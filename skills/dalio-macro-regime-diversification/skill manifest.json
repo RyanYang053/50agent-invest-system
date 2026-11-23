@@ -1,0 +1,48 @@
+{
+  "skill_id": "dalio-macro-regime-diversification",
+  "version": "0.1.0-draft",
+  "status": "RESEARCH_ONLY_NOT_CERTIFIED",
+  "methodology": "Growth-inflation regimes, balance sheet and portfolio resilience",
+  "applicability": [
+    "multi-asset or macro-sensitive portfolios"
+  ],
+  "abstention_conditions": [
+    "regime classification lacks calibrated probabilities"
+  ],
+  "required_checks": [
+    "classify growth/inflation surprise dimensions",
+    "compare central bank policy and real rates",
+    "check credit/liquidity conditions",
+    "analyze FX shocks",
+    "measure correlation instability",
+    "stress growth-inflation combinations",
+    "map nominal vs economic leverage",
+    "test portfolio concentration",
+    "evaluate liquidity and defensive sleeves",
+    "identify model-risk and historical nonstationarity"
+  ],
+  "source_candidates_to_review": [
+    "https://www.principles.com/"
+  ],
+  "sources_ingested_and_verified": false,
+  "required_outputs": [
+    "source_evidence_ids",
+    "facts",
+    "assumptions",
+    "contradictions",
+    "null_case",
+    "falsifiers",
+    "limitations"
+  ],
+  "can_place_live_orders": false,
+  "can_change_investment_policy": false,
+  "requires_eval_before_activation": true,
+  "required_evals": [
+    "source_attribution",
+    "temporal_cutoff",
+    "numerical_tieout",
+    "inversion_case",
+    "abstention",
+    "adversarial_input"
+  ]
+}

@@ -1,0 +1,127 @@
+{
+  "checked_at": "2026-11-23",
+  "scope": "Personal non-professional self-directed equity research, US/Canada focus. Product features and legal terms require a current subscription-specific check.",
+  "providers": [
+    {
+      "id": "sec_edgar",
+      "category": "primary_filings",
+      "cost": "free",
+      "coverage": "US SEC submissions, standardized XBRL, corporate filings",
+      "pit": "filing date, availability timestamps and amendment history must be reconstructed",
+      "license_status": "public filing reuse generally permitted; avoid excessive requests",
+      "ai_training": "subject_to_source_license",
+      "recommendation": "default_primary",
+      "url": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces"
+    },
+    {
+      "id": "alfred",
+      "category": "macro_pit",
+      "cost": "free API key",
+      "coverage": "historically revised US macro series as known on selected vintage date",
+      "pit": "supported via realtime_start/realtime_end",
+      "license_status": "series-specific third-party restrictions may apply",
+      "ai_training": "requires_per_series_rights",
+      "recommendation": "default_primary",
+      "url": "https://fred.stlouisfed.org/docs/api/fred/realtime_period.html"
+    },
+    {
+      "id": "boc_valet",
+      "category": "cad_fx_macro",
+      "cost": "free",
+      "coverage": "BoC FX reference rates and Canadian economic data",
+      "pit": "observation date; archive revisions as received",
+      "license_status": "follow BoC reuse terms and attribution",
+      "ai_training": "license_review",
+      "recommendation": "default_primary",
+      "url": "https://www.bankofcanada.ca/valet/docs"
+    },
+    {
+      "id": "ibkr",
+      "category": "accounts_quotes",
+      "cost": "broker account; subscription fees vary",
+      "coverage": "two-account cash, positions, margin, trades, available subscribed quotes",
+      "pit": "Flex reports not intraday; separate live snapshots",
+      "license_status": "personal/market entitlement validation required",
+      "ai_training": "not_authorized_by_default",
+      "recommendation": "default_personal_ledger",
+      "url": "https://www.interactivebrokers.com/en/pricing/market-data-pricing.php"
+    },
+    {
+      "id": "alpaca_iex",
+      "category": "live_partial_quotes",
+      "cost": "free tier with plan restrictions",
+      "coverage": "IEX-only US equity, not all-US SIP/NBBO",
+      "pit": "record quote exchange, as_of, arrival, session",
+      "license_status": "check usage, display, caching terms",
+      "ai_training": "not_authorized_by_default",
+      "recommendation": "research_alerts_only",
+      "url": "https://docs.alpaca.markets/us/docs/market-data-faq"
+    },
+    {
+      "id": "tiingo",
+      "category": "eod_pit_fundamentals",
+      "cost": "$0 Starter or $30/month Power; fundamental API covers DJIA 30 without add-on; additional history for all tickers costs $9.99/$29.99/$49.99 per month depending on 3/10/20+ year tier, confirm plan entitlement",
+      "coverage": "EOD, news, 20+ years historical as-reported US fundamentals",
+      "pit": "vendor explicitly offers as-reported and normalized",
+      "license_status": "individual entitlement and AI/index/retention terms require verification",
+      "ai_training": "not_authorized_until_confirmed",
+      "recommendation": "priority_upgrade_for_history",
+      "url": "https://www.tiingo.com/products/fundamental-data-api"
+    },
+    {
+      "id": "massive",
+      "category": "stocks_quotes_financials",
+      "cost": "Stocks Advanced $199/mo or Financials & Ratios $29/mo on checked monthly pricing page",
+      "coverage": "US stocks feeds and financials; check actual tier",
+      "pit": "depends on tier; verify as-of semantics",
+      "license_status": "individual-use-only on featured tiers; confirm model/RAG reuse",
+      "ai_training": "not_authorized_until_confirmed",
+      "recommendation": "optional_paid_feed",
+      "url": "https://massive.com/pricing?product=stocks"
+    },
+    {
+      "id": "fmp",
+      "category": "financials_aggregator",
+      "cost": "free limited; paid tiers",
+      "coverage": "standardized financials and prices",
+      "pit": "historic filing-date completeness must be verified",
+      "license_status": "November 2026 personal AI use allowed within restrictions; no model training/evals/calibration; no substitute database; no redistribution",
+      "ai_training": "prohibited",
+      "recommendation": "transient_personal_analysis_only_no_training",
+      "url": "https://site.financialmodelingprep.com/terms-of-service"
+    },
+    {
+      "id": "databento",
+      "category": "historical_microstructure",
+      "cost": "usage-based, may entail exchange entitlements",
+      "coverage": "US equity tick and order-book datasets depending on feed",
+      "pit": "market event timestamps and venue details",
+      "license_status": "confirm individual license and exchange entitlements before use",
+      "ai_training": "not_authorized_until_confirmed",
+      "recommendation": "optional_if_microstructure_strategy",
+      "url": "https://databento.com/pricing"
+    },
+    {
+      "id": "qdrant_local",
+      "category": "vector_database",
+      "cost": "open-source/local deployment compute",
+      "coverage": "dense and sparse retrieval with RRF",
+      "pit": "application must attach effective-time filters",
+      "license_status": "self-hosted code, not a financial data license",
+      "ai_training": "not_applicable",
+      "recommendation": "optional_scaling_upgrade",
+      "url": "https://qdrant.tech/documentation/hybrid-queries/"
+    },
+    {
+      "id": "qwen3_embedding_0_6b",
+      "category": "local_embedding",
+      "cost": "local compute and storage",
+      "coverage": "multilingual text embeddings",
+      "pit": "application filter",
+      "license_status": "Model card lists Apache-2.0; check exact revision, model weights and embedding corpus license separately",
+      "ai_training": "depends_on_corpus_and_model_license",
+      "recommendation": "optional_local_embedding",
+      "url": "https://huggingface.co/Qwen/Qwen3-Embedding-0.6B"
+    }
+  ]
+}

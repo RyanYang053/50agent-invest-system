@@ -1,0 +1,21 @@
+{
+  "checked_at": "2026-11-23",
+  "provider_pricing": [
+    "https://developers.openai.com/api/docs/models/gpt-6-luna",
+    "https://api-docs.deepseek.com/quick_start/pricing/",
+    "https://ai.google.dev/gemini-api/docs/pricing/",
+    "https://developers.openai.com/api/docs/pricing",
+    "https://platform.claude.com/docs/en/about-claude/pricing",
+    "https://developers.openai.com/api/docs/pricing",
+    "https://platform.claude.com/docs/en/about-claude/pricing",
+    "https://ai.google.dev/gemini-api/docs/pricing/"
+  ],
+  "broker_docs": [
+    "https://www.interactivebrokers.com/support/faq/content/get-real-time-data-us-1491290694",
+    "https://www.interactivebrokers.com/campus/ibkr-api-page/webapi-doc/"
+  ],
+  "independent_models": "https://artificialanalysis.ai/leaderboards/models",
+  "current_repo": "https://github.com/RyanYang053/IBKR-Agent-harness",
+  "current_repo_commit": "c62f1147d7077ab97a886797ec5bd759765e6706",
+  "limitations": "No connected broker live query, paid model API call, or full GitHub repo test execution was performed."
+}

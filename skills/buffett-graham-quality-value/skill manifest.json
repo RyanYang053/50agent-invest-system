@@ -1,0 +1,50 @@
+{
+  "skill_id": "buffett-graham-quality-value",
+  "version": "0.1.0-draft",
+  "status": "RESEARCH_ONLY_NOT_CERTIFIED",
+  "methodology": "Buffett and Graham public-investment-method synthesis",
+  "applicability": [
+    "established businesses",
+    "cash-flow-producing listed firms"
+  ],
+  "abstention_conditions": [
+    "business economics impossible to understand",
+    "no reliable normalized earnings or cash flow"
+  ],
+  "required_checks": [
+    "understand revenue and unit economics",
+    "historical ROIC versus reinvestment",
+    "moat evidence and erosion signals",
+    "management incentives and capital allocation",
+    "owner-earnings versus accounting profits",
+    "leverage/refinancing exposure",
+    "cyclically normalized cash flow",
+    "conservative intrinsic value range",
+    "price versus safety margin",
+    "thesis falsifiers"
+  ],
+  "source_candidates_to_review": [
+    "https://www.berkshirehathaway.com/letters/letters.html"
+  ],
+  "sources_ingested_and_verified": false,
+  "required_outputs": [
+    "source_evidence_ids",
+    "facts",
+    "assumptions",
+    "contradictions",
+    "null_case",
+    "falsifiers",
+    "limitations"
+  ],
+  "can_place_live_orders": false,
+  "can_change_investment_policy": false,
+  "requires_eval_before_activation": true,
+  "required_evals": [
+    "source_attribution",
+    "temporal_cutoff",
+    "numerical_tieout",
+    "inversion_case",
+    "abstention",
+    "adversarial_input"
+  ]
+}

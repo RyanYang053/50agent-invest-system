@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atlas-investment-os-research"
+version = "0.3.0"
+description = "Research-only investment data and governance prototype; NO live trading"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+market_calendar = ["exchange-calendars>=4.8,<5"]
+test = ["pytest>=8", "jsonschema>=4"]
+embeddings = ["sentence-transformers>=3"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["atlas_pro*"]

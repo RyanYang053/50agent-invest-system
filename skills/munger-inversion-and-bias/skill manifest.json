@@ -1,0 +1,48 @@
+{
+  "skill_id": "munger-inversion-and-bias",
+  "version": "0.1.0-draft",
+  "status": "RESEARCH_ONLY_NOT_CERTIFIED",
+  "methodology": "Inversion, base rates and multi-disciplinary bias checks",
+  "applicability": [
+    "all public-equity theses"
+  ],
+  "abstention_conditions": [
+    "insufficient independent evidence to form a specific prediction"
+  ],
+  "required_checks": [
+    "invert the hypothesis: what causes permanent loss?",
+    "identify leverage, dilution and adverse selection",
+    "list incentives and principal-agent risk",
+    "check survivorship/recency/availability biases",
+    "test alternative explanations",
+    "compare base rates and forecast error",
+    "identify neglected disconfirming evidence",
+    "estimate opportunity cost",
+    "design monitorable thesis breakers",
+    "produce no-trade alternative"
+  ],
+  "source_candidates_to_review": [
+    "https://www.berkshirehathaway.com/letters/letters.html"
+  ],
+  "sources_ingested_and_verified": false,
+  "required_outputs": [
+    "source_evidence_ids",
+    "facts",
+    "assumptions",
+    "contradictions",
+    "null_case",
+    "falsifiers",
+    "limitations"
+  ],
+  "can_place_live_orders": false,
+  "can_change_investment_policy": false,
+  "requires_eval_before_activation": true,
+  "required_evals": [
+    "source_attribution",
+    "temporal_cutoff",
+    "numerical_tieout",
+    "inversion_case",
+    "abstention",
+    "adversarial_input"
+  ]
+}

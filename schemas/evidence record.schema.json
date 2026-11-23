@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Atlas Point-in-time Evidence Record",
+  "type": "object",
+  "required": [
+    "record_id",
+    "source_document_id",
+    "source_provider",
+    "instrument_id",
+    "event_time",
+    "published_at",
+    "available_at",
+    "ingested_at",
+    "content_hash",
+    "license_status",
+    "validation_status"
+  ],
+  "properties": {
+    "record_id": {
+      "type": "string"
+    },
+    "source_document_id": {
+      "type": "string"
+    },
+    "source_provider": {
+      "type": "string"
+    },
+    "instrument_id": {
+      "type": "string"
+    },
+    "event_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "available_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ingested_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "content_hash": {
+      "type": "string"
+    },
+    "license_status": {
+      "type": "string"
+    },
+    "validation_status": {
+      "enum": [
+        "RAW",
+        "PARSED",
+        "SOURCE_VALIDATED",
+        "CROSS_CHECKED",
+        "ELIGIBLE",
+        "STALE",
+        "REVOKED"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "unit": {
+      "type": "string"
+    },
+    "currency": {
+      "type": "string"
+    }
+  }
+}

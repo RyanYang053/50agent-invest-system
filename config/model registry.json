@@ -1,0 +1,134 @@
+{
+  "gpt-6-luna": {
+    "provider": "openai",
+    "model_id": "gpt-6-luna",
+    "input_usd_per_m": 0.1,
+    "output_usd_per_m": 0.5,
+    "max_effort": "low",
+    "data_scope": "public_only",
+    "verified_at": "2026-11-23",
+    "source": "https://developers.openai.com/api/docs/models/gpt-6-luna"
+  },
+  "deepseek-flash": {
+    "provider": "deepseek",
+    "model_id": "deepseek-flash",
+    "input_usd_per_m": 0.3,
+    "output_usd_per_m": 1.2,
+    "offpeak_input_usd_per_m": 0.15,
+    "offpeak_output_usd_per_m": 0.6,
+    "max_effort": "medium",
+    "data_scope": "public_only",
+    "verified_at": "2026-11-23",
+    "source": "https://api-docs.deepseek.com/quick_start/pricing/"
+  },
+  "gemini-3.8-flash": {
+    "provider": "google",
+    "model_id": "gemini-3.8-flash",
+    "input_usd_per_m": 0.75,
+    "output_usd_per_m": 3.75,
+    "price_valid_through": "2026-12-31",
+    "next_price_input_usd_per_m": 1.5,
+    "next_price_output_usd_per_m": 7.5,
+    "max_effort": "medium",
+    "data_scope": "public_only",
+    "verified_at": "2026-11-23",
+    "source": "https://ai.google.dev/gemini-api/docs/pricing/"
+  },
+  "gpt-6.2-sol": {
+    "provider": "openai",
+    "model_id": "gpt-6.2-sol",
+    "input_usd_per_m": 2.0,
+    "output_usd_per_m": 10.0,
+    "max_effort": "high",
+    "data_scope": "public_only",
+    "verified_at": "2026-11-23",
+    "source": "https://developers.openai.com/api/docs/pricing"
+  },
+  "claude-sonnet-5-5": {
+    "provider": "anthropic",
+    "model_id": "claude-sonnet-5-5",
+    "input_usd_per_m": 2.0,
+    "output_usd_per_m": 10.0,
+    "max_effort": "high",
+    "data_scope": "public_only",
+    "verified_at": "2026-11-23",
+    "source": "https://platform.claude.com/docs/en/about-claude/pricing"
+  },
+  "gpt-6.2-astra": {
+    "provider": "openai",
+    "model_id": "gpt-6.2-astra",
+    "input_usd_per_m": 8.0,
+    "output_usd_per_m": 40.0,
+    "max_effort": "high",
+    "data_scope": "public_only",
+    "verified_at": "2026-11-23",
+    "source": "https://developers.openai.com/api/docs/pricing"
+  },
+  "claude-haiku-5-5": {
+    "provider": "anthropic",
+    "model_id": "claude-haiku-5-5",
+    "input_usd_per_m": 0.1,
+    "output_usd_per_m": 0.5,
+    "price_cap_input_tokens": 100000,
+    "higher_price_input_usd_per_m": 0.5,
+    "higher_price_output_usd_per_m": 2.5,
+    "max_effort": "low",
+    "data_scope": "public_only",
+    "verified_at": "2026-11-23",
+    "source": "https://platform.claude.com/docs/en/about-claude/pricing"
+  },
+  "gemini-3.1-flash-lite": {
+    "provider": "google",
+    "model_id": "gemini-3.1-flash-lite",
+    "input_usd_per_m": 0.25,
+    "output_usd_per_m": 1.5,
+    "max_effort": "low",
+    "data_scope": "public_only",
+    "verified_at": "2026-11-23",
+    "source": "https://ai.google.dev/gemini-api/docs/pricing/"
+  },
+  "local-private": {
+    "provider": "self_hosted",
+    "model_id": "operator-configured-local-model",
+    "input_usd_per_m": null,
+    "output_usd_per_m": null,
+    "max_effort": "medium",
+    "data_scope": "private_only",
+    "status": "subject_to_local_runtime_validation",
+    "verified_at": "2026-11-23"
+  },
+  "deterministic": {
+    "provider": "python",
+    "model_id": null,
+    "input_usd_per_m": 0,
+    "output_usd_per_m": 0,
+    "max_effort": "none",
+    "data_scope": "local_only",
+    "verified_at": "2026-11-23"
+  },
+  "gemini-4-hydrogen": {
+    "provider": "google",
+    "model_id": "gemini-4-hydrogen",
+    "input_usd_per_m": 1.5,
+    "output_usd_per_m": 7.5,
+    "max_effort": "high",
+    "data_scope": "public_only",
+    "verified_at": "2026-11-23",
+    "status": "challenger_only_requires_task_benchmark",
+    "source": "https://ai.google.dev/gemini-api/docs/pricing/"
+  },
+  "qwen3.8-flash": {
+    "provider": "alibaba",
+    "model_id": "qwen3.8-flash",
+    "billing_currency": "CNY",
+    "input_cny_per_m": 0.8,
+    "output_cny_per_m": 2.7,
+    "input_usd_per_m": null,
+    "output_usd_per_m": null,
+    "max_effort": "medium",
+    "data_scope": "public_only",
+    "verified_at": "2026-11-23",
+    "status": "challenger_only_fx_conversion_required",
+    "source": "https://help.aliyun.com/zh/model-studio/model-pricing"
+  }
+}

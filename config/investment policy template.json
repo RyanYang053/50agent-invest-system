@@ -1,0 +1,37 @@
+{
+  "mandate_id": "TEMPLATE_NOT_APPROVED",
+  "version": 1,
+  "status": "DRAFT_NOT_AUTHORIZED",
+  "owner_approval": {
+    "approved": false,
+    "approved_at": null,
+    "approval_digest": null
+  },
+  "investment_horizon_years": 10,
+  "target_annual_return": 0.15,
+  "max_drawdown_budget": 0.25,
+  "drawdown_constraint_type": "risk_budget_not_guarantee",
+  "limits": {
+    "min_cash_reserve_weight": 0.05,
+    "max_single_stock_weight": 0.15,
+    "max_correlated_cluster_weight": 0.3,
+    "max_economic_leverage": 1.2,
+    "max_gross_economic_leverage": 1.35,
+    "max_new_order_notional_usd": 0.0
+  },
+  "permissions": {
+    "analysis": true,
+    "paper_trading": false,
+    "live_execution": false,
+    "policy_changes_require_owner_approval": true,
+    "strategy_promotion_require_owner_approval": true
+  },
+  "data_rules": {
+    "max_quote_age_seconds": 90,
+    "max_account_snapshot_age_hours": 24,
+    "require_all_accounts": true,
+    "require_consistent_currency": true,
+    "require_source_provenance": true
+  },
+  "policy_note": "This is an illustrative draft; use only after explicit human confirmation. \nMaximum drawdown is never guaranteed."
+}

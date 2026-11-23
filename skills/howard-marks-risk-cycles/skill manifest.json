@@ -1,0 +1,48 @@
+{
+  "skill_id": "howard-marks-risk-cycles",
+  "version": "0.1.0-draft",
+  "status": "RESEARCH_ONLY_NOT_CERTIFIED",
+  "methodology": "Cycle-aware risk, second-level thinking and downside asymmetry",
+  "applicability": [
+    "equity and credit linked exposures"
+  ],
+  "abstention_conditions": [
+    "unverifiable cycle claims presented as certainty"
+  ],
+  "required_checks": [
+    "identify credit and liquidity regime",
+    "separate asset quality from price",
+    "state what consensus expects",
+    "measure spreads and valuation dispersion where available",
+    "check funding and positioning vulnerability",
+    "stress downside scenarios",
+    "compare probabilities without false precision",
+    "evaluate forced-seller dynamics",
+    "identify regime shift triggers",
+    "document contrarian and null case"
+  ],
+  "source_candidates_to_review": [
+    "https://www.oaktreecapital.com/insights"
+  ],
+  "sources_ingested_and_verified": false,
+  "required_outputs": [
+    "source_evidence_ids",
+    "facts",
+    "assumptions",
+    "contradictions",
+    "null_case",
+    "falsifiers",
+    "limitations"
+  ],
+  "can_place_live_orders": false,
+  "can_change_investment_policy": false,
+  "requires_eval_before_activation": true,
+  "required_evals": [
+    "source_attribution",
+    "temporal_cutoff",
+    "numerical_tieout",
+    "inversion_case",
+    "abstention",
+    "adversarial_input"
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "name": "Atlas Financial Role Evaluation Plan",
+  "status": "PLANNED_NOT_EXECUTED",
+  "minimum_locked_eval_examples_per_task": 100,
+  "tasks": [
+    {
+      "task": "SEC 10-K/10-Q extraction",
+      "metrics": [
+        "numeric_exactness",
+        "citation_precision",
+        "period_alignment",
+        "abstention"
+      ]
+    },
+    {
+      "task": "Earnings guidance change",
+      "metrics": [
+        "date_correctness",
+        "direction",
+        "original_source_precision"
+      ]
+    },
+    {
+      "task": "DCF sanity",
+      "metrics": [
+        "code_model_tie_out",
+        "assumption_provenance",
+        "scope_abstention"
+      ]
+    },
+    {
+      "task": "Reverse DCF",
+      "metrics": [
+        "solver_tieout",
+        "expected_growth_distinction"
+      ]
+    },
+    {
+      "task": "Probabilistic predictions",
+      "metrics": [
+        "proper_scoring_rule",
+        "calibration",
+        "regime_robustness"
+      ]
+    },
+    {
+      "task": "Prompt injection and tool leakage",
+      "metrics": [
+        "refusal",
+        "zero_private_data_exposure"
+      ]
+    },
+    {
+      "task": "Multi-account risk",
+      "metrics": [
+        "hard_limit_violations",
+        "reconciliation_block"
+      ]
+    },
+    {
+      "task": "RAG answer support",
+      "metrics": [
+        "citation_faithfulness",
+        "freshness",
+        "contradiction_disclosure"
+      ]
+    },
+    {
+      "task": "Agent disagreement",
+      "metrics": [
+        "independent_evidence",
+        "no_consensus_override"
+      ]
+    },
+    {
+      "task": "Performance and cost",
+      "metrics": [
+        "measured_dollars_per_accepted_task",
+        "p95_latency",
+        "error_rate"
+      ]
+    }
+  ],
+  "promotion_policy": {
+    "requires_human_signoff": true,
+    "do_not_tune_on_locked_eval": true,
+    "must_beat_baseline_on_task_specific_score": true,
+    "must_not_increase_critical_violations": true,
+    "new_models_start_shadow_only": true
+  },
+  "no_already_measured_scores": true
+}
