@@ -1,0 +1,448 @@
+[
+  {
+    "event_type": "margin_cushion_breach",
+    "priority": "P0",
+    "primary_agents": [
+      "A081",
+      "A082",
+      "A093"
+    ],
+    "cooldown_seconds": 0,
+    "max_ai_agents": 0,
+    "requires_verified_event": false,
+    "source_type": "broker_metrics",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "portfolio_data_inconsistent",
+    "priority": "P0",
+    "primary_agents": [
+      "A021",
+      "A024",
+      "A081"
+    ],
+    "cooldown_seconds": 0,
+    "max_ai_agents": 0,
+    "requires_verified_event": false,
+    "source_type": "ledger",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "market_data_stale",
+    "priority": "P0",
+    "primary_agents": [
+      "A021",
+      "A024"
+    ],
+    "cooldown_seconds": 0,
+    "max_ai_agents": 0,
+    "requires_verified_event": false,
+    "source_type": "feed_quality",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "approval_expired",
+    "priority": "P0",
+    "primary_agents": [
+      "A092",
+      "A095"
+    ],
+    "cooldown_seconds": 0,
+    "max_ai_agents": 0,
+    "requires_verified_event": false,
+    "source_type": "execution_state",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "unauthorized_policy_change",
+    "priority": "P0",
+    "primary_agents": [
+      "A012",
+      "A025"
+    ],
+    "cooldown_seconds": 0,
+    "max_ai_agents": 0,
+    "requires_verified_event": false,
+    "source_type": "policy_guard",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "execution_reconciliation_error",
+    "priority": "P0",
+    "primary_agents": [
+      "A093",
+      "A094"
+    ],
+    "cooldown_seconds": 0,
+    "max_ai_agents": 0,
+    "requires_verified_event": false,
+    "source_type": "broker",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "filing_material_risk",
+    "priority": "P1",
+    "primary_agents": [
+      "A023",
+      "A034",
+      "A035",
+      "A101",
+      "A102"
+    ],
+    "cooldown_seconds": 3600,
+    "max_ai_agents": 5,
+    "requires_verified_event": true,
+    "source_type": "sec_filing",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "management_change_verified",
+    "priority": "P1",
+    "primary_agents": [
+      "A023",
+      "A034",
+      "A042",
+      "A101"
+    ],
+    "cooldown_seconds": 3600,
+    "max_ai_agents": 5,
+    "requires_verified_event": true,
+    "source_type": "official_IR",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "guidance_withdrawal",
+    "priority": "P1",
+    "primary_agents": [
+      "A023",
+      "A032",
+      "A042",
+      "A101"
+    ],
+    "cooldown_seconds": 3600,
+    "max_ai_agents": 5,
+    "requires_verified_event": true,
+    "source_type": "official_IR",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "earnings_release",
+    "priority": "P2",
+    "primary_agents": [
+      "A022",
+      "A032",
+      "A041",
+      "A042",
+      "A043",
+      "A101"
+    ],
+    "cooldown_seconds": 3600,
+    "max_ai_agents": 6,
+    "requires_verified_event": true,
+    "source_type": "earnings",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "valuation_entry_zone",
+    "priority": "P2",
+    "primary_agents": [
+      "A041",
+      "A042",
+      "A044",
+      "A083"
+    ],
+    "cooldown_seconds": 1800,
+    "max_ai_agents": 4,
+    "requires_verified_event": true,
+    "source_type": "price_and_thesis",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "market_volatility_threshold",
+    "priority": "P2",
+    "primary_agents": [
+      "A065",
+      "A081",
+      "A084"
+    ],
+    "cooldown_seconds": 900,
+    "max_ai_agents": 3,
+    "requires_verified_event": true,
+    "source_type": "price_and_vol",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "macro_event_release",
+    "priority": "P2",
+    "primary_agents": [
+      "A063",
+      "A065",
+      "A081"
+    ],
+    "cooldown_seconds": 1800,
+    "max_ai_agents": 3,
+    "requires_verified_event": true,
+    "source_type": "macro_calendar",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "material_news",
+    "priority": "P2",
+    "primary_agents": [
+      "A023",
+      "A031",
+      "A101"
+    ],
+    "cooldown_seconds": 1200,
+    "max_ai_agents": 3,
+    "requires_verified_event": true,
+    "source_type": "news_verified",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "stock_anomaly",
+    "priority": "P3",
+    "primary_agents": [
+      "A021",
+      "A023",
+      "A033"
+    ],
+    "cooldown_seconds": 1800,
+    "max_ai_agents": 3,
+    "requires_verified_event": false,
+    "source_type": "price_volatility",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "daily_portfolio_digest",
+    "priority": "P3",
+    "primary_agents": [
+      "A011",
+      "A081",
+      "A082"
+    ],
+    "cooldown_seconds": 86400,
+    "max_ai_agents": 3,
+    "requires_verified_event": false,
+    "source_type": "schedule_nyse",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "weekly_research_triage",
+    "priority": "P3",
+    "primary_agents": [
+      "A013",
+      "A071",
+      "A073"
+    ],
+    "cooldown_seconds": 604800,
+    "max_ai_agents": 3,
+    "requires_verified_event": false,
+    "source_type": "schedule_weekly",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "weekly_postmortem",
+    "priority": "P4",
+    "primary_agents": [
+      "A104",
+      "A105"
+    ],
+    "cooldown_seconds": 604800,
+    "max_ai_agents": 2,
+    "requires_verified_event": false,
+    "source_type": "schedule_weekly",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "monthly_attribution",
+    "priority": "P4",
+    "primary_agents": [
+      "A074",
+      "A075",
+      "A104"
+    ],
+    "cooldown_seconds": 2592000,
+    "max_ai_agents": 3,
+    "requires_verified_event": false,
+    "source_type": "schedule_monthly",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "quarterly_thesis_review",
+    "priority": "P4",
+    "primary_agents": [
+      "A031",
+      "A035",
+      "A054",
+      "A105"
+    ],
+    "cooldown_seconds": 7776000,
+    "max_ai_agents": 4,
+    "requires_verified_event": false,
+    "source_type": "schedule_quarterly",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  },
+  {
+    "event_type": "strategy_candidate_proposed",
+    "priority": "P4",
+    "primary_agents": [
+      "A075",
+      "A102",
+      "A104",
+      "A105"
+    ],
+    "cooldown_seconds": 604800,
+    "max_ai_agents": 4,
+    "requires_verified_event": false,
+    "source_type": "strategy_experiment",
+    "deduplicate_by": [
+      "event_type",
+      "instrument_id",
+      "source_event_id"
+    ],
+    "must_run_deterministic_precheck": true,
+    "cannot_directly_trigger_live_order": true,
+    "trigger_logic": "Implement source-specific validated predicate. This manifest defines routing only, not the detector."
+  }
+]

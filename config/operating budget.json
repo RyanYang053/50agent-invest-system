@@ -1,0 +1,21 @@
+{
+  "daily_usd_soft_cap": 5.0,
+  "daily_usd_hard_cap": 12.0,
+  "monthly_usd_soft_cap": 100.0,
+  "monthly_usd_hard_cap": 150.0,
+  "high_cost_model_max_calls_daily": 4,
+  "gpt-6.2-astra_max_calls_monthly": 12,
+  "max_llm_parallel_calls": 6,
+  "max_agent_retries": 1,
+  "alert_at_fraction": 0.8,
+  "cost_estimation_currency": "USD",
+  "allowed_when_exceeded": [
+    "deterministic_risk_checks",
+    "broker_reconciliation",
+    "owner_alerts"
+  ],
+  "on_cloud_model_failure": "fail_closed_for_trade_related_workflows",
+  "model_selection_principle": "minimize measured cost for validated task quality and privacy restrictions",
+  "provider_price_update_cadence": "daily",
+  "model_eval_refresh_days": 30
+}

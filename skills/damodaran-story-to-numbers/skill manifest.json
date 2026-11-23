@@ -1,0 +1,51 @@
+{
+  "skill_id": "damodaran-story-to-numbers",
+  "version": "0.1.0-draft",
+  "status": "RESEARCH_ONLY_NOT_CERTIFIED",
+  "methodology": "Narrative-to-drivers DCF and reverse-market expectations",
+  "applicability": [
+    "non-financial companies with FCFF valuation support"
+  ],
+  "abstention_conditions": [
+    "missing financial statements or share count",
+    "DCF structurally inappropriate for financial companies without adapted framework"
+  ],
+  "required_checks": [
+    "quantify addressable market and revenue drivers",
+    "revenue growth fade",
+    "operating margin path",
+    "tax and reinvestment assumptions",
+    "sales-to-capital and NWC",
+    "D&A/capex reconciliation",
+    "discount rate and terminal consistency",
+    "share dilution/SBC",
+    "net debt and non-operating adjustments",
+    "reverse DCF market implied expectations",
+    "bear/base/bull sensitivities",
+    "terminal value share and model limits"
+  ],
+  "source_candidates_to_review": [
+    "https://pages.stern.nyu.edu/adamodar/New_Home_Page/home.htm"
+  ],
+  "sources_ingested_and_verified": false,
+  "required_outputs": [
+    "source_evidence_ids",
+    "facts",
+    "assumptions",
+    "contradictions",
+    "null_case",
+    "falsifiers",
+    "limitations"
+  ],
+  "can_place_live_orders": false,
+  "can_change_investment_policy": false,
+  "requires_eval_before_activation": true,
+  "required_evals": [
+    "source_attribution",
+    "temporal_cutoff",
+    "numerical_tieout",
+    "inversion_case",
+    "abstention",
+    "adversarial_input"
+  ]
+}

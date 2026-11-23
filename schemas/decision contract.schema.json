@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Atlas Investment Decision Contract — Research Only",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "decision_id",
+    "as_of_utc",
+    "instrument_id",
+    "scope",
+    "mandate_version",
+    "source_snapshot_ids",
+    "calculations",
+    "analysis",
+    "decision",
+    "audit",
+    "privileges"
+  ],
+  "properties": {
+    "decision_id": {
+      "type": "string",
+      "minLength": 12
+    },
+    "as_of_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "instrument_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "enum": [
+        "public_only",
+        "private_only"
+      ]
+    },
+    "mandate_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "source_snapshot_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "calculations": {
+      "type": "object",
+      "required": [
+        "engine_version",
+        "data_snapshot_hash",
+        "valuation_methods",
+        "risk_methods"
+      ],
+      "properties": {
+        "engine_version": {
+          "type": "string"
+        },
+        "data_snapshot_hash": {
+          "type": "string"
+        },
+        "valuation_methods": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "risk_methods": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "analysis": {
+      "type": "object",
+      "required": [
+        "facts_with_citations",
+        "assumptions",
+        "counterarguments",
+        "unknowns",
+        "thesis_falsifiers"
+      ],
+      "properties": {
+        "facts_with_citations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "claim",
+              "source_ids"
+            ],
+            "properties": {
+              "claim": {
+                "type": "string"
+              },
+              "source_ids": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "counterarguments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unknowns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "thesis_falsifiers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "required": [
+        "status",
+        "recommended_action",
+        "requires_owner_review"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "RESEARCH_ONLY",
+            "INSUFFICIENT_EVIDENCE",
+            "BLOCKED_BY_RISK",
+            "READY_FOR_OWNER_REVIEW"
+          ]
+        },
+        "recommended_action": {
+          "enum": [
+            "BUY",
+            "WAIT",
+            "HOLD",
+            "REDUCE",
+            "SELL",
+            "NONE"
+          ]
+        },
+        "requires_owner_review": {
+          "const": true
+        }
+      }
+    },
+    "audit": {
+      "type": "object",
+      "required": [
+        "audit_status",
+        "red_team_model_id",
+        "tool_trace_id"
+      ],
+      "properties": {
+        "audit_status": {
+          "enum": [
+            "PENDING",
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "red_team_model_id": {
+          "type": "string"
+        },
+        "tool_trace_id": {
+          "type": "string"
+        }
+      }
+    },
+    "privileges": {
+      "type": "object",
+      "required": [
+        "can_place_live_order",
+        "can_override_policy"
+      ],
+      "properties": {
+        "can_place_live_order": {
+          "const": false
+        },
+        "can_override_policy": {
+          "const": false
+        }
+      }
+    }
+  }
+}
