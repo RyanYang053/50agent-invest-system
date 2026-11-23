@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "atlas-investment-os-research"
-version = "0.3.0"
+version = "0.4.0"
 description = "Research-only investment data and governance prototype; NO live trading"
 requires-python = ">=3.11"
 dependencies = []
@@ -13,6 +13,12 @@ dependencies = []
 market_calendar = ["exchange-calendars>=4.8,<5"]
 test = ["pytest>=8", "jsonschema>=4"]
 embeddings = ["sentence-transformers>=3"]
+
+[project.scripts]
+atlas-screen = "atlas_pro.pipeline:main"
+
+[tool.setuptools]
+py-modules = ["atlas_policy_router"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

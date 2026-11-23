@@ -1,0 +1,8 @@
+{
+  "license_id": "SEC_PUBLIC",
+  "permitted_for_personal_analysis": false,
+  "allow_local_retention": false,
+  "allow_rag_indexing": false,
+  "cloud_allowed": false,
+  "note": "Operator must verify source-specific rights, then create a separate private policy file. This template grants no rights."
+}

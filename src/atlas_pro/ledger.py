@@ -86,11 +86,13 @@ class EvidenceLedger:
             raise ValueError('INVALID_DATA_CLASS')
         if policy.get('license_id') != item['license_id']:
             raise PermissionError('UNKNOWN_LICENSE')
-        if not policy.get('permitted_for_personal_analysis'):
+        if policy.get('permitted_for_personal_analysis') is not True:
             raise PermissionError('PROVIDER_PERSONAL_ANALYSIS_DENIED')
         if item['data_class']=='licensed' and not policy.get('allow_local_retention'):
             # Record only safe metadata; never build a restricted data archive.
             raise PermissionError('LICENSE_FORBIDS_RETENTION')
+        if item['data_class']=='public' and policy.get('cloud_allowed') is not True:
+            raise PermissionError('PUBLIC_SCOPE_REQUIRES_CLOUD_ENTITLEMENT')
         if item['data_class']=='private' and policy.get('cloud_allowed'):
             raise PermissionError('PRIVATE_CLOUD_POLICY_INVALID')
         revision=item.get('revision_of')
@@ -100,6 +102,7 @@ class EvidenceLedger:
         obj['payload']=item['payload']; obj['revision_of']=revision
         fingerprint=digest(obj)
         with self.lock, self._db() as c:
+            c.execute('BEGIN IMMEDIATE')
             prior=c.execute('SELECT payload_sha256 FROM evidence WHERE record_id=?',(item['record_id'],)).fetchone()
             if prior:
                 if prior['payload_sha256']!=fingerprint: raise ValueError('IDEMPOTENCY_CONFLICT')
@@ -118,7 +121,7 @@ class EvidenceLedger:
         iso(decision_at)
         q='SELECT * FROM evidence WHERE security_id=? AND available_at<=?'
         params=[security_id,iso(decision_at).isoformat()]
-        if not include_private: q+=' AND data_class != ?'; params.append('private')
+        if not include_private: q+=' AND data_class = ?'; params.append('public')
         q+=' ORDER BY available_at DESC, record_id DESC LIMIT ?'; params.append(min(max(max_rows,1),500))
         with self._db() as c:
             rows=c.execute(q,params).fetchall()

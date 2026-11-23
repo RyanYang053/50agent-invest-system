@@ -1,0 +1,4 @@
+[
+  {"symbol": "MSFT", "cik": 789019, "security_type": "common_equity", "sector_class": "operating_company"},
+  {"symbol": "AAPL", "cik": 320193, "security_type": "common_equity", "sector_class": "operating_company"}
+]
