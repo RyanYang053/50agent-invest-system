@@ -145,6 +145,14 @@
       "contribution": "Provider interoperability",
       "actual_status": "Deferred; repository metadata not resolved in this check",
       "acceptance_gate": "Verify exact release/license and data terms; avoid unnecessary full platform dependency"
+    },
+    {
+      "repo": "https://github.com/scikit-learn/scikit-learn",
+      "license_reported": "BSD-3-Clause",
+      "last_push_date_utc": "2026-11-23",
+      "contribution": "Real Ridge and histogram gradient boosting, fixed pipeline; cross-sectional purged label-availability walk-forward",
+      "actual_status": "Direct scikit-learn 1.8.0 training executed on synthetic panel in Linux network namespace, 5 folds, 400 predictions per model; OCI CI configured but not locally run",
+      "acceptance_gate": "Qualified historical feature/label evidence, model and data rights, prospective evaluation; production supply-chain lock"
     }
   ]
 }

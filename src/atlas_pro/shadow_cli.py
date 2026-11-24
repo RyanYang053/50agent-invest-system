@@ -17,6 +17,7 @@ def main(argv=None):
         if name!='report':q.add_argument('--evidence',type=Path,required=True)
         if name=='append':q.add_argument('--observation',type=Path,required=True)
         if name=='tick-tiingo':q.add_argument('--licence',type=Path,required=True);q.add_argument('--network',action='store_true')
+    batch=cmds.add_parser('tick-batch');batch.add_argument('--plans',type=Path,required=True);batch.add_argument('--evidence',type=Path,required=True);batch.add_argument('--licence',type=Path,required=True);batch.add_argument('--network',action='store_true');batch.add_argument('--max-fetches',type=int,default=20)
     compare=cmds.add_parser('compare');compare.add_argument('champion_id');compare.add_argument('challenger_id');compare.add_argument('--trial-count',type=int,required=True);compare.add_argument('--max-drawdown',type=float,required=True)
     a=p.parse_args(argv);j=ShadowJournal(a.journal)
     if a.cmd=='start':
@@ -29,6 +30,7 @@ def main(argv=None):
         row=json.loads(a.observation.read_text())
         if set(row)!={'session_close','evidence_by_security'}:raise ValueError('invalid observation fields')
         result=j.append(a.plan_id,EvidenceLedger(a.evidence),**row)
+    elif a.cmd=='tick-batch':result=TiingoEOD(json.loads(a.licence.read_text()),network=a.network).tick_batch(j,EvidenceLedger(a.evidence),json.loads(a.plans.read_text()),max_fetches=a.max_fetches)
     else:result=TiingoEOD(json.loads(a.licence.read_text()),network=a.network).tick(j,EvidenceLedger(a.evidence),a.plan_id)
     print(json.dumps(result,indent=2,allow_nan=False));return 0
 

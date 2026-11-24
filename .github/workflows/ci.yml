@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: python -m pip install -e '.[market_calendar,test,quant]'
+      - run: python -m pip install -e '.[market_calendar,test,quant,ml]'
       - run: python -m pytest -q
       - run: python -m atlas_pro
       - run: python -m atlas_pro.paper_replay
@@ -32,7 +32,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m pip install -e '.[market_calendar,test,quant,warehouse]'
+      - run: python -m pip install -e '.[market_calendar,test,quant,warehouse,ml]'
       - run: python -c 'import duckdb,qdrant_client'
       - run: python -m pytest -q tests/test_oss_adapters.py
   optional-risk-crosscheck:
@@ -46,3 +46,20 @@ jobs:
       - run: python -m pip install -e '.[test,quant,risk_crosscheck]'
       - run: python -c 'import skfolio,pandas'
       - run: python -m pytest -q tests/test_oss_adapters.py -k skfolio_optional
+  isolated-quant-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --file sandbox/Dockerfile --tag atlas-research:ci .
+      - run: |
+          image=$(docker image inspect --format '{{.Id}}' atlas-research:ci)
+          bash sandbox/run-research.sh "$image" "$RUNNER_TEMP/atlas-quant.json"
+          python - "$RUNNER_TEMP/atlas-quant.json" <<'PYCODE'
+          import json, sys
+          r=json.load(open(sys.argv[1]))
+          assert r['synthetic'] is True and r['can_trade'] is False
+          assert set(r['models'])=={'ridge','hist_gradient_boosting'}
+          assert all(v['n_predictions']>0 for v in r['models'].values())
+          print('network-isolated OCI training passed; synthetic research only')
+          PYCODE

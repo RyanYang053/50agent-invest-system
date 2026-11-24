@@ -51,3 +51,7 @@ See [External Engine Integration](docs/0.6.1%20External%20Engine%20Integration.m
 ## Prospective research core (0.7.0)
 
 See [Core Loop and Acceptance](docs/0.7.0%20Core%20Loop%20and%20Acceptance.md) for `atlas-shadow`, licensed Tiingo EOD proxy ingestion, immutable benchmarked research experiments, hypothesis scoring and independent comparison. `atlas-certify` regrades external locked model cases; the fixed real model transport requires measured certificates and current billing time. Both new CLIs are research-only. No actual brokerage or paid model session has been validated, and the separate paper gateway remains operator-only.
+
+## 0.8 offline deployment and quant baseline
+
+Actual scikit-learn rolling training and shared-evidence shadow batch runner. See [0.8 deployment runbook](docs/0.8.0%20Deployment%20and%20Quant%20Baseline.md). Docker isolation is tested separately in CI; locally the trusted synthetic learner ran with a network namespace, not Docker. No actual market-data, paid model or paper/live broker acceptance.
