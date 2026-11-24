@@ -7,8 +7,8 @@
       "license_reported": "MIT",
       "last_push_date_utc": "2026-11-04",
       "contribution": "Sector-relative factor ranks; purged walk-forward; normalized research interchange",
-      "actual_status": "PIT normalized score importer via ledger; optional pinned Qlib 0.9.7 DataHandlerLP/DatasetH/LinearModel execution on Atlas purged folds implemented; dedicated network-isolated CI pending",
-      "acceptance_gate": "Pass dedicated Qlib synthetic execution CI, then execute on rights-cleared independently locked real PIT panel and verify score provenance"
+      "actual_status": "Actual Qlib 0.9.7 DataHandlerLP/DatasetH/LinearModel ridge execution passed dedicated network-isolated synthetic CI (PR #24); exact fold membership, withheld test labels and numerical agreement checked.",
+      "acceptance_gate": "Execute on rights-cleared independently locked real PIT panel and verify score provenance and out-of-sample efficacy."
     },
     {
       "repo": "https://github.com/microsoft/RD-Agent",
@@ -23,8 +23,8 @@
       "license_reported": "Apache-2.0",
       "last_push_date_utc": "2026-11-23",
       "contribution": "Brokerage reality modeling, cost and fill semantics, replay result intake",
-      "actual_status": "Normalized equity curve import and independent benchmark/path arithmetic implemented and fixture-tested; LEAN not run",
-      "acceptance_gate": "Run verified LEAN with corporate actions, fees and full historical universe"
+      "actual_status": "Normalized curve import plus fixed synthetic actual-engine order/fee/cash reconciliation fixture, generated local data, offline container and dedicated CI implemented; runtime CI pending.",
+      "acceptance_gate": "Pass synthetic engine CI; pin/audit upstream image digest, then independently verify real PIT data, corporate actions, fees, benchmark, full historical universe and realistic execution."
     },
     {
       "repo": "https://github.com/dgunning/edgartools",
