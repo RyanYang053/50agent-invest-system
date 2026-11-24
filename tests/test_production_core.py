@@ -263,7 +263,7 @@ class ProductionCore(unittest.TestCase):
     def test_model_cost_limit(self):
         g=self.gateway();role=next(x for x in ROLES if x['primary_model']=='gpt-6.2-sol')
         g.certify(role['agent_id'],'gpt-6.2-sol','finance',0.97,0.9,at=NOW,valid_until='2026-12-23T00:00:00Z',provenance={'external_eval_report':'fixture','locked_testset_hash':'fixture'})
-        out=g.select_and_reserve(request_id='huge',role_id=role['agent_id'],task_set='finance',data_scope='public_only',at=NOW,input_tokens=300000,output_tokens=100000)
+        out=g.select_and_reserve(request_id='huge',role_id=role['agent_id'],task_set='finance',data_scope='public_only',at=NOW,input_tokens=100000,output_tokens=16000)
         self.assertEqual(out['status'],'COST_BUDGET_BLOCK')
     def test_release_requires_signed_approval(self):
         r=ReleaseRegistry(self.base/'rel.sqlite');p={'release_id':'v2','artifact_sha256':'x','evaluation_id':'e','shadow_id':'s','quality_pass':True,'risk_pass':True,'license_pass':True,'owner_approved':True}

@@ -1,0 +1,8 @@
+{
+  "license_id": "ALPACA_PERSONAL",
+  "permitted_for_personal_analysis": false,
+  "allow_local_retention": false,
+  "allow_rag_indexing": false,
+  "cloud_allowed": false,
+  "note": "Verify actual market-data plan, local retention rights, and permitted research use. No entitlement is inferred from possession of an API key."
+}

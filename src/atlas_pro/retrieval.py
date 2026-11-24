@@ -54,10 +54,12 @@ class ResearchIndex:
         if any(not document.get(k) for k in required): raise ValueError('MISSING_REQUIRED_DOC_METADATA')
         if document['scope'] not in ('public','licensed','private'): raise ValueError('INVALID_SCOPE')
         dt=iso(document['available_at'])
-        if document['license_id']!=license_policy.get('license_id') or not license_policy.get('permitted_for_personal_analysis'):
+        if document['license_id']!=license_policy.get('license_id') or license_policy.get('permitted_for_personal_analysis') is not True:
             raise PermissionError('LICENSE_RESTRICTED')
-        if not license_policy.get('allow_local_retention') or not license_policy.get('allow_rag_indexing'):
+        if license_policy.get('allow_local_retention') is not True or license_policy.get('allow_rag_indexing') is not True:
             raise PermissionError('LICENSE_FORBIDS_INDEXING')
+        if document['scope']=='public' and license_policy.get('cloud_allowed') is not True:
+            raise PermissionError('PUBLIC_SCOPE_REQUIRES_CLOUD_ENTITLEMENT')
         if document['scope']=='private' and license_policy.get('cloud_allowed'):
             raise PermissionError('PRIVATE_CLOUD_SCOPE_INVALID')
         body=document['content']
@@ -70,9 +72,9 @@ class ResearchIndex:
                 raise ValueError('INVALID_EMBEDDING')
         hashval=hashlib.sha256(body.encode()).hexdigest()
         with self._db() as c:
-            old=c.execute('SELECT text_sha256 FROM docs WHERE doc_id=?',(document['doc_id'],)).fetchone()
+            old=c.execute('SELECT * FROM docs WHERE doc_id=?',(document['doc_id'],)).fetchone()
             if old:
-                if old['text_sha256']!=hashval: raise ValueError('DOC_IMMUTABILITY_CONFLICT')
+                if old['text_sha256']!=hashval or any(old[k]!=document[k] for k in ('source_id','source_uri','security_id','scope','license_id')) or old['available_at']!=dt.isoformat(): raise ValueError('DOC_IMMUTABILITY_CONFLICT')
                 return 'DUPLICATE'
             c.execute('''INSERT INTO docs(doc_id,source_id,source_uri,security_id,available_at,scope,license_id,text_sha256,indexed_at,embedding_json,content)
               VALUES(?,?,?,?,?,?,?,?,?,?,?)''',
@@ -95,6 +97,7 @@ class ResearchIndex:
         terms=re.findall(r'[\w]+',query,flags=re.UNICODE)
         # Avoid raw FTS query syntax and unsafe operators; use terms only.
         terms=[t for t in terms if len(t)>=2][:10]
+        cjk_terms=re.findall(r'[\u3400-\u9fff]+',query)[:5]
         if not terms: return []
         clauses=['d.available_at<=?']; params=[decision_at]
         if scope=='public_only': clauses.append("d.scope='public'")
@@ -106,9 +109,14 @@ class ResearchIndex:
               JOIN docs d ON d.rowid=docs_fts.rowid
               WHERE docs_fts MATCH ? AND {where} ORDER BY bm LIMIT 60''',[fts_query]+params).fetchall()
             lexical={r['doc_id']:(1.0/(60+i),dict(r)) for i,r in enumerate(rows)}
+            if cjk_terms:
+                extra=c.execute(f"SELECT d.* FROM docs d WHERE {where} AND ("+' OR '.join('instr(d.content,?)>0' for _ in cjk_terms)+") ORDER BY d.available_at DESC, d.doc_id LIMIT 60",params+cjk_terms).fetchall()
+                for i,r in enumerate(extra):
+                    if r['doc_id'] not in lexical:lexical[r['doc_id']]=(1.0/(60+i),dict(r))
             if embed:
                 allrows=c.execute(f'SELECT * FROM docs d WHERE {where} AND embedding_json IS NOT NULL LIMIT 5000',params).fetchall()
                 vec=embed(query)
+                if not isinstance(vec,(list,tuple)) or not vec or any(not isinstance(x,(float,int)) or not math.isfinite(x) for x in vec):raise ValueError('INVALID_QUERY_EMBEDDING')
                 sims=[]
                 for r in allrows:
                     sim=self._cos(vec,json.loads(r['embedding_json']))

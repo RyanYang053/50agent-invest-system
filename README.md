@@ -1,39 +1,31 @@
-# Atlas Investment OS 3.0 — Professional Research Upgrade
+# Atlas Investment OS — research runtime 0.4.0
 
-> **Research-only / no live trading / no owner policy changes by AI.**
->
-> A reproducible local engineering reference implementation built on top of the previous 50-Agent pack. This **does not** install or modify the existing `IBKR-Agent-harness` repository.
+A local-first investment research system with 50 logical specialist roles and 21 event routes. **Research only; no live order submission or AI modification of owner risk policy.** The existing IBKR-Agent-harness is not modified.
 
-## Verified here
-
-- 50 logical roles and 21 registered event routes from the previous pack.
-- Added a real local, testable read-only core (`src/atlas_pro/`) with: evidence ledger, source/available-at checks, source license gate, FTS5 retrieval, vector callback interface, event queue + exchange calendar, model certification and atomic budget admission, IBKR read-only snapshot bridge, source-adapter contracts, risk refusal, owner-signature-based release proposal gate.
-- 119 tests passed offline; combined new module + CLI smoke statement coverage approximately 95% using this container's Python and `exchange_calendars`.
-- The `python -m atlas_pro` demo is synthetic with no API keys, no account requests, no paid models and no orders.
-
-## Quick start
+## Quick start (from repository checkout)
 
 ```bash
-python -m pip install -e ".[market_calendar]"
+python -m pip install -e '.[market_calendar,test]'
+python -m pytest -q
 python -m atlas_pro
-python -m unittest discover -s tests -v
 ```
 
-The `src/atlas_policy_router.py` reference router and previous 60 tests are retained unchanged. New code is under `src/atlas_pro/` and new tests under `tests/test_production_core.py`.
+The demo and tests are offline and use synthetic data or provider-shaped fixtures. They are not proof of profitability, live data coverage or model accuracy.
 
-## Documents
+## Research capabilities
 
-- `docs/Professional Engineering Readiness.md`: new implemented features, provider comparison, license permissions, exact verification boundary, G0–G7 production acceptance gates.
-- `docs/Architecture and Operations.md`: existing architecture and 50-role design.
-- `docs/Verification Report.md`: previous 60-test report (kept for provenance; **superseded** by new verification report).
-- `config/providers/personal data source catalog.json`: source-level acquisition, licensing and point-in-time caveats.
-- `config/50 agent manifest.json` and `config/event rules.json`: roles and events.
-- `src/atlas_pro/__main__.py`: offline integration smoke.
+- Point-in-time SEC annual financial normalization using accession and filing acceptance timestamps, evidence ledger, source licensing, FTS5 retrieval, optional local pinned embedding integration.
+- User-supplied stock universe (1–100 securities), fundamental and valuation screening with missing-data refusal; optional Alpaca IEX research quotes and SEC outstanding share extraction.
+- FCFF DCF, reverse DCF, scenario returns, conditional Kelly, conservative decision grid; no trade permission.
+- Model execution adapters for OpenAI, DeepSeek and Anthropic, with explicit opt-in, certification, scope and token/budget limits, citation membership checks, and role-scoped registered tool interface.
+- Durable event leases, scheduled tick/worker reference implementation, forecast journal, Brier calibration, locked evaluation and PIT return-interval replay.
 
-## Critical caveats
+## Stock screening
 
-- Local reference implementation, **not live-price**, **not live-broker**, **not secure third-party model certification**, **not an audited margin engine**.
-- The IBKR bridge is read-only and accepts only external broker snapshots already captured by the existing harness; no actual broker login was executed.
-- Qwen3-Embedding and Qdrant are recommended components, **not installed by this package**. Without a local embedding callback, search is FTS5 lexical, not proven semantic RAG.
-- Financial data supplier license terms override code capabilities. FMP's November 2026 AI terms notably ban using FMP data to train or evaluate models; the default license gate denies such usage.
-- Tests use synthetic data. To close production gaps, run real paid-model evaluations and shadow/paper monitoring under explicitly authorized personal account connections, without placing orders.
+```bash
+atlas-screen 'config/universe example.json' --data-dir /path/to/private/data --policy /path/to/private/sec-policy.json --alpaca-policy /path/to/private/alpaca-policy.json
+```
+
+Copy the policy examples to a private directory and confirm actual usage rights before enabling permissions. Configure `SEC_USER_AGENT` with a legitimate contact identity and the Alpaca credentials locally. IEX is a partial-market research feed, not an execution quote. The sample universe provides identifiers, not investment recommendations. Missing eligible price/share evidence means no candidate. Do not commit credentials or local databases. No real API request was made for this release's offline verification.
+
+See [engineering review](docs/0.4.0%20Engineering%20Review.md) for model selection, tool coverage, limitations, acceptance gates and deployment sequence. Earlier architecture and verification reports remain historical records, not current live readiness claims.
