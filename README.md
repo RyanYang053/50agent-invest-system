@@ -106,3 +106,8 @@ See [fixed historical strategy study](docs/0.16.0%20Market%20Allocation%20Refere
 ## 0.17 Agent learning memory foundation
 
 See [role-bound memory](docs/0.17.0%20Agent%20Memory.md). Separate private namespaces, signed candidate review, explicit sharing, revision and revocation. Automatic metadata-only task episodes. No autonomous promotion, model training or trading authority.
+
+
+## 0.18 employee capability packs
+
+[50 role-specific procedure, quality and learning packs](docs/0.18.0%20Employee%20Capability%20Packs.md); local role-bound retrieval, source references, runtime integration and independent-certification boundaries.
