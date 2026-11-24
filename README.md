@@ -92,3 +92,7 @@ Lexical ranking now uses an ephemeral authorized, time-filtered and issuer-filte
 ### 0.14 — historical market risk calibration (developer research)
 
 `atlas-risk-calibration --zip /private/french.zip --confirm-research-rights` compares 252-day historical simulation and fixed-decay EWMA-normal daily VaR/ES forecasts at 95% and 99%, using the official December 2024 Fama/French research return archive (2004–2024). It validates XNYS sessions and reports Kupiec and Christoffersen diagnostics, quantile loss and predefined stress-window breaches. The archive is reconstructed, not a historical PIT vintage series; aggregate market risk calibration is not portfolio risk approval, G5 certification, or evidence of alpha. The separate one-time research CI emits aggregate metrics and the archive hash, never raw data.
+
+### 0.15 — thick-tail risk challenger study (developer research)
+
+`atlas-tail-challenge --zip /private/french.zip --confirm-research-rights` compares the two existing baselines with fixed Student-t EWMA, filtered historical simulation and a stationary Student-t GARCH fit frozen at 2014-12-31. All forecasts are causal; evaluation is 2015–2024, which was already inspected in the previous baseline study and is **not an untouched holdout**. Report conditional coverage, pinball loss and a descriptive ES moment with fixed-lag HAC uncertainty. No automatic promotion, L6 certification or trading. See [risk challenger protocol](docs/0.15.0%20Tail%20Risk%20Challengers.md).
