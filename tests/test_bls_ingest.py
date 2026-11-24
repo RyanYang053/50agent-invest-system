@@ -67,3 +67,31 @@ def test_other_public_role_cannot_receive_bls():
             return [{"doc_id":"x","source_id":SOURCE}]
     r=ResearchModelRunner(G(),I(),lambda *args:pytest.fail("must not call model"))
     assert r.run(role_id="A061",task_set="fixture",request_id="r",security_id="MACRO:US",query="unemployment",at=AT)["status"]=="BLOCKED_SOURCE_SCOPE"
+
+def test_bls_role_can_receive_bls(db):
+    from atlas_pro.role_jobs import PUBLIC_TASKS
+    from atlas_pro.skill_contracts import task_id
+    import json
+    l,i=db;ingest_bls(PublicFeedClient(lambda *args:response()),l,i,series=SERIES,policy=POL,clock=clock)
+    class G:
+        roles={"A063":{"role":"Inflation & Growth Releases","data_scope":"public_only","minimum_effort":"low"}}
+        registry={"fixture":{"provider":"openai","model_id":"fixture"}}
+        def select_and_reserve(self,**kwargs):return {"status":"RESERVED","model":"fixture"}
+    calls=[]
+    def t(provider,body):
+        payload=json.loads(body["input"]);calls.append(payload)
+        assert any(d["source_id"]==SOURCE for d in payload["documents"])
+        return {"status":"completed","model":"fixture","output":[{"type":"message","content":[{"type":"output_text","text":json.dumps({"claims":[],"uncertainties":[],"countercase":"fixture"})}]}],"usage":{"input_tokens":10,"output_tokens":10}}
+    r=ResearchModelRunner(G(),i,t).run(role_id="A063",task_set=task_id("A063"),request_id="r",security_id="MACRO:US",query=PUBLIC_TASKS["A063"][1],at=AT)
+    assert r["status"]=="UNVERIFIED_RESEARCH_MEMO" and len(calls)==1
+
+def test_refresh_mixed_policies_and_duplicate_guard(db):
+    from atlas_pro.core_service import refresh_macro_sources
+    l,i=db;calls=[]
+    c=PublicFeedClient(lambda url,*args:calls.append(url) or response())
+    with pytest.raises(ValueError):refresh_macro_sources(c,l,i,[POL,POL])
+    assert not calls
+    bad=POL|{"series_id":"UNKNOWN"}
+    r=refresh_macro_sources(c,l,i,[bad,POL])
+    assert r[0]["status"]=="MACRO_INGEST_BLOCKED" and r[0]["series_id"]=="UNKNOWN"
+    assert r[1]["status"]=="BLS_INDEXED" and len(calls)==1
