@@ -7,7 +7,7 @@ name = "atlas-investment-os-research"
 version = "0.18.0"
 description = "Research-only investment data and governance prototype; NO live trading"
 requires-python = ">=3.11"
-dependencies = ["cryptography>=43,<47"]
+dependencies = ["cryptography>=43,<51"]
 
 [project.optional-dependencies]
 market_calendar = ["exchange-calendars>=4.8,<5"]
