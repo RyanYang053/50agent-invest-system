@@ -4,6 +4,8 @@
 
 # Atlas Investment OS
 
+[English](README.md) · [简体中文](README.zh-CN.md)
+
 **50 specialist roles. One auditable investment research workflow.**
 
 Local-first research, valuation, quantitative analysis, risk and governance. The 50 roles are registered logical specialists, not 50 continuously running LLMs.
@@ -61,6 +63,21 @@ flowchart TD
 
 ## Explore the roles
 
+**50 roles across 10 teams.** See the [complete role catalog](docs/ROLE_CATALOG.md) for each role's scope, deliverable and review status.
+
+| Team | Roles |
+| --- | ---: |
+| CIO & Governance | 5 |
+| Financial Data Intelligence | 5 |
+| Fundamental Research | 5 |
+| Valuation Research | 5 |
+| Investor Wisdom Council | 5 |
+| Macro & Market Intelligence | 5 |
+| Quantitative Research | 5 |
+| Portfolio and Risk | 5 |
+| Trade Operations | 5 |
+| Independent Audit and Learning | 5 |
+
 ```bash
 atlas-core catalog --roles "config/50 agent manifest.json"
 atlas-core readiness
@@ -90,13 +107,13 @@ See [engineering reference](ENGINEERING.md) for the preserved previous technical
 | Resource | Start here |
 | --- | --- |
 | First use | [Quick start](#quick-start) |
-| Technical detail | [Engineering reference](ENGINEERING.md) |
+| Technical detail | [Engineering reference](ENGINEERING.md) · [50-role catalog](docs/ROLE_CATALOG.md) |
 | Frequently asked questions | [FAQ](FAQ.md) |
-| Current plans and gaps | [Roadmap](ROADMAP.md) |
+| Current plans and gaps | [Roadmap](ROADMAP.md) · [Vision](VISION.md) |
 | Changes | [Changelog](CHANGELOG.md) |
 | Security and privacy | [Security policy](SECURITY.md) |
 | Licensing | [License status](LICENSING.md) |
-| Contribution process | [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) |
+| Contribution process | [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Support](SUPPORT.md) |
 | Releases | [GitHub Releases](https://github.com/RyanYang053/50agent-invest-system/releases) (check current availability) |
 | Research reference | [Citation metadata](CITATION.cff) |
 
