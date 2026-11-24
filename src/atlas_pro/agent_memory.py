@@ -131,6 +131,12 @@ class RoleMemory:
         if any(p.get(k)!=v for k,v in expected.items()) or not p.get("producer_organization") or p.get("cloud_allowed") is not (n["visibility"]=="public_reviewed"):raise PermissionError("review not bound to role and memory")
         if iso(p["reviewed_at"])<iso(n["created_at"]):raise ValueError("review predates note")
         self._evidence(n,t)
+        if n['shared_from'] is not None:
+            parent=n['shared_from'];source=self._store.bind(parent['role_id'])
+            with self._store._db(source.role_id) as c:
+                original=source._note(c,parent['note_id']);event=source._state(c,t).get(parent['note_id'],{})
+                if original['visibility']!='public_reviewed' or event.get('action')!='APPROVED':raise PermissionError('shared source no longer approved')
+                source._verify(parent['note_id'],original,event['review'],t)
         return p
     def approve(self,nid,envelope):
         now=self._time()
@@ -183,13 +189,16 @@ class RoleMemory:
         """Trusted journal metadata only; no raw prompt, holdings, or memo retained."""
         if not _token(task_id_value) or not _hash(result_hash) or not _token(status):raise ValueError("invalid episode")
         observed=self._time(at)
-        p={"role_id":self._role,"skill":task_id(self._role),"task":task_id_value,"result_hash":result_hash,"status":status,"observed_at":observed.isoformat()}
+        p={"role_id":self._role,"skill":task_id(self._role),"task":task_id_value,"result_hash":result_hash,"status":status,"research_asof":observed.isoformat()}
+        recorded=self._time().isoformat()
         eid=digest({"role":self._role,"task":task_id_value})
         with self._store._db(self._role) as c:
             c.execute("BEGIN IMMEDIATE")
             row=c.execute("SELECT payload FROM episodes WHERE id=?",(eid,)).fetchone()
-            if row and json.loads(row[0])!=p:raise ValueError("episode conflict")
-            c.execute("INSERT OR IGNORE INTO episodes VALUES(?,?)",(eid,canonical(p)))
+            if row:
+                old=json.loads(row[0]);saved=old.pop('recorded_at',None)
+                if old!=p or saved is None:raise ValueError('episode conflict')
+            else:c.execute('INSERT INTO episodes VALUES(?,?)',(eid,canonical(p|{'recorded_at':recorded})))
         return eid
     def stats(self):
         now=self._time()
