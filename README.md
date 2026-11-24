@@ -96,3 +96,8 @@ Lexical ranking now uses an ephemeral authorized, time-filtered and issuer-filte
 ### 0.15 — thick-tail risk challenger study (developer research)
 
 `atlas-tail-challenge --zip /private/french.zip --confirm-research-rights` compares the two existing baselines with fixed Student-t EWMA, filtered historical simulation and a stationary Student-t GARCH fit frozen at 2014-12-31. All forecasts are causal; evaluation is 2015–2024, which was already inspected in the previous baseline study and is **not an untouched holdout**. Report conditional coverage, pinball loss and a descriptive ES moment with fixed-lag HAC uncertainty. No automatic promotion, L6 certification or trading. See [risk challenger protocol](docs/0.15.0%20Tail%20Risk%20Challengers.md).
+
+
+## 0.16 market allocation reference
+
+See [fixed historical strategy study](docs/0.16.0%20Market%20Allocation%20Reference.md). Retrospective research only; no promotion or trade permission. All candidate policies and cost levels are fixed before execution.
