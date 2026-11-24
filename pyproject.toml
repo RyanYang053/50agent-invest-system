@@ -44,6 +44,7 @@ atlas-memory = "atlas_pro.memory_cli:main"
 atlas-employee = "atlas_pro.employee_packs:main"
 atlas-reference = "atlas_pro.external_references:main"
 atlas-evolution = "atlas_pro.skill_evolution:main"
+atlas-maintenance = "atlas_pro.maintenance:main"
 
 [tool.setuptools]
 py-modules = ["atlas_policy_router"]
