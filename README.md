@@ -1,13 +1,26 @@
+<p align="center">
+  <img src="docs/assets/banner.svg" alt="Atlas Investment OS — 50 specialist roles • Evidence-first research • Human control" width="100%">
+</p>
+
 # Atlas Investment OS
 
 **50 specialist roles. One auditable investment research workflow.**
 
 Local-first research, valuation, quantitative analysis, risk and governance. The 50 roles are registered logical specialists, not 50 continuously running LLMs.
 
-[Quick start](#quick-start) · [Capabilities](#what-you-can-do) · [Engineering reference](ENGINEERING.md) · [Contribute](CONTRIBUTING.md)
+[Try the demo](#try-the-demo) · [Quick start](#quick-start) · [Documentation](#documentation) · [Roadmap](ROADMAP.md) · [FAQ](FAQ.md) · [Contribute](CONTRIBUTING.md)
 
 [![CI](https://github.com/RyanYang053/50agent-invest-system/actions/workflows/ci.yml/badge.svg)](https://github.com/RyanYang053/50agent-invest-system/actions/workflows/ci.yml)
 ![Research only](https://img.shields.io/badge/live%20orders-disabled-555)
+
+[![Stars](https://img.shields.io/github/stars/RyanYang053/50agent-invest-system?style=flat)](https://github.com/RyanYang053/50agent-invest-system/stargazers) [![Forks](https://img.shields.io/github/forks/RyanYang053/50agent-invest-system?style=flat)](https://github.com/RyanYang053/50agent-invest-system/forks)
+[![Demo build](https://github.com/RyanYang053/50agent-invest-system/actions/workflows/public-demo.yml/badge.svg)](https://github.com/RyanYang053/50agent-invest-system/actions/workflows/public-demo.yml) [![Issues](https://img.shields.io/github/issues/RyanYang053/50agent-invest-system)](https://github.com/RyanYang053/50agent-invest-system/issues) [![Contributions](https://img.shields.io/badge/contributions-welcome-27845d)](CONTRIBUTING.md)
+
+## Try the demo
+
+No personal portfolio, API key or live brokerage session is needed. [Open the public demo workflow](https://github.com/RyanYang053/50agent-invest-system/actions/workflows/public-demo.yml), select a successful run from the branch you want to inspect, download its HTML preview artifact, unzip it and open `atlas-demo.html`. GitHub may require sign-in to download an artifact; artifacts expire. The source-checkout commands below work independently of GitHub artifact availability.
+
+The demo is generated from fixture data, not a marketing mock-up, live market quote or financial performance claim.
 
 ## Quick start
 
@@ -72,9 +85,24 @@ python -m pytest -q
 
 See [engineering reference](ENGINEERING.md) for the preserved previous technical documentation, [launch gates](docs/LAUNCH.md) and [license status](LICENSING.md).
 
+## Documentation
+
+| Resource | Start here |
+| --- | --- |
+| First use | [Quick start](#quick-start) |
+| Technical detail | [Engineering reference](ENGINEERING.md) |
+| Frequently asked questions | [FAQ](FAQ.md) |
+| Current plans and gaps | [Roadmap](ROADMAP.md) |
+| Changes | [Changelog](CHANGELOG.md) |
+| Security and privacy | [Security policy](SECURITY.md) |
+| Licensing | [License status](LICENSING.md) |
+| Contribution process | [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) |
+| Releases | [GitHub Releases](https://github.com/RyanYang053/50agent-invest-system/releases) (check current availability) |
+| Research reference | [Citation metadata](CITATION.cff) |
+
 ## Related projects
 
-- [IBKR Agent Harness](https://github.com/RyanYang053/IBKR-Agent-harness) — Local-first Python and MCP toolkit for Interactive Brokers portfolio research, combining deterministic calculations, investment policy checks, valuation and persistent workflows with human approval..
+- [IBKR Agent Harness](https://github.com/RyanYang053/IBKR-Agent-harness) — Local-first Python and MCP toolkit for Interactive Brokers portfolio research, combining deterministic calculations, investment policy checks, valuation and persistent workflows with human approval.
 - [IBKR Portfolio Analyzer](https://github.com/RyanYang053/ibkr-portfolio-analyzer) — Local-first desktop analytics for holdings, performance, risk and research.
 
 These are separate projects, not a claimed integrated deployment.
