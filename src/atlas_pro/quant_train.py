@@ -36,7 +36,7 @@ def synthetic_panel(days=100):
             'training_authorized':False,'dataset_version':'synthetic-v1'}
 
 
-def train_panel(panel, *, min_train_dates=40, test_dates=10, embargo_seconds=0, top_k=2):
+def train_panel(panel, *, min_train_dates=40, test_dates=10, embargo_seconds=0, top_k=2, include_qlib=False):
     """Train only on purged past labels. No model pickle; emit numeric predictions.
 
     For real data, an operator must separately verify data rights, PIT timestamps,
@@ -80,7 +80,9 @@ def train_panel(panel, *, min_train_dates=40, test_dates=10, embargo_seconds=0, 
         by[row['id']]=(row,x,y)
     folds=purged_panel_folds(split_rows,min_train_dates=min_train_dates,test_dates=test_dates,embargo_seconds=embargo_seconds)
     if not folds or len(folds)>100:raise ValueError('no qualifying folds or too many folds')
-    results={m:[] for m in MODELS};seen=set()
+    if type(include_qlib) is not bool:raise ValueError('invalid Qlib option')
+    names_models=MODELS+('qlib_ridge',) if include_qlib else MODELS
+    results={m:[] for m in names_models};seen=set();engine_receipts=[]
     with threadpool_limits(limits=1):
         for fold in folds:
             train,test=fold['train_ids'],fold['test_ids']
@@ -89,9 +91,16 @@ def train_panel(panel, *, min_train_dates=40, test_dates=10, embargo_seconds=0, 
             X=np.array([by[k][1] for k in train]); Y=np.array([by[k][2] for k in train]); T=np.array([by[k][1] for k in test])
             models={'ridge':make_pipeline(StandardScaler(),Ridge(alpha=1.0)),
                     'hist_gradient_boosting':HistGradientBoostingRegressor(max_iter=50,max_leaf_nodes=15,early_stopping=False,random_state=42)}
+            predictions={}
             for name,model in models.items():
                 model.fit(X,Y)
-                preds=model.predict(T)
+                predictions[name]=model.predict(T)
+            if include_qlib:
+                from .qlib_engine import fit_predict
+                qpred,receipt=fit_predict([by[k][0] for k in train],[{field:by[k][0][field] for field in ('id','security_id','signal_at','features')} for k in test],names)
+                predictions['qlib_ridge']=qpred;engine_receipts.append(receipt)
+            for name,preds in predictions.items():
+                if len(preds)!=len(test):raise ValueError('prediction coverage mismatch')
                 for k,p in zip(test,preds):
                     r,x,y=by[k]
                     prediction=num(p)
@@ -115,16 +124,16 @@ def train_panel(panel, *, min_train_dates=40, test_dates=10, embargo_seconds=0, 
                            'mean_top_k_label_minus_universe':statistics.mean(excess),'predictions':ps}
     return {'status':'SYNTHETIC_RESEARCH_ONLY' if panel['synthetic'] else 'UNVERIFIED_RESEARCH_RESULT',
             'data_sha256':digest(panel),'split_sha256':digest(folds),'dataset_version':panel['dataset_version'],'sklearn_version':sklearn.__version__,
-            'synthetic':panel['synthetic'],'folds':len(folds),'models':reports,'can_trade':False,'promotion_allowed':False,
+            'synthetic':panel['synthetic'],'folds':len(folds),'models':reports,'external_engine_receipts':engine_receipts,'can_trade':False,'promotion_allowed':False,
             'limitations':['no execution timing or cost accounting','label diagnostics not portfolio returns','no strategy selection from these holdout results without independent prospective validation','data rights and PIT provenance externally attested, not independently verified by trainer']}
 
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);g=p.add_mutually_exclusive_group(required=True);g.add_argument('--demo',action='store_true');g.add_argument('--panel',type=Path);p.add_argument('--sha256');p.add_argument('--min-train-dates',type=int,default=40);p.add_argument('--test-dates',type=int,default=10);p.add_argument('--embargo-seconds',type=int,default=0);p.add_argument('--top-k',type=int,default=2)
+    p=argparse.ArgumentParser(description=__doc__);g=p.add_mutually_exclusive_group(required=True);g.add_argument('--demo',action='store_true');g.add_argument('--panel',type=Path);p.add_argument('--sha256');p.add_argument('--min-train-dates',type=int,default=40);p.add_argument('--test-dates',type=int,default=10);p.add_argument('--embargo-seconds',type=int,default=0);p.add_argument('--top-k',type=int,default=2);p.add_argument('--qlib',action='store_true')
     a=p.parse_args()
     if a.panel and not a.sha256:p.error('--sha256 is required for panel')
     data=synthetic_panel() if a.demo else artifact_json(a.panel,a.sha256)
-    report=train_panel(data,min_train_dates=a.min_train_dates,test_dates=a.test_dates,embargo_seconds=a.embargo_seconds,top_k=a.top_k)
+    report=train_panel(data,min_train_dates=a.min_train_dates,test_dates=a.test_dates,embargo_seconds=a.embargo_seconds,top_k=a.top_k,include_qlib=a.qlib)
     print(json.dumps(report,allow_nan=False,separators=(',',':')))
     return 0
 if __name__=='__main__':raise SystemExit(main())

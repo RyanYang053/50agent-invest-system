@@ -97,3 +97,26 @@ jobs:
           assert r['macro']['true_pit'] is False and r['can_trade'] is False
           print('public real-data developer reference passed; no alpha claim')
           PYCODE
+
+  isolated-qlib-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --file sandbox/Dockerfile.qlib --tag atlas-qlib:ci .
+      - run: |
+          image=$(docker image inspect --format '{{.Id}}' atlas-qlib:ci)
+          bash sandbox/run-research.sh --qlib "$image" "$RUNNER_TEMP/atlas-qlib.json"
+          python - "$RUNNER_TEMP/atlas-qlib.json" <<'PYCODE'
+          import json, sys
+          r=json.load(open(sys.argv[1]))
+          assert r['synthetic'] is True and r['can_trade'] is False and r['promotion_allowed'] is False
+          assert set(r['models'])=={'ridge','hist_gradient_boosting','qlib_ridge'}
+          receipts=r['external_engine_receipts']
+          assert len(receipts)==r['folds']>0
+          assert all(x['version']=='0.9.7' and x['test_labels_supplied'] is False and x['max_reference_error']<=1e-7 for x in receipts)
+          a=r['models']['ridge']['predictions']; b=r['models']['qlib_ridge']['predictions']
+          assert len(a)==len(b)>0 and [x['id'] for x in a]==[x['id'] for x in b]
+          assert max(abs(x['prediction']-y['prediction']) for x,y in zip(a,b))<1e-8
+          print('actual Qlib training executed in offline container; synthetic data only')
+          PYCODE
