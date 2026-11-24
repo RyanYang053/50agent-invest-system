@@ -49,6 +49,17 @@ jobs:
       - run: python -m pip install -e '.[test,quant,risk_crosscheck]'
       - run: python -c 'import skfolio,pandas'
       - run: python -m pytest -q tests/test_oss_adapters.py -k skfolio_optional
+  optional-option-crosscheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[test,option_crosscheck]'
+      - run: python -c 'import QuantLib; print(QuantLib.__version__)'
+      - run: python -m pytest -q tests/test_option_crosscheck.py
   isolated-quant-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 15
