@@ -190,8 +190,8 @@ class RoleJournal:
     """Append-only job intents/results. Interrupted paid calls require operator review.
     One transaction admits each job; no automatic resend after uncertain results.
     """
-    def __init__(self,path,*,memory=None):
-        self.path=str(path);self.memory=memory
+    def __init__(self,path,*,memory=None,evolution=None):
+        self.path=str(path);self.memory=memory;self.evolution=evolution
         with closing(sqlite3.connect(self.path)) as c,c:
             c.executescript('CREATE TABLE IF NOT EXISTS role_jobs(id TEXT PRIMARY KEY,request_hash TEXT NOT NULL,result TEXT,result_hash TEXT); CREATE TABLE IF NOT EXISTS batches(id TEXT PRIMARY KEY,request_hash TEXT NOT NULL);')
     def bind_batch(self,run_id,request):
@@ -201,7 +201,10 @@ class RoleJournal:
             if row and row[0]!=rh:raise ValueError('batch inputs changed; use a new run ID')
             c.execute('INSERT OR IGNORE INTO batches VALUES(?,?)',(run_id,rh))
     def _episode(self,role_id,jid,result,at):
-        if self.memory is not None:self.memory.bind(role_id).record_episode(task_id_value=jid,result_hash=digest(result),status=result.get('status','UNKNOWN'),at=at)
+        if self.memory is not None:
+            memory=self.memory.bind(role_id)
+            memory.record_episode(task_id_value=jid,result_hash=digest(result),status=result.get('status','UNKNOWN'),at=at)
+            if self.evolution is not None:self.evolution.reflect(role_id,memory.recent_episodes())
     def execute(self,executor,role_id,*,at,run_id,inputs):
         jid=digest({'role':role_id,'run_id':run_id});rh=digest({'at':iso(at).isoformat(),'inputs':inputs,'skill':task_id(role_id)})
         with closing(sqlite3.connect(self.path,timeout=10)) as c,c:
