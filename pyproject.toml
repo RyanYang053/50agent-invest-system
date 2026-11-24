@@ -46,6 +46,7 @@ atlas-reference = "atlas_pro.external_references:main"
 atlas-evolution = "atlas_pro.skill_evolution:main"
 atlas-maintenance = "atlas_pro.maintenance:main"
 atlas-paired-bench = "atlas_pro.paired_bench:main"
+atlas-daily-bars = "atlas_pro.daily_bars:main"
 
 [tool.setuptools]
 py-modules = ["atlas_policy_router"]
