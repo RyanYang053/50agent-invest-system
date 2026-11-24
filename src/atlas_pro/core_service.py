@@ -22,6 +22,7 @@ from .filing_ingest import ingest_recent_filings,SECArchiveTransport
 from .macro_ingest import ingest_macro
 from .bls_ingest import ingest_bls,SERIES as BLS_SERIES
 from .external_references import ReferenceStore
+from .skill_evolution import Evolution
 
 
 def execute_batch(screen_result,executor,journal,*,run_id,at,max_candidates=3,roles=None,macro=False):
@@ -105,7 +106,7 @@ def main(argv=None):
         memory=MemoryStore(d/'agent-memory',ledger,trust=load_trust(a.memory_trust) if a.memory_trust else {})
         gateway=ModelGateway(d/'models.sqlite',models,roles,daily_limit_usd=a.daily_budget,monthly_limit_usd=a.monthly_budget)
         runner=ResearchModelRunner(gateway,index,FixedModelTransport(enabled=True),memory=memory) if a.paid_models else None
-        out=RoleJournal(d/'role_jobs.sqlite',memory=memory).execute(RoleExecutor(roles,ledger,model_runner=runner,forecast_journal=ForecastJournal(d/'forecasts.sqlite'),reference_store=ReferenceStore(d/'external-references')),a.role_id,at=a.at,run_id=a.run_id,inputs=load(a.inputs))
+        out=RoleJournal(d/'role_jobs.sqlite',memory=memory,evolution=Evolution(d/'skill-evolution')).execute(RoleExecutor(roles,ledger,model_runner=runner,forecast_journal=ForecastJournal(d/'forecasts.sqlite'),reference_store=ReferenceStore(d/'external-references')),a.role_id,at=a.at,run_id=a.run_id,inputs=load(a.inputs))
     else:
         if not a.network:raise PermissionError('explicit network consent required')
         if not 1<=a.max_candidates<=10:raise ValueError('candidate bound')
@@ -126,6 +127,6 @@ def main(argv=None):
         if a.macro_policies:
             ingestion.extend(refresh_macro_sources(client,ledger,index,load(a.macro_policies)))
         tasks=list(PUBLIC_TASKS) if a.macro_policies else None
-        out={'screen':result,'ingestion':ingestion,'research':execute_batch(result,executor,RoleJournal(d/'role_jobs.sqlite',memory=memory),run_id=a.run_id,at=datetime.now(timezone.utc).isoformat(),max_candidates=a.max_candidates,roles=tasks,macro=bool(a.macro_policies)),'can_trade':False}
+        out={'screen':result,'ingestion':ingestion,'research':execute_batch(result,executor,RoleJournal(d/'role_jobs.sqlite',memory=memory,evolution=Evolution(d/'skill-evolution')),run_id=a.run_id,at=datetime.now(timezone.utc).isoformat(),max_candidates=a.max_candidates,roles=tasks,macro=bool(a.macro_policies)),'can_trade':False}
     print(json.dumps(out,indent=2,allow_nan=False));return 0
 if __name__=='__main__':raise SystemExit(main())

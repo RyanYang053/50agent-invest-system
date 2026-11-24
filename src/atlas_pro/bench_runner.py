@@ -32,11 +32,11 @@ def _prompt(case):
     return json.dumps({'question':question,'documents':out},ensure_ascii=False,allow_nan=False)
 
 
-def _body(provider,model,prompt,max_output,effort):
-    if provider=='openai':return {'model':model,'instructions':SYSTEM,'input':prompt,'max_output_tokens':max_output,'store':False,'tools':[],**({'reasoning':{'effort':effort}} if effort in ('low','medium','high') else {})}
-    if provider=='anthropic':return {'model':model,'system':SYSTEM,'messages':[{'role':'user','content':prompt}],'max_tokens':max_output,'thinking':{'type':'adaptive'},'output_config':{'effort':effort if effort!='none' else 'low'}}
-    if provider=='deepseek':return {'model':model,'messages':[{'role':'system','content':SYSTEM},{'role':'user','content':prompt}],'max_tokens':max_output,'stream':False,'reasoning_effort':{'none':'none','low':'low','medium':'low','high':'high'}[effort]}
-    if provider=='google':return google_body(model,SYSTEM,prompt,max_output,effort)
+def _body(provider,model,prompt,max_output,effort,system=SYSTEM):
+    if provider=='openai':return {'model':model,'instructions':system,'input':prompt,'max_output_tokens':max_output,'store':False,'tools':[],**({'reasoning':{'effort':effort}} if effort in ('low','medium','high') else {})}
+    if provider=='anthropic':return {'model':model,'system':system,'messages':[{'role':'user','content':prompt}],'max_tokens':max_output,'thinking':{'type':'adaptive'},'output_config':{'effort':effort if effort!='none' else 'low'}}
+    if provider=='deepseek':return {'model':model,'messages':[{'role':'system','content':system},{'role':'user','content':prompt}],'max_tokens':max_output,'stream':False,'reasoning_effort':{'none':'none','low':'low','medium':'low','high':'high'}[effort]}
+    if provider=='google':return google_body(model,system,prompt,max_output,effort)
     raise ValueError('unsupported provider')
 
 
@@ -60,7 +60,7 @@ def _answer(provider,response,expected_model,input_bound,output_bound):
     return obj|{'returned_model':expected_model,'usage':{'input_tokens':inp,'output_tokens':out}}
 
 
-def run_numeric_eval(gateway,transport,cases,*,locked_hash,role_id,model_id,run_id,journal_path,max_budget_usd,max_output=800,at=None,confirmed=False):
+def run_numeric_eval(gateway,transport,cases,*,locked_hash,role_id,model_id,run_id,journal_path,max_budget_usd,max_output=800,at=None,confirmed=False,variant=None):
     if confirmed is not True:raise PermissionError('explicit evaluation and spend approval required')
     if digest(cases)!=locked_hash or not 1<=len(cases)<=500 or len({c['case_id'] for c in cases})!=len(cases):raise ValueError('locked testset mismatch')
     if role_id not in PUBLIC_TASKS or not run_id or type(max_output) is not int or not 64<=max_output<=2000:raise ValueError('invalid benchmark parameters')
@@ -70,16 +70,26 @@ def run_numeric_eval(gateway,transport,cases,*,locked_hash,role_id,model_id,run_
     if levels.get(model.get('max_effort'),-1)<levels.get(effort,99):raise ValueError('model does not meet configured effort floor')
     if isinstance(transport,FixedModelTransport) and (not transport.enabled or not os.getenv(FixedModelTransport.ENV[provider])):raise PermissionError('provider disabled or credentials unavailable')
     now=datetime.now(timezone.utc) if isinstance(transport,FixedModelTransport) or at is None else iso(at)
+    system=SYSTEM
+    variant_hash=None
+    if variant is not None:
+        from .skill_evolution import candidate_pack,CHECKS
+        from .employee_packs import pack
+        from .skill_contracts import instructions,runtime_hash
+        if not isinstance(variant,dict) or set(variant)!={'kind','check','base_runtime'} or variant['kind'] not in ('baseline','challenger') or variant['check'] not in CHECKS or variant['base_runtime']!=runtime_hash(role_id):raise ValueError('invalid skill evaluation variant')
+        p=pack(role_id) if variant['kind']=='baseline' else candidate_pack(role_id,variant['check'])['packs'][role_id]
+        system+=' '+instructions(role_id)+' '+ ' '.join(card['text'] for card in p['cards'])
+        variant_hash=digest(variant)
     prepared=[];ceiling=Decimal(0)
     for case in cases:
-        prompt=_prompt(case);bound=len((SYSTEM+prompt).encode())+512
+        prompt=_prompt(case);bound=len((system+prompt).encode())+512
         if bound>100000:raise ValueError('evaluation input too large')
         price=gateway._quote(model_id,bound,max_output,now)
         if price is None or not price.is_finite() or price<0:raise ValueError('current model price unavailable')
         ceiling+=price;prepared.append((case,prompt,bound))
     cap=Decimal(str(max_budget_usd))
     if not cap.is_finite() or cap<0 or ceiling>cap:raise PermissionError('evaluation cost ceiling exceeded')
-    rh=digest({'cases':locked_hash,'role':digest(role),'model':digest(model),'cap':str(cap),'max_output':max_output})
+    rh=digest({'cases':locked_hash,'role':digest(role),'model':digest(model),'cap':str(cap),'max_output':max_output,'variant_hash':variant_hash})
     # Reserve whole explicitly approved run before any call. Never resend an
     # interrupted run under the same ID; uncertain responses might still bill.
     with closing(sqlite3.connect(str(journal_path),timeout=10)) as db,db:
@@ -94,13 +104,13 @@ def run_numeric_eval(gateway,transport,cases,*,locked_hash,role_id,model_id,run_
         db.execute('INSERT INTO eval_runs VALUES(?,?,?,NULL,NULL)',(run_id,rh,str(ceiling)))
     answers={};failures={}
     for case,prompt,bound in prepared:
-        try:answers[case['case_id']]=_answer(provider,transport(provider,_body(provider,version,prompt,max_output,effort)),version,bound,max_output)
+        try:answers[case['case_id']]=_answer(provider,transport(provider,_body(provider,version,prompt,max_output,effort,system)),version,bound,max_output)
         except (ModelCallError,KeyError,IndexError,ValueError,TypeError,PermissionError,AttributeError) as e:
             failures[case['case_id']]=type(e).__name__
             # Fail fast on an unusable provider; no retries or cascading paid calls.
             break
     grade=grade_locked(cases,answers,expected_hash=locked_hash)
-    result={'status':'EVALUATION_REVIEW_ONLY','role_id':role_id,'model_id':model_id,'task_set':f'atlas-numeric-role-{role_id.lower()}-v1','run_id':run_id,'reserved_estimate_usd':str(ceiling),'answers':answers,'failed':failures,'grade':grade,'promotion_allowed':False,'can_trade':False,'limitations':['numeric benchmark only; not investment alpha or full role competence','provider charges may differ from estimate; independent operator verification required before certification']}
+    result={'status':'EVALUATION_REVIEW_ONLY','role_id':role_id,'model_id':model_id,'task_set':f'atlas-numeric-role-{role_id.lower()}-v1','run_id':run_id,'reserved_estimate_usd':str(ceiling),'answers':answers,'failed':failures,'grade':grade,'variant_hash':variant_hash,'promotion_allowed':False,'can_trade':False,'limitations':['numeric benchmark only; not investment alpha or full role competence','provider charges may differ from estimate; independent operator verification required before certification']}
     raw=json.dumps(result,allow_nan=False,sort_keys=True)
     with closing(sqlite3.connect(str(journal_path),timeout=10)) as db,db:db.execute('UPDATE eval_runs SET result=?,result_hash=? WHERE id=? AND result IS NULL',(raw,digest(result),run_id))
     return result

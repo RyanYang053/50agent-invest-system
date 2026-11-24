@@ -16,7 +16,7 @@ def contract(role_id):
 def runtime_hash(role_id):
     """Bind reviews to packaged source, including the actual research/diagnostic path."""
     c=contract(role_id)
-    names=['skill_contracts.py','role_jobs.py','ledger.py','independent_review.py','models.py','runtime.py','retrieval.py','research.py','ttm.py','account_risk.py','portfolio.py','experiments.py','learning.py','agent_memory.py','employee_packs.py','employee_packs.json','role_reference.py','capability_runtime.py','bls_ingest.py','feeds.py','transport.py','external_references.py']
+    names=['skill_contracts.py','role_jobs.py','ledger.py','independent_review.py','models.py','runtime.py','retrieval.py','research.py','ttm.py','account_risk.py','portfolio.py','experiments.py','learning.py','agent_memory.py','employee_packs.py','employee_packs.json','role_reference.py','capability_runtime.py','bls_ingest.py','feeds.py','transport.py','external_references.py','skill_evolution.py','option_crosscheck.py','bench_runner.py','paired_bench.py','price_behavior.py','maintenance.py']
     pkg=files('atlas_pro')
     return digest({'role':role_id,'files':{n:hashlib.sha256(pkg.joinpath(n).read_bytes()).hexdigest() for n in names}})
 

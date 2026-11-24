@@ -200,6 +200,13 @@ class RoleMemory:
                 if old!=p or saved is None:raise ValueError('episode conflict')
             else:c.execute('INSERT INTO episodes VALUES(?,?)',(eid,canonical(p|{'recorded_at':recorded})))
         return eid
+    def recent_episodes(self,*,limit=100):
+        if type(limit) is not int or not 1<=limit<=1000:raise ValueError('episode bounds')
+        with self._store._db(self._role) as c:
+            rows=[(k,json.loads(v)) for k,v in c.execute('SELECT id,payload FROM episodes ORDER BY rowid DESC LIMIT ?',(limit,))]
+        for k,v in rows:
+            if v['role_id']!=self._role or digest({'role':self._role,'task':v['task']})!=k or not _hash(v['result_hash']):raise ValueError('episode integrity')
+        return [v for _,v in rows if v['skill']==task_id(self._role)]
     def stats(self):
         now=self._time()
         with self._store._db(self._role) as c:

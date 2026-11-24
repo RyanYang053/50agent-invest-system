@@ -19,6 +19,7 @@ warehouse = ["duckdb>=1.3,<2", "qdrant-client>=1.14,<2"]
 pdf = ["docling>=2,<3"]
 empirical = ["statsmodels>=0.14,<1", "pandas>=2,<4", "scikit-learn>=1.6,<2", "numpy>=1.26,<3", "scipy>=1.12,<2"]
 risk_crosscheck = ["skfolio>=0.10,<1", "pandas>=2,<4"]
+option_crosscheck = ["QuantLib>=1.35,<2"]
 
 [project.scripts]
 atlas-screen = "atlas_pro.pipeline:main"
@@ -42,6 +43,9 @@ atlas-market-study = "atlas_pro.market_strategy:main"
 atlas-memory = "atlas_pro.memory_cli:main"
 atlas-employee = "atlas_pro.employee_packs:main"
 atlas-reference = "atlas_pro.external_references:main"
+atlas-evolution = "atlas_pro.skill_evolution:main"
+atlas-maintenance = "atlas_pro.maintenance:main"
+atlas-paired-bench = "atlas_pro.paired_bench:main"
 
 [tool.setuptools]
 py-modules = ["atlas_policy_router"]

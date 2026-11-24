@@ -79,7 +79,13 @@ def _option_bounds(p,at):
         lo=max(0,spot-strike) if p['right']=='call' else max(0,strike-spot);hi=spot if p['right']=='call' else strike*math.exp(max(0,-rate)*t)
     else:
         s=spot*math.exp(-dividend*t);k=strike*math.exp(-rate*t);lo=max(0,s-k) if p['right']=='call' else max(0,k-s);hi=s if p['right']=='call' else k
-    return {'status':'OPTION_BOUND_DIAGNOSTIC','lower':lo,'upper':hi,'mark_inside':lo-.01<=mark<=hi+.01,'limitations':['no-arbitrage sanity bounds; not implied volatility, American exercise valuation or broker margin']}
+    out={'status':'OPTION_BOUND_DIAGNOSTIC','lower':lo,'upper':hi,'mark_inside':lo-.01<=mark<=hi+.01,'limitations':['no-arbitrage sanity bounds; not implied volatility, American exercise valuation or broker margin']}
+    if p.get('quantlib_crosscheck') is True:
+        if p['style']!='european':raise ValueError('European exercise required for crosscheck')
+        from .option_crosscheck import european_crosscheck
+        try:out['quantlib']=european_crosscheck(spot=spot,strike=strike,rate=rate,dividend=dividend,volatility=p['volatility'],expiry=p['expiry'],at=at,right=p['right'])
+        except ImportError:out['quantlib']={'status':'BLOCKED_OPTIONAL_DEPENDENCY','can_trade':False}
+    return out
 
 
 def _fills(p):
@@ -148,6 +154,12 @@ class RoleExecutor:
         if task=='dcf':return dcf(**p['assumptions'])
         if task=='reverse_dcf':return reverse_dcf(p['price'],p['assumptions'])
         if task=='option_bounds':return _option_bounds(p,at)
+        if task=='regime_diagnostic' and 'price_behavior' in p:
+            from .price_behavior import diagnose,continuity
+            request=p['price_behavior']
+            if not isinstance(request,dict) or set(request)-{'security_id','record_ids','prior'}:raise ValueError('price behavior request')
+            args={'security_id':request['security_id'],'record_ids':request['record_ids'],'at':at}
+            return continuity(self.ledger,**args,prior=request['prior']) if 'prior' in request else diagnose(self.ledger,**args)
         if task=='regime_diagnostic' or task=='historical_tail':
             rows=p['returns'];values=[];previous=None
             if len(rows)<100:raise ValueError('insufficient history')
@@ -190,8 +202,8 @@ class RoleJournal:
     """Append-only job intents/results. Interrupted paid calls require operator review.
     One transaction admits each job; no automatic resend after uncertain results.
     """
-    def __init__(self,path,*,memory=None):
-        self.path=str(path);self.memory=memory
+    def __init__(self,path,*,memory=None,evolution=None):
+        self.path=str(path);self.memory=memory;self.evolution=evolution
         with closing(sqlite3.connect(self.path)) as c,c:
             c.executescript('CREATE TABLE IF NOT EXISTS role_jobs(id TEXT PRIMARY KEY,request_hash TEXT NOT NULL,result TEXT,result_hash TEXT); CREATE TABLE IF NOT EXISTS batches(id TEXT PRIMARY KEY,request_hash TEXT NOT NULL);')
     def bind_batch(self,run_id,request):
@@ -201,7 +213,10 @@ class RoleJournal:
             if row and row[0]!=rh:raise ValueError('batch inputs changed; use a new run ID')
             c.execute('INSERT OR IGNORE INTO batches VALUES(?,?)',(run_id,rh))
     def _episode(self,role_id,jid,result,at):
-        if self.memory is not None:self.memory.bind(role_id).record_episode(task_id_value=jid,result_hash=digest(result),status=result.get('status','UNKNOWN'),at=at)
+        if self.memory is not None:
+            memory=self.memory.bind(role_id)
+            memory.record_episode(task_id_value=jid,result_hash=digest(result),status=result.get('status','UNKNOWN'),at=at)
+            if self.evolution is not None:self.evolution.reflect(role_id,memory.recent_episodes())
     def execute(self,executor,role_id,*,at,run_id,inputs):
         jid=digest({'role':role_id,'run_id':run_id});rh=digest({'at':iso(at).isoformat(),'inputs':inputs,'skill':task_id(role_id)})
         with closing(sqlite3.connect(self.path,timeout=10)) as c,c:
