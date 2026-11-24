@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "atlas-investment-os-research"
-version = "0.10.0"
+version = "0.11.0"
 description = "Research-only investment data and governance prototype; NO live trading"
 requires-python = ">=3.11"
 dependencies = ["cryptography>=43,<47"]
@@ -31,6 +31,7 @@ atlas-core = "atlas_pro.core_service:main"
 atlas-bench = "atlas_pro.bench_runner:main"
 atlas-role-review = "atlas_pro.role_review_cli:main"
 atlas-l6 = "atlas_pro.l6_acceptance:main"
+atlas-public-audit = "atlas_pro.public_acceptance:main"
 
 [tool.setuptools]
 py-modules = ["atlas_policy_router"]
@@ -40,4 +41,4 @@ where = ["src"]
 include = ["atlas_pro*"]
 
 [tool.setuptools.package-data]
-atlas_pro = ["role_skills.json"]
+atlas_pro = ["role_skills.json", "public_filing_smoke.json"]

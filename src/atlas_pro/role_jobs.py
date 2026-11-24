@@ -148,7 +148,14 @@ class RoleExecutor:
             trend=math.prod(1+x for x in values[-60:])-1;vol=statistics.stdev(values[-60:])*math.sqrt(252)
             return {'status':'REGIME_DIAGNOSTIC','trailing_60_session_return':trend,'annualized_volatility':vol,'classification':'negative_trend' if trend<0 else 'nonnegative_trend','limitations':['descriptive trailing data, not a macroeconomic regime forecast']}
         if task=='purged_panel':
-            folds=purged_panel_folds(p['samples'],**p['settings']);return {'status':'SPLITS_CHECKED','folds':len(folds),'split_hash':digest(folds)}
+            rows=[]
+            for row in p['samples']:
+                available=iso(row['label_available_at'])
+                if available<iso(row['label_end_at']) or available>iso(at):raise ValueError('label availability not established at cutoff')
+                rows.append(row|{'label_end_at':available.isoformat()})
+            if any(iso(r['signal_at'])>iso(at) for r in rows):raise ValueError('future panel signal')
+            folds=purged_panel_folds(rows,**p['settings'])
+            return {'status':'SPLITS_CHECKED' if folds else 'INSUFFICIENT_DATA','folds':len(folds),'split_hash':digest(folds)}
         if task in ('account_exposures','account_stress','account_margin'):
             return review_accounts(p['snapshot'],expected_accounts=p['expected_accounts'],scenarios=p['scenarios'],limits=p['limits'],at=at)
         if task=='scenario_kelly':return scenario_grid(p['scenarios'],price=p['price'],benchmark_return=p['benchmark_return'],cost_fraction=p.get('cost_fraction',0),probabilities_validated=False)
