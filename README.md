@@ -65,3 +65,14 @@ atlas-core readiness
 atlas-core catalog --roles 'config/50 agent manifest.json'
 python -m pytest -q
 ```
+
+## 0.10: independent capability and L6 review (not certified)
+
+All 50 role skill contracts are packaged in `src/atlas_pro/role_skills.json`. The specialized runtime binds the role, task and model to reviewed skill versions. Generic numeric evaluations do not certify professional roles. See `docs/0.10.0 L6 Research Acceptance.md` for the full role audit, signed-review interface and proposed ten-gate rubric. No claim of L6 investment skill or live permission is made.
+
+```bash
+python -m atlas_pro.core_service catalog --roles 'config/50 agent manifest.json'
+python -m pytest -q
+```
+
+`atlas-role-review` imports independently signed reviews with operator-managed trust; `atlas-l6` reports missing external acceptance evidence. `quant_validation` provides conditional DSR/CSCV diagnostics; no promotion authority.

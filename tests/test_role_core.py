@@ -10,6 +10,7 @@ from atlas_pro.retrieval import ResearchIndex
 from atlas_pro.filing_ingest import filing_uri,ingest_recent_filings,FilingText
 from atlas_pro.macro_ingest import ingest_macro
 from atlas_pro.runtime import FixedModelTransport,ResearchModelRunner
+from atlas_pro.skill_contracts import task_id
 
 ROOT=Path(__file__).resolve().parents[1];ROLES=json.loads((ROOT/'config/50 agent manifest.json').read_text())
 AT='2026-11-23T18:00:00Z';OLD='2026-11-23T17:59:30Z';FUT='2026-11-24T18:00:00Z'
@@ -77,14 +78,14 @@ def test_public_model_fixed_task_and_query(jobs):
     e,j=jobs
     class Runner:
         def run(self,**kwargs):
-            assert kwargs['security_id']=='CIK:1' and kwargs['query']==PUBLIC_TASKS['A031'][1] and kwargs['task_set']=='atlas-role-a031-v1'
+            assert kwargs['security_id']=='CIK:1' and kwargs['query']==PUBLIC_TASKS['A031'][1] and kwargs['task_set']==task_id('A031')
             return {'status':'UNVERIFIED_RESEARCH_MEMO','can_trade':False}
     e.model_runner=Runner();assert j.execute(e,'A031',at=AT,run_id='x',inputs={'security_id':'CIK:1'})['status']=='UNVERIFIED_RESEARCH_MEMO'
 
 def test_journal_idempotency_conflict_and_recovery(jobs):
     e,j=jobs;r=j.execute(e,'A095',at=AT,run_id='x',inputs={});assert r['status']=='DENIED';assert j.execute(e,'A095',at=AT,run_id='x',inputs={})==r
     with pytest.raises(ValueError):j.execute(e,'A095',at=AT,run_id='x',inputs={'new':1})
-    k=digest({'role':'A095','run_id':'crash'});rh=digest({'at':'2026-11-23T18:00:00+00:00','inputs':{}})
+    k=digest({'role':'A095','run_id':'crash'});rh=digest({'at':'2026-11-23T18:00:00+00:00','inputs':{},'skill':task_id('A095')})
     with sqlite3.connect(j.path) as db:db.execute('insert into role_jobs values(?,?,NULL,NULL)',(k,rh))
     assert j.execute(e,'A095',at=AT,run_id='crash',inputs={})['status']=='UNRESOLVED_JOB_NO_RESEND'
 

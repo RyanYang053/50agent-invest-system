@@ -4,16 +4,20 @@ No inference network code. This gateway produces approvals for a separate client
 """
 from __future__ import annotations
 from contextlib import contextmanager
-import sqlite3, json, math
+import sqlite3, json, math, os
 from decimal import Decimal
 from datetime import datetime, timezone, date, timedelta
 from pathlib import Path
 from .ledger import digest, iso
 
 class ModelGateway:
-    def __init__(self, path, registry, roles, *, daily_limit_usd='5',monthly_limit_usd='100', local_cost_input_usd_per_m=None, local_cost_output_usd_per_m=None):
+    def __init__(self, path, registry, roles, *, daily_limit_usd='5',monthly_limit_usd='100', local_cost_input_usd_per_m=None, local_cost_output_usd_per_m=None, review_trust=None):
         self.path=str(path)
         self.registry=registry
+        self.review_trust=review_trust
+        if review_trust is None and os.getenv("ATLAS_REVIEW_TRUST_FILE"):
+            from .independent_review import load_trust
+            self.review_trust=load_trust(os.environ["ATLAS_REVIEW_TRUST_FILE"])
         self.roles={r['agent_id']:r for r in roles}
         self.daily_limit=Decimal(str(daily_limit_usd))
         self.monthly_limit=Decimal(str(monthly_limit_usd))
@@ -57,6 +61,7 @@ class ModelGateway:
             c.close()
 
     def certify(self, role_id, model_id, task_set, measured, minimum, *, at,valid_until, provenance):
+        if task_set.startswith('atlas-skill-'):raise PermissionError('SIGNED_ROLE_REVIEW_REQUIRED')
         if not provenance or not provenance.get('external_eval_report') or not provenance.get('locked_testset_hash'):
             raise ValueError('EXTERNAL_EVALUATION_REQUIRED')
         if role_id not in self.roles or model_id not in self.registry: raise ValueError('UNKNOWN_ROLE_OR_MODEL')
@@ -74,6 +79,7 @@ class ModelGateway:
         data rights, benchmark independence and keeping answers out of prompts.
         """
         from .evaluation import grade_locked
+        if task_set.startswith('atlas-skill-'):raise PermissionError('NUMERIC_EVAL_CANNOT_CERTIFY_SPECIALIZED_ROLE')
         if operator_verified is not True:raise PermissionError('INDEPENDENT_EVAL_ATTESTATION_REQUIRED')
         role=self.roles[role_id];model=self.registry[model_id]
         effort={'none':0,'low':1,'medium':2,'high':3}
@@ -90,6 +96,26 @@ class ModelGateway:
         with self._db() as c:
             c.execute('INSERT OR REPLACE INTO certifications(role_id,model_id,task_set,min_quality,measured_quality,completed_at,valid_until,status,provenance_json,measured_report_json) VALUES(?,?,?,?,?,?,?,?,?,?)',(role_id,model_id,task_set,threshold,report['quality'],start.isoformat(),end.isoformat(),'PASS' if passed else 'FAIL',json.dumps({'locked_testset_hash':locked_hash,'external_eval_report':manifest['report_hash']}),json.dumps(manifest,sort_keys=True,allow_nan=False)))
         return manifest|{'can_trade':False}
+
+    def certify_role_review(self, role_id, model_id, envelope, *, at, artifact_dir=None):
+        from .independent_review import role_grade
+        from .skill_contracts import task_id,contract
+        role=self.roles[role_id];model=self.registry[model_id]
+        if contract(role_id)['kind']!='public_memo' or model.get('data_scope')!='public_only' or not self.review_trust:raise PermissionError('ROLE_REVIEW_TRUST_REQUIRED')
+        result=role_grade(envelope,self.review_trust,role_id=role_id,model_id=model_id,role=role,model=model,at=at,artifact_dir=artifact_dir,check_artifacts=True)
+        with self._db() as c:
+            c.execute('INSERT OR REPLACE INTO certifications(role_id,model_id,task_set,min_quality,measured_quality,completed_at,valid_until,status,provenance_json,measured_report_json) VALUES(?,?,?,?,?,?,?,?,?,?)',(role_id,model_id,task_id(role_id),result['threshold'],result['quality'],iso(at).isoformat(),iso(envelope['payload']['valid_until']).isoformat(),'PASS' if result['passed'] else 'FAIL',json.dumps({'review_hash':result['review_hash']}),json.dumps({'kind':'SIGNED_ROLE_COMPETENCE_V1','envelope':envelope},allow_nan=False)))
+        return result
+
+    def _valid_role_review(self,row,role_id,model_id,task_set,now):
+        from .skill_contracts import task_id
+        from .independent_review import role_grade
+        try:
+            if not self.review_trust or task_set!=task_id(role_id):return False
+            stored=json.loads(row['measured_report_json'] or '{}')
+            if stored.get('kind')!='SIGNED_ROLE_COMPETENCE_V1':return False
+            return role_grade(stored['envelope'],self.review_trust,role_id=role_id,model_id=model_id,role=self.roles[role_id],model=self.registry[model_id],at=now.isoformat())['passed'] is True
+        except (ValueError,TypeError,KeyError,PermissionError,ImportError,AttributeError):return False
 
     def _quote(self, model_id, input_tokens, output_tokens, asof):
         model=self.registry[model_id]
@@ -137,7 +163,9 @@ class ModelGateway:
                 if effort_order.get(model.get('max_effort'),-1)<effort_order.get(role.get('minimum_effort'),99):continue
                 row=c.execute('SELECT status,valid_until,completed_at,provenance_json,measured_report_json FROM certifications WHERE role_id=? AND model_id=? AND task_set=?', (role_id,model_id,task_set)).fetchone()
                 if not row or not row['provenance_json'] or row['status']!='PASS' or iso(row['valid_until'])<now or iso(row['completed_at'])>now: continue
-                if require_measured:
+                if task_set.startswith('atlas-skill-'):
+                    if not self._valid_role_review(row,role_id,model_id,task_set,now):continue
+                elif require_measured:
                     try: measured=json.loads(row['measured_report_json'] or '{}')
                     except (TypeError,ValueError):continue
                     if measured.get('passed') is not True or measured.get('kind')!='LOCKED_REGRADED_OPERATOR_ATTESTED' or measured.get('role_hash')!=digest(role) or measured.get('model_hash')!=digest(model) or measured.get('task_set')!=task_set:continue
@@ -167,7 +195,9 @@ class ModelGateway:
                 current=c.execute('SELECT status,valid_until,completed_at,provenance_json,measured_report_json FROM certifications WHERE role_id=? AND model_id=? AND task_set=?',(role_id,model_id,task_set)).fetchone()
                 if not current or not current['provenance_json'] or current['status']!='PASS' or iso(current['valid_until'])<now or iso(current['completed_at'])>now:
                     return {'status':'NO_CURRENT_CERTIFIED_MODEL','can_trade':False}
-                if require_measured:
+                if task_set.startswith('atlas-skill-'):
+                    if not self._valid_role_review(current,role_id,model_id,task_set,now):return {'status':'NO_CURRENT_CERTIFIED_MODEL','can_trade':False}
+                elif require_measured:
                     try: measured=json.loads(current['measured_report_json'] or '{}')
                     except (TypeError,ValueError):return {'status':'NO_CURRENT_CERTIFIED_MODEL','can_trade':False}
                     if measured.get('passed') is not True or measured.get('kind')!='LOCKED_REGRADED_OPERATOR_ATTESTED' or measured.get('role_hash')!=digest(role) or measured.get('model_hash')!=digest(self.registry[model_id]) or measured.get('task_set')!=task_set:

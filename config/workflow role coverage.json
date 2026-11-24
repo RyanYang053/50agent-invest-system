@@ -1,5 +1,5 @@
 {
-  "status": "EXPLICIT_TASK_ROUTES_NOT_RUNTIME_CERTIFICATION",
+  "status": "ROLE_CONTRACTS_DEFINED_NOT_CERTIFIED",
   "roles": [
     {
       "agent_id": "A011",
@@ -13,7 +13,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "committee.Committee / workflow.run_packet (manual attachments; WAIT only)",
-      "task_set": "atlas-role-a011-v1"
+      "task_set": "atlas-skill-a011-v1-f53a8a2ad0826a88",
+      "skill_id": "a011-cio-orchestrator",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A012",
@@ -27,7 +30,10 @@
       "implementation": "role_jobs.RoleExecutor: policy_gate; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "risk.ResearchRiskGate (legacy advisory check)",
-      "task_set": "atlas-role-a012-v1"
+      "task_set": "atlas-skill-a012-v1-e61a1b9ddbe4f086",
+      "skill_id": "a012-investment-policy-supervisor",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A013",
@@ -40,7 +46,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a013-v1"
+      "task_set": "atlas-skill-a013-v1-99399b2d0d4cd6d8",
+      "skill_id": "a013-research-task-planner",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A014",
@@ -53,7 +62,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "ledger.resolve_ids / rag_eval.evaluate_retrieval",
-      "task_set": "atlas-role-a014-v1"
+      "task_set": "atlas-skill-a014-v1-d88285a44d1958f4",
+      "skill_id": "a014-evidence-quality-controller",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A015",
@@ -67,7 +79,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "committee stage checkpoints",
-      "task_set": "atlas-role-a015-v1"
+      "task_set": "atlas-skill-a015-v1-cee232cd96064755",
+      "skill_id": "a015-investment-committee-secretary",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A021",
@@ -80,7 +95,10 @@
       "implementation": "role_jobs.RoleExecutor: market_check; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "market_data.AlpacaResearchQuotes (research only)",
-      "task_set": "atlas-role-a021-v1"
+      "task_set": "atlas-skill-a021-v1-07100c372682efb4",
+      "skill_id": "a021-market-feed-validator",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A022",
@@ -93,7 +111,10 @@
       "implementation": "role_jobs.RoleExecutor: financial_snapshot; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "research.sec_annual_facts / annual_snapshot",
-      "task_set": "atlas-role-a022-v1"
+      "task_set": "atlas-skill-a022-v1-a8b213cbd7bc8724",
+      "skill_id": "a022-sec-and-xbrl-normalizer",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A023",
@@ -107,7 +128,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a023-v1"
+      "task_set": "atlas-skill-a023-v1-41743c4f667613fa",
+      "skill_id": "a023-news-and-event-verifier",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A024",
@@ -121,7 +145,10 @@
       "implementation": "role_jobs.RoleExecutor: reconcile_sources; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a024-v1"
+      "task_set": "atlas-skill-a024-v1-c1ac44370f80bbcc",
+      "skill_id": "a024-cross-provider-reconciler",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A025",
@@ -135,7 +162,10 @@
       "implementation": "role_jobs.RoleExecutor: evidence_audit; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "ledger.resolve_ids / retrieval scope",
-      "task_set": "atlas-role-a025-v1"
+      "task_set": "atlas-skill-a025-v1-ce6dd08d51c30503",
+      "skill_id": "a025-privacy-and-lineage-auditor",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A031",
@@ -150,7 +180,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a031-v1"
+      "task_set": "atlas-skill-a031-v1-646aa8b88c78479e",
+      "skill_id": "a031-business-model-analyst",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A032",
@@ -164,7 +197,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a032-v1"
+      "task_set": "atlas-skill-a032-v1-b96cf958f180ca08",
+      "skill_id": "a032-revenue-and-unit-economics",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A033",
@@ -178,7 +214,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a033-v1"
+      "task_set": "atlas-skill-a033-v1-720ff5162c144a2d",
+      "skill_id": "a033-competitive-moat-analyst",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A034",
@@ -192,7 +231,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a034-v1"
+      "task_set": "atlas-skill-a034-v1-eed2c614d68431be",
+      "skill_id": "a034-management-and-capital-allocation",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A035",
@@ -206,7 +248,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a035-v1"
+      "task_set": "atlas-skill-a035-v1-d5ae524de4fc7d31",
+      "skill_id": "a035-accounting-forensics-analyst",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A041",
@@ -219,7 +264,10 @@
       "implementation": "role_jobs.RoleExecutor: dcf; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "research.dcf",
-      "task_set": "atlas-role-a041-v1"
+      "task_set": "atlas-skill-a041-v1-18baab224abca9e6",
+      "skill_id": "a041-institutional-fcff-dcf-analyst",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A042",
@@ -232,7 +280,10 @@
       "implementation": "role_jobs.RoleExecutor: reverse_dcf; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "research.reverse_dcf",
-      "task_set": "atlas-role-a042-v1"
+      "task_set": "atlas-skill-a042-v1-8ed4cf4e344bdd43",
+      "skill_id": "a042-reverse-dcf-analyst",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A043",
@@ -246,7 +297,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a043-v1"
+      "task_set": "atlas-skill-a043-v1-a9f71f03840ad718",
+      "skill_id": "a043-comparable-companies-analyst",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A044",
@@ -260,7 +314,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "research.scenario_grid (probabilities unvalidated)",
-      "task_set": "atlas-role-a044-v1"
+      "task_set": "atlas-skill-a044-v1-307a52512e8c5416",
+      "skill_id": "a044-scenario-and-probability-analyst",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A045",
@@ -274,7 +331,10 @@
       "implementation": "role_jobs.RoleExecutor: option_bounds; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a045-v1"
+      "task_set": "atlas-skill-a045-v1-c61d88618a17c891",
+      "skill_id": "a045-options-valuation-analyst",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A051",
@@ -288,7 +348,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a051-v1"
+      "task_set": "atlas-skill-a051-v1-a107262da24445a1",
+      "skill_id": "a051-buffett-graham-quality-value",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A052",
@@ -301,7 +364,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a052-v1"
+      "task_set": "atlas-skill-a052-v1-2e495fae60e3c760",
+      "skill_id": "a052-munger-inversion-and-bias",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A053",
@@ -315,7 +381,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a053-v1"
+      "task_set": "atlas-skill-a053-v1-72619e376acb80b8",
+      "skill_id": "a053-howard-marks-cycles",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A054",
@@ -329,7 +398,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a054-v1"
+      "task_set": "atlas-skill-a054-v1-dd65c6c105637941",
+      "skill_id": "a054-damodaran-story-to-numbers",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A055",
@@ -343,7 +415,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a055-v1"
+      "task_set": "atlas-skill-a055-v1-68b0bd9548beeaac",
+      "skill_id": "a055-dalio-macro-regimes",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A061",
@@ -356,7 +431,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a061-v1"
+      "task_set": "atlas-skill-a061-v1-dba19b83bc3f119f",
+      "skill_id": "a061-rates-and-credit-conditions",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A062",
@@ -370,7 +448,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a062-v1"
+      "task_set": "atlas-skill-a062-v1-442d7d8b75e77b3c",
+      "skill_id": "a062-liquidity-and-financial-conditions",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A063",
@@ -383,7 +464,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a063-v1"
+      "task_set": "atlas-skill-a063-v1-228cebb104aadf7f",
+      "skill_id": "a063-inflation-and-growth-releases",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A064",
@@ -397,7 +481,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a064-v1"
+      "task_set": "atlas-skill-a064-v1-f34a14a57989452e",
+      "skill_id": "a064-fx-and-commodities",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A065",
@@ -411,7 +498,10 @@
       "implementation": "role_jobs.RoleExecutor: regime_diagnostic; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a065-v1"
+      "task_set": "atlas-skill-a065-v1-b0c5f815c223069e",
+      "skill_id": "a065-market-regime-classifier",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A071",
@@ -425,7 +515,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "discovery.rank_factors (heuristic only)",
-      "task_set": "atlas-role-a071-v1"
+      "task_set": "atlas-skill-a071-v1-b4ecdeb9d106bb33",
+      "skill_id": "a071-factor-discovery-researcher",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A072",
@@ -439,7 +532,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a072-v1"
+      "task_set": "atlas-skill-a072-v1-d611559eb6a155e1",
+      "skill_id": "a072-ml-feature-and-leakage-auditor",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A073",
@@ -453,7 +549,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a073-v1"
+      "task_set": "atlas-skill-a073-v1-0f3091fe7fe68e03",
+      "skill_id": "a073-event-study-researcher",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A074",
@@ -467,7 +566,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a074-v1"
+      "task_set": "atlas-skill-a074-v1-6ae6274a53541a8f",
+      "skill_id": "a074-alternative-data-researcher",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A075",
@@ -481,7 +583,10 @@
       "implementation": "role_jobs.RoleExecutor: purged_panel; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "experiments.purged_folds / review_experiment (conditional only)",
-      "task_set": "atlas-role-a075-v1"
+      "task_set": "atlas-skill-a075-v1-ebe483618864fc89",
+      "skill_id": "a075-walk-forward-backtest-auditor",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A081",
@@ -495,7 +600,10 @@
       "implementation": "role_jobs.RoleExecutor: account_exposures; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "portfolio.portfolio_review (cash equity only)",
-      "task_set": "atlas-role-a081-v1"
+      "task_set": "atlas-skill-a081-v1-b067e4024eb447d1",
+      "skill_id": "a081-concentration-and-exposure-auditor",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A082",
@@ -509,7 +617,10 @@
       "implementation": "role_jobs.RoleExecutor: historical_tail; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "portfolio.tail_loss / optimizer.minimum_cvar (cash equity only)",
-      "task_set": "atlas-role-a082-v1"
+      "task_set": "atlas-skill-a082-v1-e68351ab7965b413",
+      "skill_id": "a082-var-cvar-tail-risk-engine",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A083",
@@ -523,7 +634,10 @@
       "implementation": "role_jobs.RoleExecutor: scenario_kelly; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "research.scenario_grid (conditional single asset only)",
-      "task_set": "atlas-role-a083-v1"
+      "task_set": "atlas-skill-a083-v1-d88f0979168b9fb6",
+      "skill_id": "a083-robust-kelly-position-sizing",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A084",
@@ -537,7 +651,10 @@
       "implementation": "role_jobs.RoleExecutor: account_stress; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "portfolio.portfolio_review (stress scenarios, no hedge model)",
-      "task_set": "atlas-role-a084-v1"
+      "task_set": "atlas-skill-a084-v1-31cb2f88891b4963",
+      "skill_id": "a084-stress-testing-and-hedge-research",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A085",
@@ -551,7 +668,10 @@
       "implementation": "role_jobs.RoleExecutor: tax_review; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a085-v1"
+      "task_set": "atlas-skill-a085-v1-836d27d41a215f28",
+      "skill_id": "a085-tax-and-account-location-check",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A091",
@@ -565,7 +685,10 @@
       "implementation": "role_jobs.RoleExecutor: paper_proposal_gate; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "paper operator CLI (not exposed to agent)",
-      "task_set": "atlas-role-a091-v1"
+      "task_set": "atlas-skill-a091-v1-c4308ae23adaead8",
+      "skill_id": "a091-order-proposal-composer",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A092",
@@ -579,7 +702,10 @@
       "implementation": "role_jobs.RoleExecutor: spread_diagnostic; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a092-v1"
+      "task_set": "atlas-skill-a092-v1-c7f8054773ae0ad3",
+      "skill_id": "a092-liquidity-slippage-analysis",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A093",
@@ -593,7 +719,10 @@
       "implementation": "role_jobs.RoleExecutor: account_margin; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a093-v1"
+      "task_set": "atlas-skill-a093-v1-550c0ad7d39ad659",
+      "skill_id": "a093-leverage-and-margin-monitor",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A094",
@@ -607,7 +736,10 @@
       "implementation": "role_jobs.RoleExecutor: fill_reconcile; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "paper reconciliation (operator only)",
-      "task_set": "atlas-role-a094-v1"
+      "task_set": "atlas-skill-a094-v1-f42270a0ed52ee4f",
+      "skill_id": "a094-fill-and-reconciliation-auditor",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A095",
@@ -621,7 +753,10 @@
       "implementation": "role_jobs.RoleExecutor: authorization_gate; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "paper gateway (operator only; no live)",
-      "task_set": "atlas-role-a095-v1"
+      "task_set": "atlas-skill-a095-v1-041137731e77f75a",
+      "skill_id": "a095-execution-authorization-gateway",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A101",
@@ -635,7 +770,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "workflow packet bear attachment (independence externally reviewed)",
-      "task_set": "atlas-role-a101-v1"
+      "task_set": "atlas-skill-a101-v1-cacafea559625b4b",
+      "skill_id": "a101-bear-case-red-team",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A102",
@@ -649,7 +787,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "workflow verification attachment (operator attestation)",
-      "task_set": "atlas-role-a102-v1"
+      "task_set": "atlas-skill-a102-v1-02802c3480bd2bd4",
+      "skill_id": "a102-financial-and-source-audit",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A103",
@@ -663,7 +804,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "role definition only; specialized handler not verified",
-      "task_set": "atlas-role-a103-v1"
+      "task_set": "atlas-skill-a103-v1-11f65b1eaf459ebc",
+      "skill_id": "a103-causal-bias-and-confounding",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     },
     {
       "agent_id": "A104",
@@ -676,7 +820,10 @@
       "implementation": "role_jobs.RoleExecutor: calibration; local diagnostic or refusal, not execution authority",
       "live_execution": false,
       "previous_implementation": "learning.ForecastJournal",
-      "task_set": "atlas-role-a104-v1"
+      "task_set": "atlas-skill-a104-v1-0447a6f218cc2bac",
+      "skill_id": "a104-forecast-calibration-engine",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "deterministic_python"
     },
     {
       "agent_id": "A105",
@@ -690,7 +837,10 @@
       "implementation": "role_jobs.RoleExecutor: fixed public research query; requires measured model and claim verification",
       "live_execution": false,
       "previous_implementation": "experiments.experiment_request (proposal only)",
-      "task_set": "atlas-role-a105-v1"
+      "task_set": "atlas-skill-a105-v1-6bff85c682405a20",
+      "skill_id": "a105-skill-improvement-researcher",
+      "skill_catalog": "src/atlas_pro/role_skills.json",
+      "execution_engine": "public_certified_model_runner"
     }
   ]
 }
