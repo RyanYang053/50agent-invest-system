@@ -21,6 +21,7 @@ from .independent_review import load_trust
 from .filing_ingest import ingest_recent_filings,SECArchiveTransport
 from .macro_ingest import ingest_macro
 from .bls_ingest import ingest_bls,SERIES as BLS_SERIES
+from .external_references import ReferenceStore
 
 
 def execute_batch(screen_result,executor,journal,*,run_id,at,max_candidates=3,roles=None,macro=False):
@@ -104,7 +105,7 @@ def main(argv=None):
         memory=MemoryStore(d/'agent-memory',ledger,trust=load_trust(a.memory_trust) if a.memory_trust else {})
         gateway=ModelGateway(d/'models.sqlite',models,roles,daily_limit_usd=a.daily_budget,monthly_limit_usd=a.monthly_budget)
         runner=ResearchModelRunner(gateway,index,FixedModelTransport(enabled=True),memory=memory) if a.paid_models else None
-        out=RoleJournal(d/'role_jobs.sqlite',memory=memory).execute(RoleExecutor(roles,ledger,model_runner=runner,forecast_journal=ForecastJournal(d/'forecasts.sqlite')),a.role_id,at=a.at,run_id=a.run_id,inputs=load(a.inputs))
+        out=RoleJournal(d/'role_jobs.sqlite',memory=memory).execute(RoleExecutor(roles,ledger,model_runner=runner,forecast_journal=ForecastJournal(d/'forecasts.sqlite'),reference_store=ReferenceStore(d/'external-references')),a.role_id,at=a.at,run_id=a.run_id,inputs=load(a.inputs))
     else:
         if not a.network:raise PermissionError('explicit network consent required')
         if not 1<=a.max_candidates<=10:raise ValueError('candidate bound')
@@ -112,7 +113,7 @@ def main(argv=None):
         ledger=EvidenceLedger(d/'evidence.sqlite');index=ResearchIndex(d/'research.sqlite')
         memory=MemoryStore(d/'agent-memory',ledger,trust=load_trust(a.memory_trust) if a.memory_trust else {})
         gateway=ModelGateway(d/'models.sqlite',models,roles,daily_limit_usd=a.daily_budget,monthly_limit_usd=a.monthly_budget)
-        executor=RoleExecutor(roles,ledger,model_runner=ResearchModelRunner(gateway,index,FixedModelTransport(enabled=True),memory=memory) if a.paid_models else None,forecast_journal=ForecastJournal(d/'forecasts.sqlite'))
+        executor=RoleExecutor(roles,ledger,model_runner=ResearchModelRunner(gateway,index,FixedModelTransport(enabled=True),memory=memory) if a.paid_models else None,forecast_journal=ForecastJournal(d/'forecasts.sqlite'),reference_store=ReferenceStore(d/'external-references'))
         quotes=AlpacaResearchQuotes(policy=load(a.alpaca_policy)) if a.alpaca_policy else None
         client=PublicFeedClient(PublicJSONTransport(),sec_user_agent=os.getenv('SEC_USER_AGENT',''),fred_api_key=os.getenv('FRED_API_KEY',''))
         result=run_screen(load(a.universe),client=client,ledger=ledger,index=index,policy=load(a.sec_policy),at=datetime.now(timezone.utc).isoformat(),quotes=quotes,basis=a.basis)

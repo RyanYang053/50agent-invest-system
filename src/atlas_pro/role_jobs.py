@@ -95,8 +95,8 @@ def _fills(p):
 
 
 class RoleExecutor:
-    def __init__(self,roles,ledger,*,model_runner=None,forecast_journal=None):
-        self.roles={r['agent_id']:r for r in roles};self.ledger=ledger;self.model_runner=model_runner;self.forecast_journal=forecast_journal
+    def __init__(self,roles,ledger,*,model_runner=None,forecast_journal=None,reference_store=None):
+        self.roles={r['agent_id']:r for r in roles};self.ledger=ledger;self.model_runner=model_runner;self.forecast_journal=forecast_journal;self.reference_store=reference_store
         self.skills=validate_catalog(roles,PUBLIC_TASKS,LOCAL_TASKS)
         if set(self.roles)!=set(PUBLIC_TASKS)|set(LOCAL_TASKS) or set(PUBLIC_TASKS)&set(LOCAL_TASKS):raise ValueError('role manifest mismatch')
         for r in PUBLIC_TASKS:
@@ -111,6 +111,12 @@ class RoleExecutor:
         from .capability_runtime import load_role_context
         try:
             context=load_role_context(role_id)
+            if self.reference_store is not None:
+                query=(contract(role_id).get('research_query') or contract(role_id)['method'])[:500]
+                hits=self.reference_store.search(role_id,query,at=at)
+                context['receipt']['local_external_reference_hits']=[{k:h[k] for k in ('source_id','snapshot_id','sha256','excerpt_sha256','normalized_excerpt_start','normalized_excerpt_end')} for h in hits]
+                del context['receipt']['context_hash']
+                context['receipt']['context_hash']=digest(context['receipt'])
         except (ValueError,KeyError,PermissionError,OSError):
             return _safe({'status':'BLOCKED_ROLE_REFERENCE_INTEGRITY','role_id':role_id})
         receipt=context['receipt']

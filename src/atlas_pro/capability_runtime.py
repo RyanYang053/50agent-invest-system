@@ -42,16 +42,16 @@ METHODS={
 # No URL, API credential, dataset, or engine is accessed by this loader.
 ROUTES={
     "sec":"existing_adapter_requires_rights_and_live_validation",
-    "damodaran":"external_method_not_ingested_rights_review_required",
+    "damodaran":"local_import_supported_requires_rights_and_actual_snapshot",
     "french":"existing_research_archive_workflow_not_live_or_pit_certified",
-    "cra":"official_guidance_not_ingested_current_rule_review_required",
+    "cra":"local_import_supported_requires_current_rule_review",
     "financebench":"evaluation_only_never_learning_or_prompt",
     "atlas":"internal_runtime_present_not_independent_certification",
     "alfred":"existing_vintage_adapter_requires_rights_and_live_validation",
     "bls":"bls_adapter_implemented_requires_rights_and_live_validation",
     "boc":"existing_valet_adapter_requires_rights_and_live_validation",
-    "occ":"official_guidance_not_ingested_rights_review_required",
-    "nist":"official_guidance_not_ingested_rights_review_required",
+    "occ":"local_import_supported_requires_rights_and_actual_snapshot",
+    "nist":"fixed_official_download_supported_requires_rights_and_actual_snapshot",
 }
 
 def load_role_context(role_id):

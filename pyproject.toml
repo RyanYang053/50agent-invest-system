@@ -41,6 +41,7 @@ atlas-tail-challenge = "atlas_pro.tail_models:main"
 atlas-market-study = "atlas_pro.market_strategy:main"
 atlas-memory = "atlas_pro.memory_cli:main"
 atlas-employee = "atlas_pro.employee_packs:main"
+atlas-reference = "atlas_pro.external_references:main"
 
 [tool.setuptools]
 py-modules = ["atlas_policy_router"]
