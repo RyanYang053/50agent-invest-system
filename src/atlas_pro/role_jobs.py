@@ -12,6 +12,7 @@ from .pipeline import market_evidence_matches
 from .account_risk import review_accounts
 from .portfolio import tail_loss
 from .experiments import purged_panel_folds
+from .skill_contracts import validate_catalog,task_id,contract
 
 # Task IDs version the prompt contract. Do not reuse certifications for another task.
 PUBLIC_TASKS={
@@ -96,13 +97,14 @@ def _fills(p):
 class RoleExecutor:
     def __init__(self,roles,ledger,*,model_runner=None,forecast_journal=None):
         self.roles={r['agent_id']:r for r in roles};self.ledger=ledger;self.model_runner=model_runner;self.forecast_journal=forecast_journal
+        self.skills=validate_catalog(roles,PUBLIC_TASKS,LOCAL_TASKS)
         if set(self.roles)!=set(PUBLIC_TASKS)|set(LOCAL_TASKS) or set(PUBLIC_TASKS)&set(LOCAL_TASKS):raise ValueError('role manifest mismatch')
         for r in PUBLIC_TASKS:
             if self.roles[r]['data_scope']!='public_only' or self.roles[r]['primary_model']=='deterministic':raise ValueError('public role mismatch')
         for r in LOCAL_TASKS:
             if self.roles[r]['primary_model'] not in ('deterministic','local-private'):raise ValueError('local role mismatch')
     def catalog(self):
-        return [{'role_id':r,'role':self.roles[r]['role'],'task_set':f'atlas-role-{r.lower()}-v1','kind':'certified_public_memo' if r in PUBLIC_TASKS else LOCAL_TASKS[r], 'can_trade':False} for r in sorted(self.roles)]
+        return [{'role_id':r,'role':self.roles[r]['role'],'task_set':task_id(r),'skill':self.skills[r],'kind':'certified_public_memo' if r in PUBLIC_TASKS else LOCAL_TASKS[r], 'can_trade':False} for r in sorted(self.roles)]
     def run(self,role_id,*,at,run_id,inputs):
         if role_id not in self.roles or not run_id or not isinstance(inputs,dict):raise ValueError('invalid role job')
         iso(at)
@@ -112,9 +114,9 @@ class RoleExecutor:
             if set(inputs)!={'security_id'} or not isinstance(sid,str) or (kind=='company' and not re.fullmatch(r'CIK:[1-9][0-9]{0,9}',sid)) or (kind=='macro' and sid!='MACRO:US'):
                 raise PermissionError('public role only accepts canonical public identifier')
             if self.model_runner is None:return _safe({'status':'BLOCKED_MODEL_RUNTIME','role_id':role_id})
-            result=self.model_runner.run(role_id=role_id,task_set=f'atlas-role-{role_id.lower()}-v1',request_id=digest({'run':run_id,'role':role_id,'security':sid,'at':iso(at).isoformat()}),security_id=sid,query=query,at=at)
+            result=self.model_runner.run(role_id=role_id,task_set=task_id(role_id),request_id=digest({'run':run_id,'role':role_id,'security':sid,'at':iso(at).isoformat()}),security_id=sid,query=query,at=at)
         else:result=self._local(LOCAL_TASKS[role_id],inputs,at)
-        return _safe(result)|{'role_id':role_id,'task_id':digest({'role':role_id,'run':run_id,'inputs':inputs,'at':iso(at).isoformat()})}
+        return _safe(result)|{'role_id':role_id,'skill_task_set':task_id(role_id),'task_id':digest({'role':role_id,'skill':task_id(role_id),'run':run_id,'inputs':inputs,'at':iso(at).isoformat()})}
     def _local(self,task,p,at):
         if task=='policy_gate':
             pol=p['policy'];ok=pol.get('status')=='ACTIVE_APPROVED' and pol.get('owner_approval',{}).get('approved') is True and pol.get('permissions',{}).get('live_execution') is False
@@ -180,7 +182,7 @@ class RoleJournal:
             if row and row[0]!=rh:raise ValueError('batch inputs changed; use a new run ID')
             c.execute('INSERT OR IGNORE INTO batches VALUES(?,?)',(run_id,rh))
     def execute(self,executor,role_id,*,at,run_id,inputs):
-        jid=digest({'role':role_id,'run_id':run_id});rh=digest({'at':iso(at).isoformat(),'inputs':inputs})
+        jid=digest({'role':role_id,'run_id':run_id});rh=digest({'at':iso(at).isoformat(),'inputs':inputs,'skill':task_id(role_id)})
         with closing(sqlite3.connect(self.path,timeout=10)) as c,c:
             c.execute('BEGIN IMMEDIATE');row=c.execute('SELECT request_hash,result,result_hash FROM role_jobs WHERE id=?',(jid,)).fetchone()
             if row:
