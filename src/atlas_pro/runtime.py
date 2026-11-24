@@ -4,6 +4,7 @@ Provider clients are operator-supplied and only receive public evidence.
 """
 from __future__ import annotations
 import json, os, re, ssl, time, math, threading
+from datetime import datetime, timezone
 from urllib.request import Request, build_opener, HTTPSHandler, ProxyHandler
 from urllib.error import HTTPError, URLError
 from .transport import NoRedirect
@@ -74,6 +75,10 @@ class ResearchModelRunner:
     def run(self, *, role_id, task_set, request_id, security_id, query, at, max_output=1200):
         # query is an operator-authored PUBLIC research query, never a private account query.
         if not isinstance(query,str) or not 1<=len(query)<=500 or not 64<=max_output<=4000:raise ValueError('request bounds')
+        # A historical evidence cutoff is not a billing/certification clock.
+        # The fixed real provider transport always meters against actual UTC.
+        billing_at=datetime.now(timezone.utc).isoformat() if isinstance(self.transport,FixedModelTransport) else at
+        if iso(at)>iso(billing_at):return {'status':'FUTURE_RESEARCH_CUTOFF','can_trade':False}
         role=self.gateway.roles.get(role_id)
         if not role or role['data_scope']!='public_only':return {'status':'PRIVATE_OR_UNKNOWN_ROLE_BLOCKED','can_trade':False}
         docs=self.index.search(query,decision_at=at,scope='public_only',security_id=security_id,top_k=5,embed=self.embed,vector_backend=self.vector_backend)
@@ -84,7 +89,7 @@ class ResearchModelRunner:
         # Conservative byte count plus framing allowance; no tokenization claim.
         input_bound=len((instructions+payload).encode())+512
         available={k:v['provider'] in FixedModelTransport.ENDPOINTS for k,v in self.gateway.registry.items()}
-        reservation=self.gateway.select_and_reserve(request_id=request_id,role_id=role_id,task_set=task_set,data_scope='public_only',at=at,input_tokens=input_bound,output_tokens=max_output,provider_available=available)
+        reservation=self.gateway.select_and_reserve(request_id=request_id,role_id=role_id,task_set=task_set,data_scope='public_only',at=billing_at,input_tokens=input_bound,output_tokens=max_output,provider_available=available,require_measured=isinstance(self.transport,FixedModelTransport))
         if reservation['status']!='RESERVED':return reservation
         model_id=reservation['model']; model=self.gateway.registry[model_id];provider=model['provider']
         # Low effort by default, high only through an independently evaluated role.
@@ -98,6 +103,9 @@ class ResearchModelRunner:
             body={'model':model['model_id'],'messages':[{'role':'system','content':instructions},{'role':'user','content':payload}], 'max_tokens':max_output,'stream':False,'reasoning_effort':{'none':'none','low':'low','medium':'low','high':'high'}[effort]}
         try:
             response=self.transport(provider,body)
+            # Do not accept an unexpected alias/snapshot in a real certified route.
+            if isinstance(self.transport,FixedModelTransport) and response.get('model')!=model['model_id']:
+                raise ModelCallError('UNEXPECTED_MODEL_IDENTITY')
             if provider=='openai':
                 if response.get('status')!='completed':raise ModelCallError('INCOMPLETE_MODEL_OUTPUT')
                 output=response.get('output',[])

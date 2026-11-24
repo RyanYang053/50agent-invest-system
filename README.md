@@ -1,4 +1,4 @@
-# Atlas Investment OS — research and controlled paper pilot 0.6.1
+# Atlas Investment OS — research and controlled paper pilot 0.7.0
 
 A local-first investment research system with 50 logical specialist roles and 21 event routes. **No live order submission or AI modification of owner risk policy.** Separate operator-only paper pilot; no Agent can send orders. The existing IBKR-Agent-harness is not modified.
 
@@ -47,3 +47,7 @@ See [Open Source Fusion](docs/0.6.0%20Open%20Source%20Fusion.md) for the executa
 ## Open-source adapters and financial research hardening (0.6.1)
 
 See [External Engine Integration](docs/0.6.1%20External%20Engine%20Integration.md). `atlas-screen --basis ttm` selects a strict SEC fiscal YTD bridge; annual remains default. `atlas-oss` accepts hash-pinned, operator-prepared normalized research artifacts only. Optional `warehouse`, `pdf` and `risk_crosscheck` extras do not turn on any network or execution permissions. Core tests do not require external engines. GitHub optional integration jobs install DuckDB/Qdrant and skfolio to run actual library tests. No external broker, model or dataset performance has been demonstrated.
+
+## Prospective research core (0.7.0)
+
+See [Core Loop and Acceptance](docs/0.7.0%20Core%20Loop%20and%20Acceptance.md) for `atlas-shadow`, licensed Tiingo EOD proxy ingestion, immutable benchmarked research experiments, hypothesis scoring and independent comparison. `atlas-certify` regrades external locked model cases; the fixed real model transport requires measured certificates and current billing time. Both new CLIs are research-only. No actual brokerage or paid model session has been validated, and the separate paper gateway remains operator-only.
