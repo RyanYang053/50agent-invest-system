@@ -1,11 +1,11 @@
-# Atlas Investment OS — research and controlled paper pilot 0.7.0
+# Atlas Investment OS — research and controlled paper pilot 0.9.0
 
 A local-first investment research system with 50 logical specialist roles and 21 event routes. **No live order submission or AI modification of owner risk policy.** Separate operator-only paper pilot; no Agent can send orders. The existing IBKR-Agent-harness is not modified.
 
 ## Quick start (from repository checkout)
 
 ```bash
-python -m pip install -e '.[market_calendar,test,quant]'
+python -m pip install -e '.[market_calendar,test,quant,ml]'
 python -m pytest -q
 python -m atlas_pro
 ```
@@ -55,3 +55,13 @@ See [Core Loop and Acceptance](docs/0.7.0%20Core%20Loop%20and%20Acceptance.md) f
 ## 0.8 offline deployment and quant baseline
 
 Actual scikit-learn rolling training and shared-evidence shadow batch runner. See [0.8 deployment runbook](docs/0.8.0%20Deployment%20and%20Quant%20Baseline.md). Docker isolation is tested separately in CI; locally the trusted synthetic learner ran with a network namespace, not Docker. No actual market-data, paid model or paper/live broker acceptance.
+
+## 0.9 role execution, data research batches and account risk
+
+See [Core Runtime Acceptance](docs/0.9.0%20Core%20Runtime%20Acceptance.md). `atlas-core catalog` lists 50 explicit role task routes (29 public model tasks, 21 local computation or refusal/check tasks). `atlas-core screen-research` runs the bounded SEC/Alpaca screen and public research batch, optionally indexing recent primary SEC filings and rights-cleared macro series. `atlas-core run-role` runs a specific task using explicit local inputs. `atlas-bench` can execute a precommitted numeric evaluation with separate explicit spending permission; it does not qualify broader role competence or automatically certify models. Four provider protocol adapters exist; none has been exercised against a paid external API here. Independent multi-account risk diagnostics use supplied FX, ETF decomposition, option metadata, account reconciliation and stress shocks; they are not IBKR margin predictions. No real or external paper order was sent. All actual investment decisions and execution remain gated.
+
+```bash
+atlas-core readiness
+atlas-core catalog --roles 'config/50 agent manifest.json'
+python -m pytest -q
+```
