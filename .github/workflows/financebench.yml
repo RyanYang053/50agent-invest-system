@@ -1,0 +1,32 @@
+name: Optional noncommercial FinanceBench retrieval audit
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      confirm_noncommercial_rights:
+        description: Confirm noncommercial evaluation rights; no training or raw dataset publication
+        type: boolean
+        required: true
+        default: false
+permissions:
+  contents: read
+jobs:
+  public-retrieval-audit:
+    # One personal, noncommercial developer validation on this same-repo PR.
+    # Forks and subsequent releases require explicit manual rights confirmation.
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.confirm_noncommercial_rights == true) ||
+      (github.event_name == 'pull_request' && github.repository == 'RyanYang053/50agent-invest-system' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'atlas-0.13-scoped-rag')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e .
+      - run: |
+          curl --fail --location --proto '=https' --max-time 90 --max-filesize 2000000 'https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/data/financebench_open_source.jsonl' -o "$RUNNER_TEMP/financebench.jsonl"
+          python -m atlas_pro.financebench_atlas --jsonl "$RUNNER_TEMP/financebench.jsonl" --confirm-noncommercial-evaluation-rights
+          rm -f "$RUNNER_TEMP/financebench.jsonl"

@@ -9,6 +9,7 @@ import json, math, re, sqlite3, hashlib
 from datetime import datetime, timezone
 from pathlib import Path
 from .ledger import iso
+from .query_terms import terms as query_terms, excerpt
 
 class ResearchIndex:
     def __init__(self, path: str|Path):
@@ -101,10 +102,8 @@ class ResearchIndex:
             raise PermissionError('INVALID_LOCAL_VECTOR_BACKEND')
         if embed and scope=='private_local' and not getattr(embed,'local_only',False):
             raise PermissionError('PRIVATE_QUERY_EMBEDDING_MUST_BE_LOCAL')
-        if not 1<=top_k<=25: raise ValueError('TOP_K_OUT_OF_RANGE')
-        terms=re.findall(r'[\w]+',query,flags=re.UNICODE)
-        # Avoid raw FTS query syntax and unsafe operators; use terms only.
-        terms=[t for t in terms if len(t)>=2][:10]
+        if type(top_k) is not int or not 1<=top_k<=25: raise ValueError('TOP_K_OUT_OF_RANGE')
+        terms=query_terms(query)
         cjk_terms=re.findall(r'[\u3400-\u9fff]+',query)[:5]
         if not terms: return []
         clauses=['d.available_at<=?']; params=[decision_at]
@@ -113,9 +112,19 @@ class ResearchIndex:
         where=' AND '.join(clauses)
         fts_query=' OR '.join('"'+term.replace('"','')+'"' for term in terms)
         with self._db() as c:
-            rows=c.execute(f'''SELECT d.*,bm25(docs_fts) AS bm FROM docs_fts
-              JOIN docs d ON d.rowid=docs_fts.rowid
-              WHERE docs_fts MATCH ? AND {where} ORDER BY bm,d.doc_id LIMIT 60''',[fts_query]+params).fetchall()
+            # FTS5 BM25 uses collection-wide document frequencies and lengths.
+            # Filtering returned rows alone leaks private/future/other-issuer
+            # corpus statistics into ranking. Build an ephemeral eligible corpus
+            # in a read transaction; fail closed above bounded local capacity.
+            c.execute('BEGIN')
+            count,chars=c.execute(f'SELECT count(*),coalesce(sum(length(d.content)),0) FROM docs d WHERE {where}',params).fetchone()
+            if count>20000 or chars>64_000_000:raise ValueError('SCOPED_LEXICAL_CAPACITY_EXCEEDED_USE_VALIDATED_INDEX')
+            c.execute('PRAGMA temp_store=MEMORY')
+            c.execute("CREATE VIRTUAL TABLE temp.eligible_fts USING fts5(doc_id UNINDEXED,content, tokenize='unicode61')")
+            c.execute(f'INSERT INTO eligible_fts(doc_id,content) SELECT d.doc_id,d.content FROM docs d WHERE {where}',params)
+            rows=c.execute('''SELECT d.*,bm25(eligible_fts) AS bm FROM eligible_fts
+              JOIN docs d ON d.doc_id=eligible_fts.doc_id
+              WHERE eligible_fts MATCH ? ORDER BY bm,d.doc_id LIMIT 60''',[fts_query]).fetchall()
             lexical={r['doc_id']:(1.0/(60+i),dict(r)) for i,r in enumerate(rows)}
             if cjk_terms:
                 extra=c.execute(f"SELECT d.* FROM docs d WHERE {where} AND ("+' OR '.join('instr(d.content,?)>0' for _ in cjk_terms)+") ORDER BY d.available_at DESC, d.doc_id LIMIT 60",params+cjk_terms).fetchall()
@@ -155,8 +164,12 @@ class ResearchIndex:
         for _,r in results:
             if hashlib.sha256(r['content'].encode()).hexdigest()!=r['text_sha256']:raise ValueError('DOCUMENT_CONTENT_INTEGRITY_FAILURE')
         # Return source refs, NOT operator instructions. Cloud cannot query private.
-        return [{'doc_id':r['doc_id'],'source_id':r['source_id'],'source_uri':r['source_uri'],
+        answer=[]
+        for score,r in results:
+            snippet,start,end=excerpt(r['content'],terms)
+            answer.append({'doc_id':r['doc_id'],'source_id':r['source_id'],'source_uri':r['source_uri'],
                  'available_at':r['available_at'],'security_id':r['security_id'],'evidence_sha256':r['text_sha256'],
-                 'scope':r['scope'],'text':r['content'][:1600],
-                 'retrieval_score':round(score,7),'untrusted_source_text':True}
-                for score,r in results]
+                 'scope':r['scope'],'text':snippet,'excerpt_start':start,'excerpt_end':end,
+                 'excerpt_sha256':hashlib.sha256(snippet.encode()).hexdigest(),
+                 'retrieval_score':round(score,7),'untrusted_source_text':True})
+        return answer
