@@ -121,7 +121,7 @@ def test_real_transport_uses_real_billing_clock(monkeypatch):
             return {'status':'BLOCKED','can_trade':False}
     class Index:
         def search(self,*a,**k):return [{'doc_id':'a'}]
-    r=ResearchModelRunner(G(),Index(),FixedModelTransport())
+    r=ResearchModelRunner(G(),Index(),FixedModelTransport(enabled=True))
     assert r.run(role_id='role',task_set='finance',request_id='r',security_id='A',query='income',at='2020-01-01T00:00:00Z')['status']=='BLOCKED'
 
 TII_POLICY={'license_id':'TIINGO_EOD_PERSONAL','permitted_for_personal_analysis':True,'allow_local_retention':True,'cloud_allowed':False,'adjustment_coverage_reviewed':True}
@@ -195,7 +195,7 @@ def test_shadow_refresh_same_policy(tmp_path):
 
 def test_real_route_rejects_wrong_model_identity():
     class FakeRealTransport(FixedModelTransport):
-        def __init__(self):pass
+        def __init__(self):self.enabled=True
         def __call__(self,*args):return {'model':'unknown-provider-snapshot','status':'completed'}
     class G:
         roles={'role':{'role':'research','data_scope':'public_only','minimum_effort':'low'}}

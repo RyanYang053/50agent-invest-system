@@ -18,17 +18,19 @@ def grade_locked(cases, responses, *, expected_hash, minimum_quality=.95, min_ca
     results=[]
     for c in cases:
         if c.get('evaluation_rights_verified') is not True:raise PermissionError('UNAUTHORIZED_EVALUATION_DATA')
-        a=responses.get(c['case_id']); valid=False; critical=c.get('must_abstain') is True
+        tolerance=num(c.get('relative_tolerance',.00001))
+        if not 0<=tolerance<=.01:raise ValueError('invalid numerical tolerance')
+        a=responses.get(c['case_id']); valid=False; critical=True
         if isinstance(a,dict):
             cited=a.get('evidence_ids'); allowed=set(c['allowed_evidence_ids'])
             citation_ok=isinstance(cited,list) and all(isinstance(x,str) and x in allowed for x in cited) and bool(cited)
             if c.get('must_abstain') is True:
-                valid=a.get('abstain') is True and not a.get('values')
+                valid=a.get('abstain') is True and a.get('values')=={} and isinstance(cited,list) and all(isinstance(x,str) and x in allowed for x in cited)
                 critical=not valid
             else:
                 expected=c['expected_values']; got=a.get('values'); valid=citation_ok and isinstance(got,dict) and set(got)==set(expected) and a.get('abstain') is False
                 if valid:
-                    try:valid=all(abs(num(got[k])-num(v))<=max(1e-10,abs(num(v))*num(c.get('relative_tolerance',.00001))) for k,v in expected.items())
+                    try:valid=all(abs(num(got[k])-num(v))<=max(1e-10,abs(num(v))*tolerance) for k,v in expected.items())
                     except (TypeError,ValueError):valid=False
                 critical=not citation_ok
         results.append({'case_id':c['case_id'],'pass':valid,'critical_failure':critical})

@@ -261,3 +261,17 @@ def test_fusion_workflow_resumes_on_independent_artifacts(issuer,market,assumpti
     r=run_packet(c,l,p,attachments=memos);assert r['stage']=='verification'
     prior=c.state(r['run_id'])[1];review={'status':'VERIFIED','reviewer_id':'independent fixture','claims_verified':True,'reviewed_hashes':{s:digest(prior[s]) for s in ('fundamental','valuation','bull','bear')},'can_trade':False}
     r=run_packet(c,l,p,attachments=memos|{'verification':review});assert r['status']=='COMPLETE_RESEARCH_ONLY' and r['decision']['decision']=='WAIT' and len(r['completed_stages'])==10
+
+def test_actual_screen_into_role_batch(issuer,tmp_path):
+    from atlas_pro.role_jobs import RoleExecutor,RoleJournal
+    from atlas_pro.core_service import execute_batch
+    l=EvidenceLedger(tmp_path/'ev');idx=ResearchIndex(tmp_path/'rag');u=[{'symbol':'TEST','cik':1,'security_type':'common_equity','sector_class':'operating_company'}]
+    s=run_screen(u,client=FakeSEC(issuer),ledger=l,index=idx,policy=PUBLIC,at=NOW,received_at=NOW,quotes=fake_quotes(quote()))
+    assert s['candidate_count']==1
+    class FakeMemoRunner:
+        def run(self,**kw):
+            assert kw['security_id']=='CIK:1'
+            docs=idx.search('revenue',decision_at=kw['at'],security_id=kw['security_id']);assert docs and all(d['scope']=='public' for d in docs)
+            return {'status':'UNVERIFIED_RESEARCH_MEMO','memo':{'claims':[],'uncertainties':['fixture only'],'countercase':'not certified'},'can_trade':False}
+    r=execute_batch(s,RoleExecutor(ROLES,l,model_runner=FakeMemoRunner()),RoleJournal(tmp_path/'jobs'),run_id='fixture-run',at=NOW,roles=['A031','A101'])
+    assert r['unverified_memos']==2 and r['decision']=='WAIT' and r['can_trade'] is False

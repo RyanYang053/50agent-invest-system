@@ -40,8 +40,8 @@ class FixedModelTransport:
     """Only known endpoints; no arbitrary URL, redirects, retries or logging secrets.
     Paid calls are opt-in by operator; no broker or other tool credentials exposed.
     """
-    ENDPOINTS={'openai':'https://api.openai.com/v1/responses','deepseek':'https://api.deepseek.com/chat/completions','anthropic':'https://api.anthropic.com/v1/messages'}
-    ENV={'openai':'OPENAI_API_KEY','deepseek':'DEEPSEEK_API_KEY','anthropic':'ANTHROPIC_API_KEY'}
+    ENDPOINTS={'openai':'https://api.openai.com/v1/responses','deepseek':'https://api.deepseek.com/chat/completions','anthropic':'https://api.anthropic.com/v1/messages','google':'https://generativelanguage.googleapis.com/v1beta/models/'}
+    ENV={'openai':'OPENAI_API_KEY','deepseek':'DEEPSEEK_API_KEY','anthropic':'ANTHROPIC_API_KEY','google':'GEMINI_API_KEY'}
     def __init__(self, *, enabled=False, timeout=60):
         self.enabled=enabled is True; self.timeout=timeout
         self.opener=build_opener(ProxyHandler({}),NoRedirect(),HTTPSHandler(context=ssl.create_default_context()))
@@ -51,7 +51,12 @@ class FixedModelTransport:
         key=os.getenv(self.ENV[provider]);
         if not key:raise ModelCallError('MODEL_CREDENTIAL_UNAVAILABLE')
         auth={'x-api-key':key,'anthropic-version':'2023-06-01'} if provider=='anthropic' else {'Authorization':'Bearer '+key}
-        req=Request(self.ENDPOINTS[provider],data=json.dumps(body,allow_nan=False).encode(),headers=auth|{'Content-Type':'application/json','Accept':'application/json'},method='POST')
+        endpoint=self.ENDPOINTS[provider]
+        if provider=='google':
+            model=body.get('model','')
+            if not isinstance(model,str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,127}',model):raise ModelCallError('INVALID_GOOGLE_MODEL_ID')
+            endpoint+=model+':generateContent';auth={'x-goog-api-key':key};body={k:v for k,v in body.items() if k!='model'}
+        req=Request(endpoint,data=json.dumps(body,allow_nan=False).encode(),headers=auth|{'Content-Type':'application/json','Accept':'application/json'},method='POST')
         try:
             with self.opener.open(req,timeout=self.timeout) as r:
                 raw=r.read(4_000_001)
@@ -62,6 +67,24 @@ class FixedModelTransport:
         except HTTPError as exc:
             code=exc.code;exc.close();raise ModelCallError(f'MODEL_HTTP_{code}') from None
         except (URLError,TimeoutError,OSError,ValueError):raise ModelCallError('MODEL_TRANSPORT_FAILED') from None
+
+
+def google_body(model, instructions, prompt, max_output, effort):
+    # Gemini 3-family thinkingLevel semantics; provider can reject unsupported model/level.
+    level={'none':'LOW','low':'LOW','medium':'MEDIUM','high':'HIGH'}[effort]
+    return {'model':model,'systemInstruction':{'parts':[{'text':instructions}]},'contents':[{'role':'user','parts':[{'text':prompt}]}],
+            'generationConfig':{'maxOutputTokens':max_output,'candidateCount':1,'responseMimeType':'application/json','thinkingConfig':{'thinkingLevel':level}}}
+
+
+def google_output(response):
+    candidates=response['candidates']
+    if len(candidates)!=1 or candidates[0].get('finishReason')!='STOP' or response.get('promptFeedback',{}).get('blockReason'):raise ModelCallError('INCOMPLETE_OR_UNSAFE_MODEL_OUTPUT')
+    parts=candidates[0]['content']['parts']
+    if any(set(x)-{'text','thought','thoughtSignature'} or not isinstance(x.get('text'),str) for x in parts):raise ModelCallError('UNEXPECTED_MODEL_TOOL_CALL')
+    raw=''.join(x['text'] for x in parts if x.get('thought') is not True)
+    u=response['usageMetadata'];inp=u['promptTokenCount'];out=u.get('candidatesTokenCount',0)+u.get('thoughtsTokenCount',0)
+    if u.get('toolUsePromptTokenCount',0)!=0 or u.get('totalTokenCount')!=inp+out:raise ModelCallError('USAGE_NOT_RECONCILED')
+    return raw,inp,out
 
 
 class ResearchModelRunner:
@@ -88,7 +111,11 @@ class ResearchModelRunner:
         payload=json.dumps({'question':query,'documents':docs},ensure_ascii=False,allow_nan=False)
         # Conservative byte count plus framing allowance; no tokenization claim.
         input_bound=len((instructions+payload).encode())+512
-        available={k:v['provider'] in FixedModelTransport.ENDPOINTS for k,v in self.gateway.registry.items()}
+        if isinstance(self.transport,FixedModelTransport):
+            if not self.transport.enabled:return {'status':'PAID_INFERENCE_DISABLED','can_trade':False}
+            available={k:v['provider'] in FixedModelTransport.ENDPOINTS and bool(os.getenv(FixedModelTransport.ENV.get(v['provider'],''))) for k,v in self.gateway.registry.items()}
+        else:
+            available={k:v['provider'] in FixedModelTransport.ENDPOINTS for k,v in self.gateway.registry.items()}
         reservation=self.gateway.select_and_reserve(request_id=request_id,role_id=role_id,task_set=task_set,data_scope='public_only',at=billing_at,input_tokens=input_bound,output_tokens=max_output,provider_available=available,require_measured=isinstance(self.transport,FixedModelTransport))
         if reservation['status']!='RESERVED':return reservation
         model_id=reservation['model']; model=self.gateway.registry[model_id];provider=model['provider']
@@ -99,12 +126,14 @@ class ResearchModelRunner:
             if effort in ('low','medium','high'):body['reasoning']={'effort':effort}
         elif provider=='anthropic':
             body={'model':model['model_id'],'system':instructions,'messages':[{'role':'user','content':payload}],'max_tokens':max_output,'thinking':{'type':'adaptive'},'output_config':{'effort':effort if effort!='none' else 'low'}}
+        elif provider=='google':body=google_body(model['model_id'],instructions,payload,max_output,effort)
         else:
             body={'model':model['model_id'],'messages':[{'role':'system','content':instructions},{'role':'user','content':payload}], 'max_tokens':max_output,'stream':False,'reasoning_effort':{'none':'none','low':'low','medium':'low','high':'high'}[effort]}
         try:
             response=self.transport(provider,body)
             # Do not accept an unexpected alias/snapshot in a real certified route.
-            if isinstance(self.transport,FixedModelTransport) and response.get('model')!=model['model_id']:
+            returned=response.get('modelVersion') if provider=='google' else response.get('model')
+            if isinstance(self.transport,FixedModelTransport) and returned!=model['model_id']:
                 raise ModelCallError('UNEXPECTED_MODEL_IDENTITY')
             if provider=='openai':
                 if response.get('status')!='completed':raise ModelCallError('INCOMPLETE_MODEL_OUTPUT')
@@ -118,6 +147,7 @@ class ResearchModelRunner:
                 if any(x.get('type') not in ('text','thinking','redacted_thinking') for x in blocks):raise ModelCallError('UNEXPECTED_MODEL_TOOL_CALL')
                 raw=''.join(x.get('text','') for x in blocks if x.get('type')=='text')
                 usage=response['usage'];inp=usage['input_tokens']+usage.get('cache_creation_input_tokens',0)+usage.get('cache_read_input_tokens',0);out=usage['output_tokens']
+            elif provider=='google':raw,inp,out=google_output(response)
             else:
                 choice=response['choices'][0];msg=choice['message']
                 if choice.get('finish_reason')!='stop' or msg.get('tool_calls'):raise ModelCallError('INCOMPLETE_OR_UNSAFE_MODEL_OUTPUT')
@@ -128,7 +158,7 @@ class ResearchModelRunner:
             if len(memo['claims'])>20 or any(not isinstance(x,str) for x in memo['uncertainties']):raise ModelCallError('INVALID_MEMO_SCHEMA')
             for c in memo['claims']:
                 if not isinstance(c,dict) or set(c)!={'claim','evidence_ids'} or not isinstance(c['claim'],str) or not isinstance(c['evidence_ids'],list) or not c['evidence_ids'] or any(not isinstance(x,str) or x not in allowed for x in c['evidence_ids']):raise ModelCallError('UNSUPPORTED_CITATION')
-            return {'status':'UNVERIFIED_RESEARCH_MEMO','memo':memo,'model':model_id,'returned_model':response.get('model'),'usage':{'input_tokens':inp,'output_tokens':out},'evidence_ids':sorted(allowed),'reservation':reservation,'can_trade':False,'requires_claim_verification':True}
+            return {'status':'UNVERIFIED_RESEARCH_MEMO','memo':memo,'model':model_id,'returned_model':returned,'usage':{'input_tokens':inp,'output_tokens':out},'evidence_ids':sorted(allowed),'reservation':reservation,'can_trade':False,'requires_claim_verification':True}
         except (ModelCallError,KeyError,IndexError,TypeError,ValueError,PermissionError,AttributeError) as e:
             # Reservation intentionally remains charged: uncertain network outcomes can bill.
             return {'status':'MODEL_OUTPUT_REJECTED','reason':type(e).__name__,'reservation':reservation,'can_trade':False}
