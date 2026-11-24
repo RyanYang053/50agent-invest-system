@@ -23,6 +23,7 @@ jobs:
       - run: python -m pytest -q
       - run: python -m atlas_pro
       - run: python -m atlas_pro.paper_replay
+      - run: python -m atlas_pro.public_acceptance
       - run: python -m atlas_pro.core_service readiness
       - run: python -m atlas_pro.core_service catalog --roles "config/50 agent manifest.json"
       - run: python -m compileall -q src

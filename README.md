@@ -76,3 +76,7 @@ python -m pytest -q
 ```
 
 `atlas-role-review` imports independently signed reviews with operator-managed trust; `atlas-l6` reports missing external acceptance evidence. `quant_validation` provides conditional DSR/CSCV diagnostics; no promotion authority.
+
+## Developer acceptance (0.11.0)
+
+Run `python -m atlas_pro.public_acceptance` for a small developer-visible public filing fact check and 500 generated RAG boundary cases. The role review importer now verifies distinct JSON benchmark artifacts and exact case/answer/evidence joins. L6 checks elapsed exchange sessions; `atlas_pro.trial_registry.TrialRegistry` records preregistered trials including failures and blocks reuse of stable holdout IDs. See [Developer Acceptance and Evidence](docs/0.11.0%20Developer%20Acceptance%20and%20Evidence.md). These developer tests are not independent skill or investment certification. The current L6 result remains `L6_NOT_VERIFIED`.

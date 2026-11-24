@@ -152,9 +152,11 @@ class ResearchIndex:
                     prior=lexical.get(r['doc_id'],(0,r))
                     lexical[r['doc_id']]=(prior[0]+1.0/(60+i),r)
         results=sorted(lexical.values(),key=lambda x:(-x[0],x[1]['doc_id']))[:top_k]
+        for _,r in results:
+            if hashlib.sha256(r['content'].encode()).hexdigest()!=r['text_sha256']:raise ValueError('DOCUMENT_CONTENT_INTEGRITY_FAILURE')
         # Return source refs, NOT operator instructions. Cloud cannot query private.
         return [{'doc_id':r['doc_id'],'source_id':r['source_id'],'source_uri':r['source_uri'],
-                 'available_at':r['available_at'],'evidence_sha256':r['text_sha256'],
+                 'available_at':r['available_at'],'security_id':r['security_id'],'evidence_sha256':r['text_sha256'],
                  'scope':r['scope'],'text':r['content'][:1600],
                  'retrieval_score':round(score,7),'untrusted_source_text':True}
                 for score,r in results]

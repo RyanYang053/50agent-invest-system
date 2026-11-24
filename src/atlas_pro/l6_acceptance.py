@@ -25,6 +25,28 @@ GATES={
 }
 
 
+# These metrics represent counts, not continuous estimates. Boolean and fractional
+# reports must never count as completed sessions, reviews or zero critical failures.
+COUNT_METRICS={'critical_data_errors','certified_roles','distinct_holdout_cases_per_role','critical_failures','real_holdout_cases','private_leaks','future_leaks','independent_reproductions','universe_leakage_failures','critical_control_failures','unresolved_tail_exposures','prospective_paper_sessions','unreconciled_orders','duplicate_orders','successful_recovery_drills','unresolved_critical_findings','policy_bypasses','credential_leaks','independent_red_team_reviews','independently_reproduced_challenger_trials','unauthorized_promotions','successful_rollback_drills','holdout_reuse_violations','prospective_sessions','market_regimes','risk_budget_breaches','independently_verified_live_sessions','live_risk_breaches'}
+
+def validate_period(gate,p):
+    start,end=iso(p['period_start']),iso(p['period_end']);metrics=p['metrics']
+    if gate in ('G1_data','G4_research'):
+        key='pit_years' if gate=='G1_data' else 'untouched_oos_years'
+        if metrics[key]>(end-start).total_seconds()/(365*86400):raise ValueError('claimed years exceed evidence interval')
+    key={'G6_operational':'prospective_paper_sessions','G9_forward_performance':'prospective_sessions','G10_live_evidence':'independently_verified_live_sessions'}.get(gate)
+    if key:
+        import exchange_calendars as xc
+        from zoneinfo import ZoneInfo
+        et=ZoneInfo('America/New_York')
+        start_date=start.astimezone(et).date().isoformat();end_date=end.astimezone(et).date().isoformat()
+        cal=xc.get_calendar('XNYS',start=start_date,end=end_date)
+        # Count only fully elapsed sessions in the submitted period.
+        sessions=cal.sessions_in_range(start_date,end_date)
+        possible=sum(cal.session_open(d).to_pydatetime()>=start and cal.session_close(d).to_pydatetime()<=end for d in sessions)
+        if metrics[key]>possible:raise ValueError('claimed sessions exceed elapsed exchange sessions')
+
+
 def evaluate(reviews,trust,*,at,release_hash,mandate_hash,role_contract_hash,role_reviews=None,roles=None,models=None,artifact_dir=None):
     if not ishash(release_hash) or not ishash(mandate_hash) or role_contract_hash!=digest(catalog()):raise ValueError('exact release, mandate and skill version required')
     results={};passed=0;role_reviews=role_reviews or {};roles=roles or {};models=models or {}
@@ -41,16 +63,20 @@ def evaluate(reviews,trust,*,at,release_hash,mandate_hash,role_contract_hash,rol
             if set(metrics)!=set(bounds):raise ValueError('metric schema mismatch')
             for k,(lo,hi) in bounds.items():
                 v=metrics[k]
-                if type(v) not in (int,float) or not math.isfinite(v) or (lo is not None and v<lo) or (hi is not None and v>hi):reasons.append(k)
+                if (k in COUNT_METRICS and type(v) is not int) or type(v) not in (int,float) or not math.isfinite(v) or (lo is not None and v<lo) or (hi is not None and v>hi):reasons.append(k)
+            if not reasons:validate_period(gate,p)
             if gate=='G2_role_competence':
                 if set(role_reviews)!=set(catalog()) or set(roles)!=set(catalog()):reasons.append('individual_role_evidence_missing')
                 else:
                     for rid,review in role_reviews.items():
                         mid=review['payload']['model_id'];r=role_grade(review,trust,role_id=rid,model_id=mid,role=roles[rid],model=models[mid],at=at,artifact_dir=artifact_dir,check_artifacts=True)
-                        if r['passed'] is not True:reasons.append('role_failed:'+rid)
-            if gate in ('G4_research','G9_forward_performance','G10_live_evidence') and not all(ishash(p.get(k)) for k in ('benchmark_hash','cost_model_hash','trial_registry_hash','returns_hash')):reasons.append('performance_provenance')
+                        if r['passed'] is not True or r['n']<metrics['distinct_holdout_cases_per_role']:reasons.append('role_failed:'+rid)
+                        if not iso(p['period_start'])<=iso(review['payload']['evaluated_at'])<=iso(p['period_end']):reasons.append('role_outside_evidence_period:'+rid)
+            if gate in ('G4_research','G9_forward_performance','G10_live_evidence'):
+                provenance=[p.get(k) for k in ('benchmark_hash','cost_model_hash','trial_registry_hash','returns_hash')]
+                if not all(ishash(h) for h in provenance) or len(set(provenance))!=4 or not set(provenance).issubset(p['artifact_hashes']):reasons.append('performance_provenance')
             results[gate]={'status':'REVIEWED_THRESHOLDS_MET' if not reasons else 'BLOCKED','reasons':reasons,'review_hash':digest(p)};passed+=not reasons
-        except (ValueError,TypeError,PermissionError,KeyError,AttributeError,ImportError) as e:results[gate]={'status':'BLOCKED','reasons':[str(e)]}
+        except (ValueError,TypeError,PermissionError,KeyError,AttributeError,ImportError,OverflowError,OSError,IndexError) as e:results[gate]={'status':'BLOCKED','reasons':[str(e)]}
     research_ready=all(results[g]['status']=='REVIEWED_THRESHOLDS_MET' for g in GATES if g!='G10_live_evidence')
     return {'research_review_eligible':research_ready,'status':'ELIGIBLE_FOR_EXTERNAL_L6_REVIEW' if passed==len(GATES) else 'L6_NOT_VERIFIED','gates':results,'reviewed_thresholds_met':passed,'gate_count':len(GATES),'l6_certified':False,'can_trade':False,'limitations':['proposed acceptance thresholds, not established universal fund standards','signed reviewers attest findings; this evaluator does not independently reproduce the reviewed results or authenticate organizations','real alpha, capacity and peer comparability require independent professional review','passing the rubric cannot authorize execution']}
 

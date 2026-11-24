@@ -21,7 +21,7 @@ def signer():
     return trust,sign
 
 def payload():
-    return {'kind':'ROLE_COMPETENCE_V1','role_id':RID,'model_id':MID,'task_set':task_id(RID),'skill_hash':digest(contract(RID)),'runtime_hash':runtime_hash(RID),'role_hash':digest(BYID[RID]),'model_hash':digest(REG[MID]),'synthetic':False,'data_rights_verified':True,'holdout_independence_verified':True,'producer_organization':'developer','locked_at':'2026-11-01T00:00:00Z','evaluated_at':'2026-11-20T00:00:00Z','reviewed_at':'2026-11-22T00:00:00Z','valid_until':'2026-12-22T00:00:00Z',**{x:H for x in ('testset_hash','answers_hash','rubric_hash','raw_review_hash')},'cases':[{'id':str(i),'negative':i<20,'critical_failure':False,'evidence_hash':H,'checks':dict.fromkeys(['task_correctness','source_entailment','numeric_consistency','uncertainty','boundary_compliance'],True)} for i in range(100)]}
+    return {'kind':'ROLE_COMPETENCE_V1','role_id':RID,'model_id':MID,'task_set':task_id(RID),'skill_hash':digest(contract(RID)),'runtime_hash':runtime_hash(RID),'role_hash':digest(BYID[RID]),'model_hash':digest(REG[MID]),'synthetic':False,'data_rights_verified':True,'holdout_independence_verified':True,'producer_organization':'developer','locked_at':'2026-11-01T00:00:00Z','evaluated_at':'2026-11-20T00:00:00Z','reviewed_at':'2026-11-22T00:00:00Z','valid_until':'2026-12-22T00:00:00Z',**{x:hashlib.sha256(x.encode()).hexdigest() for x in ('testset_hash','answers_hash','rubric_hash','raw_review_hash')},'cases':[{'id':str(i),'negative':i<20,'critical_failure':False,'evidence_hash':H,'checks':dict.fromkeys(['task_correctness','source_entailment','numeric_consistency','uncertainty','boundary_compliance'],True)} for i in range(100)]}
 
 def grade(e,t):return role_grade(e,t,role_id=RID,model_id=MID,role=BYID[RID],model=REG[MID],at=AT)
 
@@ -75,9 +75,7 @@ def test_numeric_not_role_and_revocation(tmp_path,signer):
     kw=dict(role_id=RID,task_set=task_id(RID),data_scope='public_only',at=AT,input_tokens=1000,output_tokens=100,require_measured=True)
     assert g.select_and_reserve(request_id='before',**kw)['status']=='NO_CURRENT_CERTIFIED_MODEL'
     with pytest.raises(ValueError):g.certify_role_review(RID,MID,s(payload()),at=AT)
-    p=payload();h=hashlib.sha256(b'synthetic test artifact').hexdigest();(tmp_path/h).write_bytes(b'synthetic test artifact')
-    for k in ('testset_hash','answers_hash','rubric_hash','raw_review_hash'):p[k]=h
-    for row in p['cases']:row['evidence_hash']=h
+    p=payload();write_benchmark_artifacts(p,tmp_path)
     assert g.certify_role_review(RID,MID,s(p),at=AT,artifact_dir=tmp_path)['passed']
     assert g.select_and_reserve(request_id='after',**kw)['status']=='RESERVED'
     t['1']['revoked']=True
@@ -110,3 +108,39 @@ def test_cscv_conditional_and_shape():
     r=cscv_pbo(m,blocks=8);assert r['splits']==70 and 0<=r['pbo']<=1 and not r['promotion_allowed']
     with pytest.raises(ValueError):cscv_pbo(m[:-1],blocks=8)
     with pytest.raises(ValueError):deflated_sharpe([.01]*100,trial_sharpes=[0,.1],effective_trials=2,independent_observations=100)
+
+
+def write_benchmark_artifacts(p,root):
+    def store(obj):
+        raw=strict_json(obj);h=hashlib.sha256(raw).hexdigest();(root/h).write_bytes(raw);return h
+    h=store({'synthetic_fixture_source':True})
+    for row in p['cases']:row['evidence_hash']=h
+    p['testset_hash']=store({'cases':[{'id':r['id'],'input':{'synthetic_question':r['id']},'negative':r['negative'],'evidence_hash':h} for r in p['cases']]})
+    p['answers_hash']=store({'answers':[{'id':r['id'],'output':{'synthetic_response':r['id']}} for r in p['cases']]})
+    p['rubric_hash']=store({'version':'fixture-1','dimensions':sorted(p['cases'][0]['checks'])})
+    p['raw_review_hash']=store({'cases':p['cases']})
+    return store
+
+@pytest.mark.parametrize('attack',['reused_artifact','duplicate_inputs','wrong_answer_id','missing_answer','grade_mismatch','mismatched_evidence','wrong_rubric'])
+def test_certification_artifact_joins(tmp_path,signer,attack):
+    t,s=signer;p=payload();store=write_benchmark_artifacts(p,tmp_path)
+    if attack=='reused_artifact':p['answers_hash']=p['testset_hash']
+    elif attack in ('duplicate_inputs','mismatched_evidence'):
+        doc=json.loads((tmp_path/p['testset_hash']).read_text())
+        if attack=='duplicate_inputs':doc['cases'][1]['input']=doc['cases'][0]['input']
+        else:doc['cases'][1]['evidence_hash']=H
+        p['testset_hash']=store(doc)
+    elif attack in ('wrong_answer_id','missing_answer'):
+        doc=json.loads((tmp_path/p['answers_hash']).read_text())
+        if attack=='wrong_answer_id':doc['answers'][0]['id']='other'
+        else:doc['answers'].pop()
+        p['answers_hash']=store(doc)
+    elif attack=='grade_mismatch':p['cases'][0]['checks']['uncertainty']=False
+    else:p['rubric_hash']=store({'version':'invalid','dimensions':[]})
+    with pytest.raises(ValueError):role_grade(s(p),t,role_id=RID,model_id=MID,role=BYID[RID],model=REG[MID],at=AT,artifact_dir=tmp_path,check_artifacts=True)
+
+@pytest.mark.parametrize('gate', ['G1_data','G4_research','G6_operational','G9_forward_performance','G10_live_evidence'])
+def test_impossible_period_blocked(gate):
+    from atlas_pro.l6_acceptance import validate_period
+    p={'period_start':'2026-11-23T14:00:00Z','period_end':'2026-11-24T21:00:00Z','metrics':{k:lo for k,(lo,hi) in GATES[gate].items()}}
+    with pytest.raises(ValueError):validate_period(gate,p)

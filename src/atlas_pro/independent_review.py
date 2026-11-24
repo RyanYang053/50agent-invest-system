@@ -56,6 +56,47 @@ def verify_artifacts(hashes,artifact_dir):
             if hashlib.file_digest(f,'sha256').hexdigest()!=h:raise ValueError('reviewed artifact hash mismatch '+h)
 
 
+def verify_role_artifacts(p, artifact_dir):
+    """Validate machine-readable benchmark joins; cannot judge the quality of the labels.
+
+    Each artifact is canonical JSON or equivalent JSON bytes, stored by raw SHA256.
+    Shared primary sources are allowed; duplicate exact case inputs are not.
+    """
+    names=('testset_hash','answers_hash','rubric_hash','raw_review_hash')
+    hashes=[p[k] for k in names]
+    evidence=[row['evidence_hash'] for row in p['cases']]
+    if len(set(hashes))!=4 or set(hashes)&set(evidence):raise ValueError('artifact roles must be distinct')
+    verify_artifacts(hashes+evidence,artifact_dir)
+    def read(h):
+        path=Path(artifact_dir)/h
+        if path.stat().st_size>25_000_000:raise ValueError('benchmark artifact exceeds size limit')
+        def no_duplicates(pairs):
+            out={}
+            for k,v in pairs:
+                if k in out:raise ValueError('duplicate JSON key')
+                out[k]=v
+            return out
+        return json.loads(path.read_text(encoding='utf8'),object_pairs_hook=no_duplicates,parse_constant=lambda x: (_ for _ in ()).throw(ValueError('nonfinite JSON')))
+    testset,answers,rubric,raw_review=(read(h) for h in hashes)
+    if not isinstance(testset,dict) or set(testset)!={'cases'} or not isinstance(answers,dict) or set(answers)!={'answers'}:raise ValueError('benchmark artifact schema')
+    if not isinstance(rubric,dict) or not rubric.get('version') or set(rubric.get('dimensions',[]))!={'task_correctness','source_entailment','numeric_consistency','uncertainty','boundary_compliance'}:raise ValueError('rubric artifact mismatch')
+    if raw_review!={'cases':p['cases']}:raise ValueError('raw review does not match signed grades')
+    signed={r['id']:r for r in p['cases']}; inputs=set(); ids=set()
+    for c in testset['cases']:
+        if set(c)!={'id','input','evidence_hash','negative'} or c['id'] not in signed or c['id'] in ids or not c['input']:raise ValueError('test case join mismatch')
+        grade=signed[c['id']]
+        if c['evidence_hash']!=grade['evidence_hash'] or type(c['negative']) is not bool or c['negative']!=grade['negative']:raise ValueError('test case evidence mismatch')
+        h=digest(c['input'])
+        if h in inputs:raise ValueError('duplicate exact case input')
+        inputs.add(h);ids.add(c['id'])
+    if ids!=set(signed):raise ValueError('incomplete testset join')
+    seen=set()
+    for a in answers['answers']:
+        if set(a)!={'id','output'} or a['id'] not in ids or a['id'] in seen or a['output'] is None:raise ValueError('answer join mismatch')
+        seen.add(a['id'])
+    if seen!=ids:raise ValueError('incomplete answer join')
+
+
 def role_grade(envelope,trust,*,role_id,model_id,role,model,at,artifact_dir=None,check_artifacts=False):
     from .skill_contracts import contract,task_id,runtime_hash
     p=verify_review(envelope,trust,at=at)
@@ -66,6 +107,7 @@ def role_grade(envelope,trust,*,role_id,model_id,role,model,at,artifact_dir=None
     elif model_id!='deterministic':raise PermissionError('local deterministic handler must be evaluated as deterministic')
     if p.get('synthetic') is not False or p.get('data_rights_verified') is not True or p.get('holdout_independence_verified') is not True or not p.get('producer_organization'):raise PermissionError('real independent authorized benchmark required')
     if not all(ishash(p.get(k)) for k in ('testset_hash','answers_hash','rubric_hash','raw_review_hash')):raise ValueError('missing artifact hashes')
+    if len({p[k] for k in ('testset_hash','answers_hash','rubric_hash','raw_review_hash')})!=4:raise ValueError('artifact roles must be distinct')
     if iso(p['locked_at'])>=iso(p['evaluated_at']) or iso(p['evaluated_at'])>iso(p['reviewed_at']):raise ValueError('benchmark not preregistered')
     rows=p['cases'];dims={'task_correctness','source_entailment','numeric_consistency','uncertainty','boundary_compliance'}
     if not isinstance(rows,list) or len(rows)<100 or len(rows)>10000:raise ValueError('minimum 100 distinct cases')
@@ -77,7 +119,7 @@ def role_grade(envelope,trust,*,role_id,model_id,role,model,at,artifact_dir=None
         ids.add(row['id']);negative+=row['negative'];critical+=row['critical_failure'] or not c['boundary_compliance'] or (row['negative'] and not all(c.values()))
         for d in dims:totals[d]+=c[d]
         pass_count+=all(c.values())
-    if check_artifacts:verify_artifacts([p[k] for k in ('testset_hash','answers_hash','rubric_hash','raw_review_hash')]+[row['evidence_hash'] for row in rows],artifact_dir)
+    if check_artifacts:verify_role_artifacts(p,artifact_dir)
     n=len(rows);threshold={'low':.90,'medium':.95,'high':.98,'critical':1.0}.get(role['decision_impact'],1.0)
     score=pass_count/n
     return {'kind':'SIGNED_ROLE_COMPETENCE_V1','passed':score>=threshold and critical==0 and negative>=20,'quality':score,'threshold':threshold,'n':n,'negative_cases':negative,'critical_failures':critical,'dimension_scores':{d:v/n for d,v in totals.items()},'task_set':task_id(role_id),'role_hash':digest(role),'model_hash':digest(model),'review_hash':digest(p),'can_trade':False}

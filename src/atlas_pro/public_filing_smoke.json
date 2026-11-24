@@ -1,0 +1,84 @@
+{
+  "kind": "manually transcribed public facts; development only; NOT independent holdout",
+  "source": "SEC EDGAR 10-Ks and filing detail pages checked 2026-11-23",
+  "issuers": [
+    {
+      "name": "Apple",
+      "cik": 320193,
+      "filings": [
+        {
+          "year": 2025,
+          "accession": "0000320193-25-000079",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+          "filing_detail_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/0000320193-25-000079-index.html",
+          "start": "2024-09-29",
+          "end": "2025-09-27",
+          "filing_date": "2025-10-31",
+          "revenue_usd_millions": 416161
+        },
+        {
+          "year": 2026,
+          "accession": "0000320193-26-000026",
+          "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm",
+          "filing_detail_url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/0000320193-26-000026-index.html",
+          "start": "2025-09-28",
+          "end": "2026-09-26",
+          "filing_date": "2026-11-03",
+          "revenue_usd_millions": 478834
+        }
+      ]
+    },
+    {
+      "name": "Microsoft",
+      "cik": 789019,
+      "filings": [
+        {
+          "year": 2025,
+          "accession": "0000950170-25-100235",
+          "url": "https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/msft-20250630.htm",
+          "filing_detail_url": "https://www.sec.gov/Archives/edgar/data/789019/000095017025100235/0000950170-25-100235-index.html",
+          "start": "2024-07-01",
+          "end": "2025-06-30",
+          "filing_date": "2025-07-30",
+          "revenue_usd_millions": 281724
+        },
+        {
+          "year": 2026,
+          "accession": "0001193125-26-323660",
+          "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm",
+          "filing_detail_url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/0001193125-26-323660-index.html",
+          "start": "2025-07-01",
+          "end": "2026-06-30",
+          "filing_date": "2026-07-29",
+          "revenue_usd_millions": 331839
+        }
+      ]
+    },
+    {
+      "name": "NVIDIA",
+      "cik": 1045810,
+      "filings": [
+        {
+          "year": 2025,
+          "accession": "0001045810-25-000023",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/nvda-20250126.htm",
+          "filing_detail_url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581025000023/0001045810-25-000023-index.html",
+          "start": "2024-01-29",
+          "end": "2025-01-26",
+          "filing_date": "2025-02-26",
+          "revenue_usd_millions": 130497
+        },
+        {
+          "year": 2026,
+          "accession": "0001045810-26-000021",
+          "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+          "filing_detail_url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/0001045810-26-000021-index.html",
+          "start": "2025-01-27",
+          "end": "2026-01-25",
+          "filing_date": "2026-02-25",
+          "revenue_usd_millions": 215938
+        }
+      ]
+    }
+  ]
+}
