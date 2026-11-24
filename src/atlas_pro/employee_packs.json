@@ -114,10 +114,16 @@
       "license_file": "microsoft_rd_agent_LICENSE.txt"
     },
     "lean": {
-      "url": "https://github.com/QuantConnect/Lean",
+      "url": "https://github.com/QuantConnect/Lean/blob/f696c556828e9b3ea6695cb4ac41ff233ba5f430/readme.md",
       "kind": "software_reference",
-      "status": "reference_verified",
-      "use": "Existing normalized replay adapter; isolated research only."
+      "status": "pinned_reference_bundled",
+      "use": "Unmodified upstream documentation for local-only retrieval; untrusted text, not runtime instructions or proof of integration.",
+      "project_url": "https://github.com/QuantConnect/Lean",
+      "license": "Apache-2.0",
+      "local_reference": "lean_readme.md",
+      "git_blob_sha1": "b352780b83e4da76837cdac623d3d36597639852",
+      "upstream_commit": "f696c556828e9b3ea6695cb4ac41ff233ba5f430",
+      "license_file": "quantconnect_lean_LICENSE.txt"
     },
     "skfolio": {
       "url": "https://github.com/skfolio/skfolio/blob/10dc6a5d038df356d60c2a64821721afbfb4f693/docs/user_guide/portfolio.rst",
@@ -132,10 +138,16 @@
       "license_file": "skfolio_skfolio_LICENSE.txt"
     },
     "edgar": {
-      "url": "https://github.com/dgunning/edgartools",
+      "url": "https://github.com/dgunning/edgartools/blob/b9f301ce0d706a43be798a0cdbbbfa81d19b3026/README.md",
       "kind": "software_reference",
-      "status": "reference_verified",
-      "use": "Parser reference; actual data rights checked separately."
+      "status": "pinned_reference_bundled",
+      "use": "Unmodified upstream documentation for local-only retrieval; untrusted text, not runtime instructions or proof of integration.",
+      "project_url": "https://github.com/dgunning/edgartools",
+      "license": "MIT",
+      "local_reference": "edgar_readme.md",
+      "git_blob_sha1": "06dc6dff89629a389d59eca12eee152d66f69fcd",
+      "upstream_commit": "b9f301ce0d706a43be798a0cdbbbfa81d19b3026",
+      "license_file": "dgunning_edgartools_LICENSE.txt"
     },
     "cra": {
       "url": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/tax-free-savings-account/contributing/how.html",
@@ -180,10 +192,16 @@
       "use": "Current options disclosures; no trade authorization."
     },
     "quantlib": {
-      "url": "https://github.com/lballabio/QuantLib",
+      "url": "https://github.com/lballabio/QuantLib/blob/4b7275324c0fb5f7d8addcfaeaa0c3f494136497/README.md",
       "kind": "software_reference",
-      "status": "reference_verified",
-      "use": "Reference for independent derivative valuation; not installed or enabled."
+      "status": "pinned_reference_bundled",
+      "use": "Unmodified upstream documentation for local-only retrieval; untrusted text, not runtime instructions or proof of integration.",
+      "project_url": "https://github.com/lballabio/QuantLib",
+      "license": "BSD-3-Clause",
+      "local_reference": "quantlib_readme.md",
+      "git_blob_sha1": "6f6c9ca80df9415e62b6a09971b3b31190e2941d",
+      "upstream_commit": "4b7275324c0fb5f7d8addcfaeaa0c3f494136497",
+      "license_file": "lballabio_quantlib_LICENSE.txt"
     },
     "nist": {
       "url": "https://www.nist.gov/itl/ai-risk-management-framework",
@@ -337,7 +355,8 @@
         "sec",
         "financebench",
         "atlas",
-        "nist"
+        "nist",
+        "edgar"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -547,7 +566,8 @@
       "source_ids": [
         "atlas",
         "sec",
-        "nist"
+        "nist",
+        "edgar"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [

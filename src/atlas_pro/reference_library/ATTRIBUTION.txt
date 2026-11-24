@@ -9,3 +9,7 @@ qlib_workflow.rst: microsoft/qlib@54355232463878d2eebb91fe0ee5fa7fa1f5976c/docs/
 rd_model.rst: microsoft/RD-Agent@484776c211e4fbbeef03e0ec00d6bbee7362a4f4/docs/scens/model_agent_fin.rst; MIT; see microsoft_rd_agent_LICENSE.txt
 skfolio_portfolio.rst: skfolio/skfolio@10dc6a5d038df356d60c2a64821721afbfb4f693/docs/user_guide/portfolio.rst; BSD-3-Clause; see skfolio_skfolio_LICENSE.txt
 skfolio_backtest.rst: skfolio/skfolio@10dc6a5d038df356d60c2a64821721afbfb4f693/docs/user_guide/backtesting_and_evaluation.rst; BSD-3-Clause; see skfolio_skfolio_LICENSE.txt
+
+lean_readme.md: QuantConnect/Lean@f696c556828e9b3ea6695cb4ac41ff233ba5f430/readme.md; Apache-2.0; see quantconnect_lean_LICENSE.txt
+quantlib_readme.md: lballabio/QuantLib@4b7275324c0fb5f7d8addcfaeaa0c3f494136497/README.md; BSD-3-Clause; see lballabio_quantlib_LICENSE.txt
+edgar_readme.md: dgunning/edgartools@b9f301ce0d706a43be798a0cdbbbfa81d19b3026/README.md; MIT; see dgunning_edgartools_LICENSE.txt
