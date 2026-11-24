@@ -66,3 +66,23 @@ jobs:
           assert all(v['n_predictions']>0 for v in r['models'].values())
           print('network-isolated OCI training passed; synthetic research only')
           PYCODE
+
+  public-empirical-reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[market_calendar,test,empirical]'
+      - run: python -m pytest -q tests/test_evidence_recomputation.py
+      - run: python -m atlas_pro.public_empirical --output "$RUNNER_TEMP/atlas-empirical.json" > /dev/null
+      - run: |
+          python - "$RUNNER_TEMP/atlas-empirical.json" <<'PYCODE'
+          import json, sys
+          r=json.load(open(sys.argv[1]))
+          assert r['macro']['observations']==203 and r['industrial_panel']['observations']==220
+          assert r['macro']['true_pit'] is False and r['can_trade'] is False
+          print('public real-data developer reference passed; no alpha claim')
+          PYCODE

@@ -80,3 +80,7 @@ python -m pytest -q
 ## Developer acceptance (0.11.0)
 
 Run `python -m atlas_pro.public_acceptance` for a small developer-visible public filing fact check and 500 generated RAG boundary cases. The role review importer now verifies distinct JSON benchmark artifacts and exact case/answer/evidence joins. L6 checks elapsed exchange sessions; `atlas_pro.trial_registry.TrialRegistry` records preregistered trials including failures and blocks reuse of stable holdout IDs. See [Developer Acceptance and Evidence](docs/0.11.0%20Developer%20Acceptance%20and%20Evidence.md). These developer tests are not independent skill or investment certification. The current L6 result remains `L6_NOT_VERIFIED`.
+
+### 0.12 evidence recomputation (research-only)
+
+See [Evidence Recalculation and Public Benchmarks](docs/0.12.0%20Evidence%20Recalculation%20and%20Public%20Benchmarks.md). G3 and performance gates now independently recompute machine-verifiable metrics from joined artifacts. The public-data reference experiments use actual macro/industrial data, but are not historical PIT stock-return experiments or evidence of investment performance. `atlas-empirical` and the optional, rights-gated `atlas-financebench-reference` are developer benchmarks, not L6 certification. No live trading.

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "atlas-investment-os-research"
-version = "0.11.0"
+version = "0.12.0"
 description = "Research-only investment data and governance prototype; NO live trading"
 requires-python = ">=3.11"
 dependencies = ["cryptography>=43,<47"]
@@ -17,6 +17,7 @@ quant = ["numpy>=1.26,<3", "scipy>=1.12,<2"]
 ml = ["numpy>=1.26,<3", "scipy>=1.12,<2", "scikit-learn>=1.6,<2"]
 warehouse = ["duckdb>=1.3,<2", "qdrant-client>=1.14,<2"]
 pdf = ["docling>=2,<3"]
+empirical = ["statsmodels>=0.14,<1", "pandas>=2,<4", "scikit-learn>=1.6,<2", "numpy>=1.26,<3", "scipy>=1.12,<2"]
 risk_crosscheck = ["skfolio>=0.10,<1", "pandas>=2,<4"]
 
 [project.scripts]
@@ -32,6 +33,8 @@ atlas-bench = "atlas_pro.bench_runner:main"
 atlas-role-review = "atlas_pro.role_review_cli:main"
 atlas-l6 = "atlas_pro.l6_acceptance:main"
 atlas-public-audit = "atlas_pro.public_acceptance:main"
+atlas-empirical = "atlas_pro.public_empirical:main"
+atlas-financebench-reference = "atlas_pro.financebench_reference:main"
 
 [tool.setuptools]
 py-modules = ["atlas_policy_router"]

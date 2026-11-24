@@ -36,14 +36,8 @@ def validate_period(gate,p):
         if metrics[key]>(end-start).total_seconds()/(365*86400):raise ValueError('claimed years exceed evidence interval')
     key={'G6_operational':'prospective_paper_sessions','G9_forward_performance':'prospective_sessions','G10_live_evidence':'independently_verified_live_sessions'}.get(gate)
     if key:
-        import exchange_calendars as xc
-        from zoneinfo import ZoneInfo
-        et=ZoneInfo('America/New_York')
-        start_date=start.astimezone(et).date().isoformat();end_date=end.astimezone(et).date().isoformat()
-        cal=xc.get_calendar('XNYS',start=start_date,end=end_date)
-        # Count only fully elapsed sessions in the submitted period.
-        sessions=cal.sessions_in_range(start_date,end_date)
-        possible=sum(cal.session_open(d).to_pydatetime()>=start and cal.session_close(d).to_pydatetime()<=end for d in sessions)
+        from .performance_evidence import full_session_closes
+        possible=len(full_session_closes(p['period_start'],p['period_end']))
         if metrics[key]>possible:raise ValueError('claimed sessions exceed elapsed exchange sessions')
 
 
@@ -72,9 +66,15 @@ def evaluate(reviews,trust,*,at,release_hash,mandate_hash,role_contract_hash,rol
                         mid=review['payload']['model_id'];r=role_grade(review,trust,role_id=rid,model_id=mid,role=roles[rid],model=models[mid],at=at,artifact_dir=artifact_dir,check_artifacts=True)
                         if r['passed'] is not True or r['n']<metrics['distinct_holdout_cases_per_role']:reasons.append('role_failed:'+rid)
                         if not iso(p['period_start'])<=iso(review['payload']['evaluated_at'])<=iso(p['period_end']):reasons.append('role_outside_evidence_period:'+rid)
+            if gate=='G3_rag' and not reasons:
+                from .rag_evidence import check_rag_metrics
+                reasons.extend(check_rag_metrics(p,artifact_dir))
             if gate in ('G4_research','G9_forward_performance','G10_live_evidence'):
                 provenance=[p.get(k) for k in ('benchmark_hash','cost_model_hash','trial_registry_hash','returns_hash')]
                 if not all(ishash(h) for h in provenance) or len(set(provenance))!=4 or not set(provenance).issubset(p['artifact_hashes']):reasons.append('performance_provenance')
+                elif not reasons:
+                    from .performance_evidence import check_signed_metrics
+                    reasons.extend(check_signed_metrics(p,artifact_dir,gate=gate))
             results[gate]={'status':'REVIEWED_THRESHOLDS_MET' if not reasons else 'BLOCKED','reasons':reasons,'review_hash':digest(p)};passed+=not reasons
         except (ValueError,TypeError,PermissionError,KeyError,AttributeError,ImportError,OverflowError,OSError,IndexError) as e:results[gate]={'status':'BLOCKED','reasons':[str(e)]}
     research_ready=all(results[g]['status']=='REVIEWED_THRESHOLDS_MET' for g in GATES if g!='G10_live_evidence')
