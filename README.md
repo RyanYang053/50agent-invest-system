@@ -1,11 +1,11 @@
-# Atlas Investment OS — research and controlled paper pilot 0.5.0
+# Atlas Investment OS — research and controlled paper pilot 0.6.0
 
 A local-first investment research system with 50 logical specialist roles and 21 event routes. **No live order submission or AI modification of owner risk policy.** Separate operator-only paper pilot; no Agent can send orders. The existing IBKR-Agent-harness is not modified.
 
 ## Quick start (from repository checkout)
 
 ```bash
-python -m pip install -e '.[market_calendar,test]'
+python -m pip install -e '.[market_calendar,test,quant]'
 python -m pytest -q
 python -m atlas_pro
 ```
@@ -39,3 +39,7 @@ python -m atlas_pro.paper_replay
 The offline replay uses fictional prices and a fictional instrument. For a dedicated Alpaca paper account, follow [Paper Pilot Runbook](docs/0.5.0%20Paper%20Pilot%20Runbook.md). The paper gateway is disarmed by default, fixed to the Alpaca paper host, and requires a locally confirmed policy, dedicated paper keys, account ID match, cash-only limits, and explicit operator approval for every order. IBKR remains read-only. Do not use real brokerage credentials, commit private files, or register the paper gateway as a model tool.
 
 The broker paper adapter has been tested against provider-shaped fixtures, not an authenticated broker session. No actual simulated broker orders have been sent. Research WAIT decisions are not automatically converted to orders.
+
+## Open-source-informed research workflow (0.6)
+
+See [Open Source Fusion](docs/0.6.0%20Open%20Source%20Fusion.md) for the executable research packet workflow, upstream integration catalog, 50-role coverage map, exact evidence lookup, sector ranking, independent cash-equity risk, optional SciPy CVaR optimization, locked RAG evaluation and external experiment result contract. `atlas-workflow` is research-only and always waits rather than emitting orders. External Qlib, RD-Agent, LEAN, Docling, skfolio and other engines are not installed or certified by this release. Existing paper pilot is unchanged and requires explicit operator consent per order.

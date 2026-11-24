@@ -18,7 +18,7 @@ def grade_locked(cases, responses, *, expected_hash, minimum_quality=.95, min_ca
     results=[]
     for c in cases:
         if c.get('evaluation_rights_verified') is not True:raise PermissionError('UNAUTHORIZED_EVALUATION_DATA')
-        a=responses.get(c['case_id']); valid=False; critical=False
+        a=responses.get(c['case_id']); valid=False; critical=c.get('must_abstain') is True
         if isinstance(a,dict):
             cited=a.get('evidence_ids'); allowed=set(c['allowed_evidence_ids'])
             citation_ok=isinstance(cited,list) and all(isinstance(x,str) and x in allowed for x in cited) and bool(cited)

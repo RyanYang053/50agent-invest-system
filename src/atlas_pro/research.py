@@ -195,7 +195,7 @@ def screen(snapshot, market, *, at):
     score=100*sum(weights[k]*v for k,v in components.items())
     return {'status':'CANDIDATE','cik':snapshot['cik'],'symbol':market['symbol'],'score':round(score,4),
         'components':components,'metrics':{'operating_margin':op/rev,'fcf_margin':fcf/rev,'roe':ni/eq,'revenue_growth':growth,'fcf_yield':fcf/market_cap,'net_debt':net_debt},
-        'price_basis':market.get('price_basis','unspecified'),'financial_period':snapshot['period_end'],
+        'price':price,'price_asof':iso(market['price_asof']).isoformat(),'available_at':iso(market['available_at']).isoformat(),'price_basis':market.get('price_basis','unspecified'),'financial_period':snapshot['period_end'],
         'fundamental_evidence_ids':[digest(v) for v in snapshot['sources'].values()],
         'market_evidence_ids':market['evidence_ids'],'action':'RESEARCH_ONLY','can_trade':False,
         'limitations':['annual US GAAP; no TTM or sector normalization','heuristic weights not validated for alpha','no full debt/lease or dilution adjustment; not a buy signal']}

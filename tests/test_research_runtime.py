@@ -246,3 +246,18 @@ def test_locked_eval_critical_citation_error():
     c=[{'case_id':'1','expected_values':{'x':10},'allowed_evidence_ids':['e'],'evaluation_rights_verified':True,'synthetic':False}]
     r=grade_locked(c,{'1':{'values':{'x':10},'abstain':False,'evidence_ids':['fake']}},expected_hash=digest(c),min_cases=1)
     assert r['quality']==0 and r['critical_failures']==1 and not r['eligible_for_external_review']
+
+def test_fusion_workflow_resumes_on_independent_artifacts(issuer,market,assumptions,scenarios,tmp_path):
+    from atlas_pro.workflow import run_packet
+    from atlas_pro.committee import Committee
+    from test_fusion import snapshot as portfolio_snapshot, returns, stress, LIMITS, CLUSTERS
+    l=EvidenceLedger(tmp_path/'ev');idx=ResearchIndex(tmp_path/'rag');c=Committee(tmp_path/'committee')
+    screen_result=run_screen([{'symbol':'TEST','cik':1,'security_type':'common_equity','sector_class':'operating_company'}],client=FakeSEC(issuer),ledger=l,index=idx,policy=PUBLIC,at=NOW,received_at=NOW,quotes=fake_quotes(quote()))
+    candidate=screen_result['candidates'][0]
+    m=market|{'evidence_ids':candidate['market_evidence_ids'],'price_asof':NOW,'shares_asof':'2026-11-18T00:00:00Z'}
+    p={'cik':1,'decision_at':NOW,'strategy_version':'fixture','policy':{'status':'ACTIVE_APPROVED','owner_approval':{'approved':True},'limits':LIMITS},'fundamental_ids':candidate['fundamental_evidence_ids'],'market':m,'assumptions':{'bear':assumptions|{'growth':[.02]*5},'base':assumptions,'bull':assumptions|{'growth':[.15]*5}},'terminal_scenarios':scenarios,'benchmark_return':.08,'portfolio':portfolio_snapshot(),'target_weights':{'A':.3,'B':.2,'CASH':.5},'aligned_returns':returns(),'clusters':CLUSTERS,'stress_scenarios':stress()}
+    r=run_packet(c,l,p);assert r['stage']=='bull' and r['status']=='BLOCKED_MISSING_HANDLER'
+    memos={s:{'status':'RESEARCH_MEMO','researcher_id':s,'claim':'fixture claim','evidence_ids':[p['fundamental_ids'][0]],'can_trade':False} for s in ('bull','bear')}
+    r=run_packet(c,l,p,attachments=memos);assert r['stage']=='verification'
+    prior=c.state(r['run_id'])[1];review={'status':'VERIFIED','reviewer_id':'independent fixture','claims_verified':True,'reviewed_hashes':{s:digest(prior[s]) for s in ('fundamental','valuation','bull','bear')},'can_trade':False}
+    r=run_packet(c,l,p,attachments=memos|{'verification':review});assert r['status']=='COMPLETE_RESEARCH_ONLY' and r['decision']['decision']=='WAIT' and len(r['completed_stages'])==10

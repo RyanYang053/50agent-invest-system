@@ -127,6 +127,24 @@ class EvidenceLedger:
             rows=c.execute(q,params).fetchall()
         return [dict(row)|{'payload':json.loads(row['payload_json'])} for row in rows]
 
+    def resolve_ids(self, record_ids, *, security_id, decision_at, include_private=False):
+        """Exact evidence lookup, not a recent-row window; verify hash and PIT scope."""
+        if not isinstance(record_ids,list) or not 1<=len(record_ids)<=200 or any(not isinstance(x,str) or not x for x in record_ids) or len(set(record_ids))!=len(record_ids):
+            raise ValueError('invalid evidence IDs')
+        cutoff=iso(decision_at).isoformat()
+        with self._db() as c:
+            rows=c.execute('SELECT * FROM evidence WHERE record_id IN ('+','.join('?' for _ in record_ids)+')',record_ids).fetchall()
+        if len(rows)!=len(record_ids):raise ValueError('missing evidence')
+        out={}
+        for r in rows:
+            if r['security_id']!=security_id or r['available_at']>cutoff or (not include_private and r['data_class']!='public'):
+                raise ValueError('evidence identity, time or scope mismatch')
+            obj={k:r[k] for k in ('record_id','source_id','document_id','security_id','observed_at','published_at','available_at','data_class','license_id')}
+            obj['payload']=json.loads(r['payload_json']);obj['revision_of']=r['revision_of']
+            if digest(obj)!=r['payload_sha256']:raise ValueError('evidence integrity failure')
+            out[r['record_id']]=dict(r)|{'payload':obj['payload']}
+        return [out[k] for k in record_ids]
+
     def verify_chain(self) -> bool:
         prev='GENESIS'
         with self._db() as c:
