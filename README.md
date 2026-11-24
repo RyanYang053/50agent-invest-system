@@ -1,113 +1,131 @@
-# Atlas Investment OS — research and controlled paper pilot 0.9.0
+<p align="center">
+  <img src="docs/assets/banner.svg" alt="Atlas Investment OS — 50 specialist roles • Evidence-first research • Human control" width="100%">
+</p>
 
-A local-first investment research system with 50 logical specialist roles and 21 event routes. **No live order submission or AI modification of owner risk policy.** Separate operator-only paper pilot; no Agent can send orders. The existing IBKR-Agent-harness is not modified.
+# Atlas Investment OS
 
-## Quick start (from repository checkout)
+[English](README.md) · [简体中文](README.zh-CN.md)
+
+**50 specialist roles. One auditable investment research workflow.**
+
+Local-first research, valuation, quantitative analysis, risk and governance. The 50 roles are registered logical specialists, not 50 continuously running LLMs.
+
+[Try the demo](#try-the-demo) · [Quick start](#quick-start) · [Documentation](#documentation) · [Roadmap](ROADMAP.md) · [FAQ](FAQ.md) · [Contribute](CONTRIBUTING.md)
+
+[![CI](https://github.com/RyanYang053/50agent-invest-system/actions/workflows/ci.yml/badge.svg)](https://github.com/RyanYang053/50agent-invest-system/actions/workflows/ci.yml)
+![Research only](https://img.shields.io/badge/live%20orders-disabled-555)
+
+[![Stars](https://img.shields.io/github/stars/RyanYang053/50agent-invest-system?style=flat)](https://github.com/RyanYang053/50agent-invest-system/stargazers) [![Forks](https://img.shields.io/github/forks/RyanYang053/50agent-invest-system?style=flat)](https://github.com/RyanYang053/50agent-invest-system/forks)
+[![Demo build](https://github.com/RyanYang053/50agent-invest-system/actions/workflows/public-demo.yml/badge.svg)](https://github.com/RyanYang053/50agent-invest-system/actions/workflows/public-demo.yml) [![Issues](https://img.shields.io/github/issues/RyanYang053/50agent-invest-system)](https://github.com/RyanYang053/50agent-invest-system/issues) [![Contributions](https://img.shields.io/badge/contributions-welcome-27845d)](CONTRIBUTING.md)
+
+## Try the demo
+
+No personal portfolio, API key or live brokerage session is needed. [Open the public demo workflow](https://github.com/RyanYang053/50agent-invest-system/actions/workflows/public-demo.yml), select a successful run from the branch you want to inspect, download its preview artifact (HTML and PNGs), unzip it and open `atlas-demo.html`. GitHub may require sign-in to download an artifact; artifacts expire. The source-checkout commands below work independently of GitHub artifact availability.
+
+The demo is generated from fixture data, not a marketing mock-up, live market quote or financial performance claim.
+
+## Quick start
+
+```bash
+git clone https://github.com/RyanYang053/50agent-invest-system.git
+cd 50agent-invest-system
+python -m venv .venv
+```
+
+Activate with `source .venv/bin/activate` on macOS/Linux or `.venv\Scripts\Activate.ps1` in PowerShell.
 
 ```bash
 python -m pip install -e '.[market_calendar,test,quant,ml]'
-python -m pytest -q
+python scripts/demo.py --output atlas-demo.html
+```
+
+Open the generated HTML file locally. The report runs the actual offline integration smoke and displays the role manifest. No broker or paid model calls; not a live agent trace.
+
+## What you can do
+
+| Area | Capabilities |
+| --- | --- |
+| Evidence | Point-in-time SEC normalization, source licensing and scoped retrieval |
+| Valuation | FCFF DCF, reverse DCF, scenarios and conditional Kelly |
+| Quant | Rolling training, fixed experiments and risk challengers |
+| Workflow | Role-specific tasks, event routing, reviewed skills and private memory namespaces |
+| Governance | Fail-closed checks and operator approval |
+
+```mermaid
+flowchart TD
+ E[Licensed evidence] --> R[Scoped retrieval]
+ R --> T[Specialist roles]
+ T --> Q[Deterministic valuation and risk]
+ Q --> G[Policy and evidence checks]
+ G --> O[Research output / wait]
+ H[Human operator] --> P[Separate paper pilot]
+```
+
+## Explore the roles
+
+**50 roles across 10 teams.** See the [complete role catalog](docs/ROLE_CATALOG.md) for each role's scope, deliverable and review status.
+
+| Team | Roles |
+| --- | ---: |
+| CIO & Governance | 5 |
+| Financial Data Intelligence | 5 |
+| Fundamental Research | 5 |
+| Valuation Research | 5 |
+| Investor Wisdom Council | 5 |
+| Macro & Market Intelligence | 5 |
+| Quantitative Research | 5 |
+| Portfolio and Risk | 5 |
+| Trade Operations | 5 |
+| Independent Audit and Learning | 5 |
+
+```bash
+atlas-core catalog --roles "config/50 agent manifest.json"
+atlas-core readiness
 python -m atlas_pro
-```
-
-The demo and tests are offline and use synthetic data or provider-shaped fixtures. They are not proof of profitability, live data coverage or model accuracy.
-
-## Research capabilities
-
-- Point-in-time SEC annual financial normalization using accession and filing acceptance timestamps, evidence ledger, source licensing, FTS5 retrieval, optional local pinned embedding integration.
-- User-supplied stock universe (1–100 securities), fundamental and valuation screening with missing-data refusal; optional Alpaca IEX research quotes and SEC outstanding share extraction.
-- FCFF DCF, reverse DCF, scenario returns, conditional Kelly, conservative decision grid; no trade permission.
-- Model execution adapters for OpenAI, DeepSeek and Anthropic, with explicit opt-in, certification, scope and token/budget limits, citation membership checks, and role-scoped registered tool interface.
-- Durable event leases, scheduled tick/worker reference implementation, forecast journal, Brier calibration, locked evaluation and PIT return-interval replay.
-
-## Stock screening
-
-```bash
-atlas-screen 'config/universe example.json' --data-dir /path/to/private/data --policy /path/to/private/sec-policy.json --alpaca-policy /path/to/private/alpaca-policy.json
-```
-
-Copy the policy examples to a private directory and confirm actual usage rights before enabling permissions. Configure `SEC_USER_AGENT` with a legitimate contact identity and the Alpaca credentials locally. IEX is a partial-market research feed, not an execution quote. The sample universe provides identifiers, not investment recommendations. Missing eligible price/share evidence means no candidate. Do not commit credentials or local databases. No real API request was made for this release's offline verification.
-
-See [engineering review](docs/0.4.0%20Engineering%20Review.md) for model selection, tool coverage, limitations, acceptance gates and deployment sequence. Earlier architecture and verification reports remain historical records, not current live readiness claims.
-
-## Controlled paper pilot
-
-```bash
 python -m atlas_pro.paper_replay
 ```
 
-The offline replay uses fictional prices and a fictional instrument. For a dedicated Alpaca paper account, follow [Paper Pilot Runbook](docs/0.5.0%20Paper%20Pilot%20Runbook.md). The paper gateway is disarmed by default, fixed to the Alpaca paper host, and requires a locally confirmed policy, dedicated paper keys, account ID match, cash-only limits, and explicit operator approval for every order. IBKR remains read-only. Do not use real brokerage credentials, commit private files, or register the paper gateway as a model tool.
+- [Role manifest](config/50%20agent%20manifest.json)
+- [Capability packs](docs/0.18.0%20Employee%20Capability%20Packs.md)
+- [Architecture and operations](docs/Architecture%20and%20Operations.md)
+- [Verification report](docs/Current%20Verification%20Report.md)
+- [Paper pilot](docs/0.5.0%20Paper%20Pilot%20Runbook.md)
+- [Macro source refresh](docs/0.20%20Macro%20Source%20Refresh.md)
 
-The broker paper adapter has been tested against provider-shaped fixtures, not an authenticated broker session. No actual simulated broker orders have been sent. Research WAIT decisions are not automatically converted to orders.
+Research prototype: no live order submission. Paper pilot is separate, disarmed by default and operator-only. Offline fixtures do not prove returns, independent role competence, real-provider readiness or professional certification.
 
-## Open-source-informed research workflow (0.6)
-
-See [Open Source Fusion](docs/0.6.0%20Open%20Source%20Fusion.md) for the executable research packet workflow, upstream integration catalog, 50-role coverage map, exact evidence lookup, sector ranking, independent cash-equity risk, optional SciPy CVaR optimization, locked RAG evaluation and external experiment result contract. `atlas-workflow` is research-only and always waits rather than emitting orders. External Qlib, RD-Agent, LEAN, Docling, skfolio and other engines are not installed or certified by this release. Existing paper pilot is unchanged and requires explicit operator consent per order.
-
-## Open-source adapters and financial research hardening (0.6.1)
-
-See [External Engine Integration](docs/0.6.1%20External%20Engine%20Integration.md). `atlas-screen --basis ttm` selects a strict SEC fiscal YTD bridge; annual remains default. `atlas-oss` accepts hash-pinned, operator-prepared normalized research artifacts only. Optional `warehouse`, `pdf` and `risk_crosscheck` extras do not turn on any network or execution permissions. Core tests do not require external engines. GitHub optional integration jobs install DuckDB/Qdrant and skfolio to run actual library tests. No external broker, model or dataset performance has been demonstrated.
-
-## Prospective research core (0.7.0)
-
-See [Core Loop and Acceptance](docs/0.7.0%20Core%20Loop%20and%20Acceptance.md) for `atlas-shadow`, licensed Tiingo EOD proxy ingestion, immutable benchmarked research experiments, hypothesis scoring and independent comparison. `atlas-certify` regrades external locked model cases; the fixed real model transport requires measured certificates and current billing time. Both new CLIs are research-only. No actual brokerage or paid model session has been validated, and the separate paper gateway remains operator-only.
-
-## 0.8 offline deployment and quant baseline
-
-Actual scikit-learn rolling training and shared-evidence shadow batch runner. See [0.8 deployment runbook](docs/0.8.0%20Deployment%20and%20Quant%20Baseline.md). Docker isolation is tested separately in CI; locally the trusted synthetic learner ran with a network namespace, not Docker. No actual market-data, paid model or paper/live broker acceptance.
-
-## 0.9 role execution, data research batches and account risk
-
-See [Core Runtime Acceptance](docs/0.9.0%20Core%20Runtime%20Acceptance.md). `atlas-core catalog` lists 50 explicit role task routes (29 public model tasks, 21 local computation or refusal/check tasks). `atlas-core screen-research` runs the bounded SEC/Alpaca screen and public research batch, optionally indexing recent primary SEC filings and rights-cleared macro series. `atlas-core run-role` runs a specific task using explicit local inputs. `atlas-bench` can execute a precommitted numeric evaluation with separate explicit spending permission; it does not qualify broader role competence or automatically certify models. Four provider protocol adapters exist; none has been exercised against a paid external API here. Independent multi-account risk diagnostics use supplied FX, ETF decomposition, option metadata, account reconciliation and stress shocks; they are not IBKR margin predictions. No real or external paper order was sent. All actual investment decisions and execution remain gated.
+## Verification
 
 ```bash
-atlas-core readiness
-atlas-core catalog --roles 'config/50 agent manifest.json'
 python -m pytest -q
 ```
 
-## 0.10: independent capability and L6 review (not certified)
+See [engineering reference](ENGINEERING.md) for the preserved previous technical documentation, [launch gates](docs/LAUNCH.md) and [license status](LICENSING.md).
 
-All 50 role skill contracts are packaged in `src/atlas_pro/role_skills.json`. The specialized runtime binds the role, task and model to reviewed skill versions. Generic numeric evaluations do not certify professional roles. See `docs/0.10.0 L6 Research Acceptance.md` for the full role audit, signed-review interface and proposed ten-gate rubric. No claim of L6 investment skill or live permission is made.
+## Documentation
 
-```bash
-python -m atlas_pro.core_service catalog --roles 'config/50 agent manifest.json'
-python -m pytest -q
-```
+| Resource | Start here |
+| --- | --- |
+| First use | [Quick start](#quick-start) |
+| Technical detail | [Engineering reference](ENGINEERING.md) · [50-role catalog](docs/ROLE_CATALOG.md) |
+| Frequently asked questions | [FAQ](FAQ.md) |
+| Current plans and gaps | [Roadmap](ROADMAP.md) · [Vision](VISION.md) |
+| Changes | [Changelog](CHANGELOG.md) |
+| Security and privacy | [Security policy](SECURITY.md) |
+| Licensing | [License status](LICENSING.md) |
+| Contribution process | [Contributing](CONTRIBUTING.md) · [Code of conduct](CODE_OF_CONDUCT.md) · [Support](SUPPORT.md) |
+| Releases | [GitHub Releases](https://github.com/RyanYang053/50agent-invest-system/releases) (check current availability) |
+| Research reference | [Citation metadata](CITATION.cff) |
 
-`atlas-role-review` imports independently signed reviews with operator-managed trust; `atlas-l6` reports missing external acceptance evidence. `quant_validation` provides conditional DSR/CSCV diagnostics; no promotion authority.
+## Related projects
 
-## Developer acceptance (0.11.0)
+- [IBKR Agent Harness](https://github.com/RyanYang053/IBKR-Agent-harness) — Local-first Python and MCP toolkit for Interactive Brokers portfolio research, combining deterministic calculations, investment policy checks, valuation and persistent workflows with human approval.
+- [IBKR Portfolio Analyzer](https://github.com/RyanYang053/ibkr-portfolio-analyzer) — Local-first desktop analytics for holdings, performance, risk and research.
 
-Run `python -m atlas_pro.public_acceptance` for a small developer-visible public filing fact check and 500 generated RAG boundary cases. The role review importer now verifies distinct JSON benchmark artifacts and exact case/answer/evidence joins. L6 checks elapsed exchange sessions; `atlas_pro.trial_registry.TrialRegistry` records preregistered trials including failures and blocks reuse of stable holdout IDs. See [Developer Acceptance and Evidence](docs/0.11.0%20Developer%20Acceptance%20and%20Evidence.md). These developer tests are not independent skill or investment certification. The current L6 result remains `L6_NOT_VERIFIED`.
+These are separate projects, not a claimed integrated deployment.
 
-### 0.12 evidence recomputation (research-only)
+## Contributing
 
-See [Evidence Recalculation and Public Benchmarks](docs/0.12.0%20Evidence%20Recalculation%20and%20Public%20Benchmarks.md). G3 and performance gates now independently recompute machine-verifiable metrics from joined artifacts. The public-data reference experiments use actual macro/industrial data, but are not historical PIT stock-return experiments or evidence of investment performance. `atlas-empirical` and the optional, rights-gated `atlas-financebench-reference` are developer benchmarks, not L6 certification. No live trading.
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md). If the project is useful, consider starring it or reporting a reproducible improvement.
 
-### 0.13 — scoped RAG verification
-
-Lexical ranking now uses an ephemeral authorized, time-filtered and issuer-filtered FTS corpus rather than global document frequency statistics. Local limits: 20,000 eligible documents and 64 million characters; beyond these bounds fail closed and deploy a validated scoped retrieval backend. Evidence snippets include exact offsets and SHA-256. `atlas-financebench --jsonl /private/financebench.jsonl --confirm-noncommercial-evaluation-rights` runs the actual retrieval engine on the pinned noncommercial developer sample, without uploading raw content or calling models. It is annotated-page retrieval only, not independent G3 acceptance. The optional noncommercial workflow runs once for the same-repository personal development PR, then requires explicit manual rights confirmation.
-
-### 0.14 — historical market risk calibration (developer research)
-
-`atlas-risk-calibration --zip /private/french.zip --confirm-research-rights` compares 252-day historical simulation and fixed-decay EWMA-normal daily VaR/ES forecasts at 95% and 99%, using the official December 2024 Fama/French research return archive (2004–2024). It validates XNYS sessions and reports Kupiec and Christoffersen diagnostics, quantile loss and predefined stress-window breaches. The archive is reconstructed, not a historical PIT vintage series; aggregate market risk calibration is not portfolio risk approval, G5 certification, or evidence of alpha. The separate one-time research CI emits aggregate metrics and the archive hash, never raw data.
-
-### 0.15 — thick-tail risk challenger study (developer research)
-
-`atlas-tail-challenge --zip /private/french.zip --confirm-research-rights` compares the two existing baselines with fixed Student-t EWMA, filtered historical simulation and a stationary Student-t GARCH fit frozen at 2014-12-31. All forecasts are causal; evaluation is 2015–2024, which was already inspected in the previous baseline study and is **not an untouched holdout**. Report conditional coverage, pinball loss and a descriptive ES moment with fixed-lag HAC uncertainty. No automatic promotion, L6 certification or trading. See [risk challenger protocol](docs/0.15.0%20Tail%20Risk%20Challengers.md).
-
-
-## 0.16 market allocation reference
-
-See [fixed historical strategy study](docs/0.16.0%20Market%20Allocation%20Reference.md). Retrospective research only; no promotion or trade permission. All candidate policies and cost levels are fixed before execution.
-
-
-## 0.17 Agent learning memory foundation
-
-See [role-bound memory](docs/0.17.0%20Agent%20Memory.md). Separate private namespaces, signed candidate review, explicit sharing, revision and revocation. Automatic metadata-only task episodes. No autonomous promotion, model training or trading authority.
-
-
-## 0.18 employee capability packs
-
-[50 role-specific procedure, quality and learning packs](docs/0.18.0%20Employee%20Capability%20Packs.md); local role-bound retrieval, source references, runtime integration and independent-certification boundaries.
+Research and educational use only; not financial or tax advice.
