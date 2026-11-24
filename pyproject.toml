@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "atlas-investment-os-research"
-version = "0.14.0"
+version = "0.15.0"
 description = "Research-only investment data and governance prototype; NO live trading"
 requires-python = ">=3.11"
 dependencies = ["cryptography>=43,<47"]
@@ -37,6 +37,7 @@ atlas-empirical = "atlas_pro.public_empirical:main"
 atlas-financebench-reference = "atlas_pro.financebench_reference:main"
 atlas-financebench = "atlas_pro.financebench_atlas:main"
 atlas-risk-calibration = "atlas_pro.risk_calibration:main"
+atlas-tail-challenge = "atlas_pro.tail_models:main"
 
 [tool.setuptools]
 py-modules = ["atlas_policy_router"]

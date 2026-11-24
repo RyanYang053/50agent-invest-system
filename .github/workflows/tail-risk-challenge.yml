@@ -1,0 +1,31 @@
+name: Public historical thick-tail risk challenge
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      confirm_research_rights:
+        description: Confirm personal research rights; no raw data publication
+        type: boolean
+        required: true
+        default: false
+permissions:
+  contents: read
+jobs:
+  tail-risk-challenge:
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.confirm_research_rights == true) ||
+      (github.event_name == 'pull_request' && github.repository == 'RyanYang053/50agent-invest-system' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'atlas-0.15-tail-risk')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[market_calendar,test,quant]'
+      - run: python -m pytest -q tests/test_tail_models.py
+      - run: |
+          curl --fail --location --proto '=https' --max-time 90 --max-filesize 2000000 'https://mba.tuck.dartmouth.edu/pages/Faculty/ken.french/ftp_202412/F-F_Research_Data_Factors_daily_CSV.zip' -o "$RUNNER_TEMP/french.zip"
+          python -m atlas_pro.tail_models --zip "$RUNNER_TEMP/french.zip" --confirm-research-rights
+          rm -f "$RUNNER_TEMP/french.zip"
