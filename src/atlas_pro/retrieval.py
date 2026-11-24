@@ -93,10 +93,12 @@ class ResearchIndex:
         norm_a=math.sqrt(sum(x*x for x in a)); norm_b=math.sqrt(sum(x*x for x in b))
         return sum(x*y for x,y in zip(a,b))/(norm_a*norm_b) if norm_a and norm_b else 0.0
 
-    def search(self, query:str, *, decision_at:str, scope:str='public_only', security_id:str='', top_k:int=5, embed=None):
+    def search(self, query:str, *, decision_at:str, scope:str='public_only', security_id:str='', top_k:int=5, embed=None, vector_backend=None):
         decision_at=iso(decision_at).isoformat()
         if scope not in ('public_only','private_local'):
             raise ValueError('INVALID_RETRIEVAL_SCOPE')
+        if vector_backend is not None and (not embed or getattr(vector_backend,'local_only',False) is not True or getattr(vector_backend,'index',None) is not self):
+            raise PermissionError('INVALID_LOCAL_VECTOR_BACKEND')
         if embed and scope=='private_local' and not getattr(embed,'local_only',False):
             raise PermissionError('PRIVATE_QUERY_EMBEDDING_MUST_BE_LOCAL')
         if not 1<=top_k<=25: raise ValueError('TOP_K_OUT_OF_RANGE')
@@ -122,17 +124,30 @@ class ResearchIndex:
             # Unversioned vectors cannot safely be compared across model revisions.
             model_id=getattr(embed,'model_id',None) if embed else None
             if embed and model_id:
-                allrows=c.execute(f'SELECT * FROM docs d WHERE {where} AND embedding_json IS NOT NULL AND embedding_model_id=? ORDER BY d.doc_id LIMIT 5001',params+[model_id]).fetchall()
-                if len(allrows)>5000:raise ValueError('EXACT_VECTOR_CAPACITY_EXCEEDED_USE_VALIDATED_INDEX')
                 vec=embed(query)
-                if not isinstance(vec,(list,tuple)) or not vec or any(not isinstance(x,(float,int)) or not math.isfinite(x) for x in vec):raise ValueError('INVALID_QUERY_EMBEDDING')
+                if not isinstance(vec,(list,tuple)) or not vec or any(type(x) not in (float,int) or not math.isfinite(x) for x in vec):raise ValueError('INVALID_QUERY_EMBEDDING')
                 sims=[]
-                for r in allrows:
-                    stored=json.loads(r['embedding_json'])
-                    if len(vec)!=len(stored):raise ValueError('EMBEDDING_DIMENSION_MISMATCH')
-                    sim=self._cos(vec,stored)
-                    if sim>0: sims.append((sim,dict(r)))
-                sims.sort(reverse=True,key=lambda x:x[0])
+                if vector_backend is not None:
+                    hits=vector_backend.search(vec,decision_at=decision_at,scope=scope,security_id=security_id,model_id=model_id,limit=60)
+                    if len(hits)>60:raise ValueError('VECTOR_BACKEND_RESULT_CAP')
+                    seen=set()
+                    for score,hit in hits:
+                        doc=hit['doc_id']
+                        if doc in seen or not math.isfinite(score):raise ValueError('INVALID_VECTOR_HIT')
+                        seen.add(doc)
+                        # Rehydrate authoritative content, never accept text from a vector backend.
+                        row=c.execute(f'SELECT d.* FROM docs d WHERE {where} AND d.doc_id=? AND d.embedding_model_id=?',params+[doc,model_id]).fetchone()
+                        if row is None or row['text_sha256']!=hit.get('text_sha256'):raise ValueError('VECTOR_HIT_NOT_AUTHORIZED')
+                        if score>0:sims.append((score,dict(row)))
+                else:
+                    allrows=c.execute(f'SELECT * FROM docs d WHERE {where} AND embedding_json IS NOT NULL AND embedding_model_id=? ORDER BY d.doc_id LIMIT 5001',params+[model_id]).fetchall()
+                    if len(allrows)>5000:raise ValueError('EXACT_VECTOR_CAPACITY_EXCEEDED_USE_VALIDATED_INDEX')
+                    for r in allrows:
+                        stored=json.loads(r['embedding_json'])
+                        if len(vec)!=len(stored):raise ValueError('EMBEDDING_DIMENSION_MISMATCH')
+                        sim=self._cos(vec,stored)
+                        if sim>0:sims.append((sim,dict(r)))
+                sims.sort(key=lambda x:(-x[0],x[1]['doc_id']))
                 for i,(_,r) in enumerate(sims[:60]):
                     prior=lexical.get(r['doc_id'],(0,r))
                     lexical[r['doc_id']]=(prior[0]+1.0/(60+i),r)

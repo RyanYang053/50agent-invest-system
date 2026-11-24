@@ -72,3 +72,25 @@ def review_experiment(request, report, *, locked_test_ids, max_drawdown=.25, min
             'report_hash':digest(report),'promotion_allowed':False,'can_trade':False,
             'limitations':['paired path only; not statistically significant alpha','verify licensed historical universe, costs, leakage, trials, regime stability and shadow results independently']}
     return result|{'review_id':digest(result)}
+
+
+def purged_panel_folds(samples,*,min_train_dates=60,test_dates=20,embargo_seconds=0):
+    """Cross-sectional Qlib-style split. A whole signal timestamp stays in one fold.
+    Purge an entire training timestamp if any label at that timestamp crosses test.
+    Inputs must be authorized and timestamped; no random split of correlated rows.
+    """
+    if type(min_train_dates) is not int or type(test_dates) is not int or min(min_train_dates,test_dates)<1 or num(embargo_seconds)<0:raise ValueError('invalid panel split settings')
+    groups={};seen=set();last=None
+    for s in samples:
+        t,e,a=(iso(s[k]) for k in ('signal_at','label_end_at','feature_available_at'));rid=s['id'];security=s['security_id']
+        if not security or not rid or rid in seen or a>t or e<=t or (last and t<last):raise ValueError('invalid panel chronology/identity')
+        seen.add(rid);last=t;g=groups.setdefault(t,[])
+        if any(x[2]==security for x in g):raise ValueError('duplicate cross-sectional security')
+        g.append((rid,e,security))
+    ts=list(groups);folds=[]
+    for i in range(min_train_dates,len(ts)-test_dates+1,test_dates):
+        test=ts[i:i+test_dates];start=test[0]
+        train=[t for t in ts[:i] if all((start-x[1]).total_seconds()>embargo_seconds for x in groups[t])]
+        if len(train)>=min_train_dates:
+            folds.append({'train_ids':[x[0] for t in train for x in groups[t]],'test_ids':[x[0] for t in test for x in groups[t]],'test_start':start.isoformat(),'test_end':max(x[1] for t in test for x in groups[t]).isoformat()})
+    return folds

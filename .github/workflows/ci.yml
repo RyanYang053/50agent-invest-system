@@ -24,3 +24,25 @@ jobs:
       - run: python -m atlas_pro
       - run: python -m atlas_pro.paper_replay
       - run: python -m compileall -q src
+  optional-data-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[market_calendar,test,quant,warehouse]'
+      - run: python -c 'import duckdb,qdrant_client'
+      - run: python -m pytest -q tests/test_oss_adapters.py
+  optional-risk-crosscheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[test,quant,risk_crosscheck]'
+      - run: python -c 'import skfolio,pandas'
+      - run: python -m pytest -q tests/test_oss_adapters.py -k skfolio_optional
