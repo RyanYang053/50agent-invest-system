@@ -120,3 +120,36 @@ jobs:
           assert max(abs(x['prediction']-y['prediction']) for x,y in zip(a,b))<1e-8
           print('actual Qlib training executed in offline container; synthetic data only')
           PYCODE
+
+  isolated-lean-engine:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[test]'
+      - run: python -m pytest -q tests/test_lean_fixture.py
+      - name: Acquire upstream LEAN image (CI reference only)
+        run: |
+          docker pull quantconnect/lean:latest
+          docker image inspect --format '{{json .RepoDigests}}' quantconnect/lean:latest
+      - name: Run network-isolated synthetic accounting case
+        run: |
+          image=$(docker image inspect --format '{{.Id}}' quantconnect/lean:latest)
+          bash sandbox/run-lean-fixture.sh "$image" "$RUNNER_TEMP/atlas-lean.json"
+          python - "$RUNNER_TEMP/atlas-lean.json" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['status']=='LEAN_SYNTHETIC_ACCOUNTING_CHECKED'
+          assert r['synthetic'] is True and r['can_trade'] is False and r['promotion_allowed'] is False
+          assert r['simulated_fill_count']==2 and r['ending_cash']==10098 and r['fees']==2
+          print('actual LEAN synthetic order and fee events independently reconciled')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lean-synthetic-accounting-receipt
+          path: ${{ runner.temp }}/atlas-lean.json
+          if-no-files-found: error
+          retention-days: 14
