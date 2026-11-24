@@ -8,6 +8,7 @@ from pathlib import Path
 from .ledger import EvidenceLedger,digest,iso
 from .pipeline import market_evidence_matches
 from .research import annual_snapshot,screen
+from .ttm import ttm_snapshot
 from .decision import decision_grid
 from .portfolio import portfolio_review
 from .committee import Committee,STAGES
@@ -29,7 +30,9 @@ def run_packet(committee,ledger,packet,*,attachments=None):
         if not market_evidence_matches(ledger,packet['market'],cik=cik,at=at):raise ValueError('market evidence mismatch')
         return safe({'status':'OK','facts':[r['payload'] for r in records],'fundamental_ids':packet['fundamental_ids'],'market_ids':packet['market']['evidence_ids']})
     def discovery(key,req,prior):
-        snap=annual_snapshot(prior['evidence']['facts'],at=at);candidate=screen(snap,packet['market'],at=at)
+        basis=packet.get('basis','annual')
+        if basis not in ('annual','ttm'):raise ValueError('invalid financial basis')
+        snap=(ttm_snapshot if basis=='ttm' else annual_snapshot)(prior['evidence']['facts'],at=at);candidate=screen(snap,packet['market'],at=at)
         return safe(candidate|{'snapshot':snap})
     def fundamental(key,req,prior):return safe({'status':'OK','snapshot':prior['discovery']['snapshot'],'evidence_ids':prior['discovery']['fundamental_evidence_ids']})
     def valuation(key,req,prior):

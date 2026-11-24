@@ -1,46 +1,46 @@
 {
   "review_date_et": "2026-11-23",
-  "policy": "Original Atlas code; upstream patterns, no copied third-party code. Only SciPy/NumPy quant extra installed/tested locally. GitHub activity is not proof of quality. Licenses of datasets, model weights and provider terms separate. Pin exact releases before deployment.",
+  "policy": "Original Atlas code and explicit upstream interfaces; no vendored source. SciPy/NumPy exercised locally. New optional dependency adapters and external artifact imports are separately labeled; a package, schema, test fixture or GitHub activity is not proof of financial correctness. Data, code and model licenses are independent. Pin audited releases and transitive builds before deployment.",
   "projects": [
     {
       "repo": "https://github.com/microsoft/qlib",
       "license_reported": "MIT",
       "last_push_date_utc": "2026-11-04",
       "contribution": "Sector-relative factor ranks; purged walk-forward; normalized research interchange",
-      "actual_status": "Pattern and report contract implemented; upstream runtime not installed",
-      "acceptance_gate": "Licensed PIT universe, instrument mapping, verified Qlib experiment export"
+      "actual_status": "PIT normalized score importer via ledger; purged cross-sectional split; sector-factor ranking implemented and fixture-tested; Qlib engine not installed",
+      "acceptance_gate": "Execute locked real Qlib training and export scores in isolated worker"
     },
     {
       "repo": "https://github.com/microsoft/RD-Agent",
       "license_reported": "MIT",
       "last_push_date_utc": "2026-10-21",
       "contribution": "Hypothesis, bounded experiment, locked evaluation, independent review",
-      "actual_status": "Experiment request/review implemented; external sandbox/runtime absent",
-      "acceptance_gate": "Isolated disposable container; no broker credentials; independent code/data audit"
+      "actual_status": "Experiment contracts and paired challenger bootstrap/trial-count penalty implemented; upstream generation/sandbox not installed",
+      "acceptance_gate": "Execute isolated worker with read-only authorized data, no broker or network credentials"
     },
     {
       "repo": "https://github.com/QuantConnect/Lean",
       "license_reported": "Apache-2.0",
       "last_push_date_utc": "2026-11-23",
       "contribution": "Brokerage reality modeling, cost and fill semantics, replay result intake",
-      "actual_status": "Report contract only; paper gateway retained",
-      "acceptance_gate": "Run independent LEAN backtests on licensed data; compare against replay; no routing to broker"
+      "actual_status": "Normalized equity curve import and independent benchmark/path arithmetic implemented and fixture-tested; LEAN not run",
+      "acceptance_gate": "Run verified LEAN with corporate actions, fees and full historical universe"
     },
     {
       "repo": "https://github.com/dgunning/edgartools",
       "license_reported": "MIT",
       "last_push_date_utc": "2026-11-23",
       "contribution": "SEC filing tables, footnotes, normalized 10-K/10-Q XBRL",
-      "actual_status": "Research target only; existing SEC direct adapter hardened",
-      "acceptance_gate": "Verify accession, tags, dimensions, units, period and availability before ledger admission"
+      "actual_status": "Direct SEC 10-Q/10-K fiscal TTM bridge now implemented and fixture-tested; upstream parser not installed",
+      "acceptance_gate": "Compare full filings, tagged units/dimensions, footnotes and segment facts with EdgarTools"
     },
     {
       "repo": "https://github.com/skfolio/skfolio",
       "license_reported": "BSD-3-Clause",
       "last_push_date_utc": "2026-11-23",
       "contribution": "Risk/correlation constraints and CVaR optimization",
-      "actual_status": "Concept implemented via independently tested SciPy solver; skfolio itself not installed",
-      "acceptance_gate": "Compare against skfolio on matched data and constraints; tax/options/margin separately"
+      "actual_status": "SciPy optimizer tested; optional Portfolio CVaR cross-check adapter added; real skfolio test unavailable locally, CI job configured",
+      "acceptance_gate": "Actual cross-check and broker-specific margin/FX/options validation"
     },
     {
       "repo": "https://github.com/scipy/scipy",
@@ -55,32 +55,32 @@
       "license_reported": "MIT",
       "last_push_date_utc": "2026-11-24 UTC",
       "contribution": "Locked task evaluation and model qualification",
-      "actual_status": "Local grader and retrieval metrics implemented; no Inspect runtime",
-      "acceptance_gate": "Authorized real cases, matched model runs, independent certification"
+      "actual_status": "Structured normalized sample answer import and independent grader tested; no Inspect execution or paid inference",
+      "acceptance_gate": "Run authorized locked real finance tasks using Inspect, export actual completions"
     },
     {
       "repo": "https://github.com/docling-project/docling",
       "license_reported": "MIT",
       "last_push_date_utc": "2026-11-23",
       "contribution": "PDF/XBRL tables and layout-preserving document conversion",
-      "actual_status": "Research target only; current ingestion still text chunks",
-      "acceptance_gate": "Pinned offline converter and table/citation tests; review model weights licenses"
+      "actual_status": "Optional offline PDF-to-Markdown adapter added with sandbox attestation and source hash; actual conversion untested locally",
+      "acceptance_gate": "Install pinned assets offline and verify PDF table/cell citations, OCR and licensing"
     },
     {
       "repo": "https://github.com/qdrant/qdrant",
       "license_reported": "Apache-2.0",
       "last_push_date_utc": "2026-11-23",
       "contribution": "Hybrid search with metadata filters and versioned dense vectors",
-      "actual_status": "Local hybrid retrieval version isolation and explicit capacity guard; Qdrant not installed",
-      "acceptance_gate": "Index must preserve ACL/PIT before search, exact baseline and ANN recall tests"
+      "actual_status": "Optional local in-memory Qdrant snapshot wired to RAG/runner/eval; scope/time/source checks and stale rebuild; actual package test unavailable locally, CI job configured",
+      "acceptance_gate": "Real retrieval tests, performance/recall benchmark; persistent ANN only if needed"
     },
     {
       "repo": "https://github.com/duckdb/duckdb",
       "license_reported": "MIT",
       "last_push_date_utc": "2026-11-23",
       "contribution": "Parquet/PIT analytics and larger datasets",
-      "actual_status": "Deferred; no DuckDB runtime installed",
-      "acceptance_gate": "Add immutable parquet snapshots, point-in-time joins, data licensing"
+      "actual_status": "Optional fixed-schema local Parquet as-of revision query; hash and license gates, actual package test unavailable locally, CI job configured",
+      "acceptance_gate": "Real integration test and verified source completeness/warehouse ETL"
     },
     {
       "repo": "https://github.com/langchain-ai/langgraph",
@@ -103,32 +103,32 @@
       "license_reported": "MIT",
       "last_push_date_utc": "2026-11-21",
       "contribution": "Prompt optimization using measured quality",
-      "actual_status": "External experiment contract only",
-      "acceptance_gate": "Train/validation/test separation, authorized data, independent test result"
+      "actual_status": "Experiment and locked evaluation contracts, no actual DSPy optimization",
+      "acceptance_gate": "Run authorized development-only prompt optimization in isolated process and independently score heldout"
     },
     {
       "repo": "https://github.com/promptfoo/promptfoo",
       "license_reported": "MIT",
       "last_push_date_utc": "2026-11-24 UTC",
       "contribution": "Adversarial tests and prompt injection evaluation",
-      "actual_status": "Local negative tests; upstream runner not installed",
-      "acceptance_gate": "CI external red-team with synthetic data and restricted tools"
+      "actual_status": "Local injection/ACL/model output tests; no upstream Promptfoo runner",
+      "acceptance_gate": "Adversarial cross-model suite in isolated environment"
     },
     {
       "repo": "https://github.com/mlflow/mlflow",
       "license_reported": "Apache-2.0",
       "last_push_date_utc": "2026-11-24 UTC",
       "contribution": "Versioned artifacts and candidate versus champion governance",
-      "actual_status": "Artifact hash binding and candidate-only review; no MLflow service",
-      "acceptance_gate": "Independent shadow, signed release/rollback, external registry if needed"
+      "actual_status": "Hash-bound experiment and challenger statistical gate; existing signed release registry; no MLflow runtime",
+      "acceptance_gate": "Independent trial accounting, durable registry, shadow and rollback tests"
     },
     {
       "repo": "https://github.com/ranaroussi/quantstats",
       "license_reported": "Apache-2.0",
       "last_push_date_utc": "2026-11-02",
       "contribution": "Benchmark and risk reporting",
-      "actual_status": "Net return/drawdown recomputation; not imported",
-      "acceptance_gate": "Daily NAV, benchmark total returns, cash flows, performance attribution"
+      "actual_status": "Independent daily paired net total return, Sharpe, drawdown and tracking error implemented; no QuantStats import",
+      "acceptance_gate": "Cross-check actual QuantStats reports on same qualified daily series"
     },
     {
       "repo": "https://github.com/ib-api-reloaded/ib_async",

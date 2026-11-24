@@ -5,14 +5,14 @@ from __future__ import annotations
 import math
 from .ledger import digest,iso
 
-def evaluate_retrieval(index,cases,*,expected_hash,top_k=5,embed=None):
+def evaluate_retrieval(index,cases,*,expected_hash,top_k=5,embed=None,vector_backend=None):
     if digest(cases)!=expected_hash:raise ValueError('evaluation dataset changed')
     if not cases or len({c['case_id'] for c in cases})!=len(cases):raise ValueError('empty or duplicate cases')
     if any(c.get('evaluation_rights_verified') is not True for c in cases):raise PermissionError('evaluation data rights unverified')
     rows=[]
     for c in cases:
         gold=set(c['relevant_doc_ids']); at=iso(c['decision_at']); scope=c.get('scope','public_only')
-        docs=index.search(c['query'],decision_at=c['decision_at'],security_id=c.get('security_id',''),scope=scope,top_k=top_k,embed=embed)
+        docs=index.search(c['query'],decision_at=c['decision_at'],security_id=c.get('security_id',''),scope=scope,top_k=top_k,embed=embed,vector_backend=vector_backend)
         ids=[d['doc_id'] for d in docs]
         if len(set(ids))!=len(ids):raise ValueError('duplicate retrieval results')
         violation=any(iso(d['available_at'])>at or (scope=='public_only' and d['scope']!='public') for d in docs)

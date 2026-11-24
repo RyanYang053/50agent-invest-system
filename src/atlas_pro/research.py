@@ -34,14 +34,15 @@ TAGS = {
 FLOWS = {'revenue','operating_income','ocf','capex','net_income'}
 
 
-def sec_annual_facts(companyfacts, submissions, *, at, received_at, replay=False):
-    """Only annual facts from 10-K/10-K/A; join exact accession acceptance timestamp.
+def sec_annual_facts(companyfacts, submissions, *, at, received_at, replay=False, include_quarters=False):
+    """Annual facts by default; optional 10-Q cumulative period facts for TTM. Join exact accession acceptance timestamp.
 
     Live availability is max(acceptance, actual receipt). Historical replay uses
     acceptance as proxy (not an independently proven historical feed capture).
     Current-only submissions can omit old accessions: skip, never infer timestamps.
     Does not claim historical universe completeness or normalize foreign issuers.
     """
+    if type(include_quarters) is not bool:raise ValueError('invalid quarter flag')
     cutoff, received = iso(at), iso(received_at)
     if not replay and received > cutoff:
         raise ValueError('received after decision cutoff')
@@ -68,7 +69,7 @@ def sec_annual_facts(companyfacts, submissions, *, at, received_at, replay=False
     for field, aliases in TAGS.items():
         for priority, tag in enumerate(aliases):
             for fact in taxonomy.get(tag, {}).get('units', {}).get('USD', []):
-                if fact.get('form') not in ('10-K', '10-K/A'):
+                if fact.get('form') not in (('10-K','10-K/A','10-Q','10-Q/A') if include_quarters else ('10-K','10-K/A')):
                     continue
                 accepted = accepts.get(fact.get('accn'))
                 if accepted is None:
@@ -81,7 +82,7 @@ def sec_annual_facts(companyfacts, submissions, *, at, received_at, replay=False
                     if end > accepted.date():
                         continue
                     start = date.fromisoformat(fact['start']) if 'start' in fact else None
-                    if field in FLOWS and (start is None or not 330 <= (end-start).days <= 380):
+                    if field in FLOWS and (start is None or not (70 if include_quarters else 330) <= (end-start).days <= 380):
                         continue
                     if field not in FLOWS and start is not None:
                         continue
@@ -106,7 +107,7 @@ def annual_snapshot(rows, *, at, max_age_days=550):
     Missing fields are not filled with zero. Restatements only as of cutoff.
     """
     cutoff = iso(at)
-    rows = [r for r in rows if iso(r['available_at']) <= cutoff]
+    rows = [r for r in rows if iso(r['available_at']) <= cutoff and (r['field'] not in FLOWS or (r.get('start') and 330 <= (date.fromisoformat(r['end'])-date.fromisoformat(r['start'])).days <= 380))]
     if not rows:
         return None
     if len({r['cik'] for r in rows}) != 1:
@@ -162,7 +163,8 @@ def screen(snapshot, market, *, at):
     try:
         if int(market['cik'])!=snapshot['cik'] or iso(snapshot['as_of'])>cutoff:
             return excluded('entity or financial cutoff mismatch')
-        if not 0 <= (cutoff.date()-date.fromisoformat(snapshot['period_end'])).days <= 550:
+        max_age=180 if snapshot.get('basis')=='ttm_us_gaap_usd_fiscal_bridge' else 550
+        if not 0 <= (cutoff.date()-date.fromisoformat(snapshot['period_end'])).days <= max_age:
             return excluded('stale annual financials')
         if not snapshot['sources'] or any(iso(x['available_at'])>cutoff for x in snapshot['sources'].values()):
             return excluded('future or missing fundamental evidence')
@@ -195,10 +197,10 @@ def screen(snapshot, market, *, at):
     score=100*sum(weights[k]*v for k,v in components.items())
     return {'status':'CANDIDATE','cik':snapshot['cik'],'symbol':market['symbol'],'score':round(score,4),
         'components':components,'metrics':{'operating_margin':op/rev,'fcf_margin':fcf/rev,'roe':ni/eq,'revenue_growth':growth,'fcf_yield':fcf/market_cap,'net_debt':net_debt},
-        'price':price,'price_asof':iso(market['price_asof']).isoformat(),'available_at':iso(market['available_at']).isoformat(),'price_basis':market.get('price_basis','unspecified'),'financial_period':snapshot['period_end'],
-        'fundamental_evidence_ids':[digest(v) for v in snapshot['sources'].values()],
+        'price':price,'price_asof':iso(market['price_asof']).isoformat(),'available_at':iso(market['available_at']).isoformat(),'price_basis':market.get('price_basis','unspecified'),'financial_period':snapshot['period_end'], 'financial_basis':snapshot.get('basis','unspecified'),
+        'fundamental_evidence_ids':list(dict.fromkeys(digest(v) for v in snapshot['sources'].values())),
         'market_evidence_ids':market['evidence_ids'],'action':'RESEARCH_ONLY','can_trade':False,
-        'limitations':['annual US GAAP; no TTM or sector normalization','heuristic weights not validated for alpha','no full debt/lease or dilution adjustment; not a buy signal']}
+        'limitations':[('TTM fiscal bridge US GAAP; no sector normalization' if snapshot.get('basis')=='ttm_us_gaap_usd_fiscal_bridge' else 'annual US GAAP; no TTM or sector normalization'),'heuristic weights not validated for alpha','no full debt/lease or dilution adjustment; not a buy signal']}
 
 
 def dcf(*, revenue, growth, margin, tax, da_rate, capex_rate, nwc_rate, wacc, terminal_growth, net_debt, diluted_shares):
