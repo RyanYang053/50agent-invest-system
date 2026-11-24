@@ -101,3 +101,8 @@ Lexical ranking now uses an ephemeral authorized, time-filtered and issuer-filte
 ## 0.16 market allocation reference
 
 See [fixed historical strategy study](docs/0.16.0%20Market%20Allocation%20Reference.md). Retrospective research only; no promotion or trade permission. All candidate policies and cost levels are fixed before execution.
+
+
+## 0.17 Agent learning memory foundation
+
+See [role-bound memory](docs/0.17.0%20Agent%20Memory.md). Separate private namespaces, signed candidate review, explicit sharing, revision and revocation. Automatic metadata-only task episodes. No autonomous promotion, model training or trading authority.

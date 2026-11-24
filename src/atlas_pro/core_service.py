@@ -16,6 +16,8 @@ from .feeds import PublicFeedClient
 from .transport import PublicJSONTransport
 from .market_data import AlpacaResearchQuotes
 from .learning import ForecastJournal
+from .agent_memory import MemoryStore
+from .independent_review import load_trust
 from .filing_ingest import ingest_recent_filings,SECArchiveTransport
 from .macro_ingest import ingest_macro
 
@@ -71,21 +73,24 @@ def main(argv=None):
     c=sub.add_parser('catalog');c.add_argument('--roles',type=Path,required=True)
     r=sub.add_parser('screen-research');r.add_argument('--universe',type=Path,required=True);r.add_argument('--data-dir',type=Path,required=True);r.add_argument('--sec-policy',type=Path,required=True);r.add_argument('--alpaca-policy',type=Path);r.add_argument('--roles',type=Path,required=True);r.add_argument('--models',type=Path,required=True);r.add_argument('--max-candidates',type=int,default=3);r.add_argument('--daily-budget',default='0');r.add_argument('--monthly-budget',default='0');r.add_argument('--paid-models',action='store_true');r.add_argument('--network',action='store_true');r.add_argument('--basis',choices=['annual','ttm'],default='ttm');r.add_argument('--run-id',required=True);r.add_argument('--filings-per-company',type=int,default=0,choices=range(0,6));r.add_argument('--macro-policies',type=Path)
     j=sub.add_parser('run-role');j.add_argument('role_id');j.add_argument('--inputs',type=Path,required=True);j.add_argument('--data-dir',type=Path,required=True);j.add_argument('--roles',type=Path,required=True);j.add_argument('--models',type=Path,required=True);j.add_argument('--at',required=True);j.add_argument('--run-id',required=True);j.add_argument('--paid-models',action='store_true');j.add_argument('--daily-budget',default='0');j.add_argument('--monthly-budget',default='0')
+    for cmd in (r,j):cmd.add_argument('--memory-trust',type=Path)
     a=parser.parse_args(argv)
     if a.cmd=='readiness':out=readiness()
     elif a.cmd=='catalog':out=RoleExecutor(json.loads(a.roles.read_text()),None).catalog()
     elif a.cmd=='run-role':
         os.umask(0o077);d=private_dir(a.data_dir);load=lambda p:json.loads(p.read_text());roles=load(a.roles);models=load(a.models);ledger=EvidenceLedger(d/'evidence.sqlite');index=ResearchIndex(d/'research.sqlite')
+        memory=MemoryStore(d/'agent-memory',ledger,trust=load_trust(a.memory_trust) if a.memory_trust else {})
         gateway=ModelGateway(d/'models.sqlite',models,roles,daily_limit_usd=a.daily_budget,monthly_limit_usd=a.monthly_budget)
-        runner=ResearchModelRunner(gateway,index,FixedModelTransport(enabled=True)) if a.paid_models else None
-        out=RoleJournal(d/'role_jobs.sqlite').execute(RoleExecutor(roles,ledger,model_runner=runner,forecast_journal=ForecastJournal(d/'forecasts.sqlite')),a.role_id,at=a.at,run_id=a.run_id,inputs=load(a.inputs))
+        runner=ResearchModelRunner(gateway,index,FixedModelTransport(enabled=True),memory=memory) if a.paid_models else None
+        out=RoleJournal(d/'role_jobs.sqlite',memory=memory).execute(RoleExecutor(roles,ledger,model_runner=runner,forecast_journal=ForecastJournal(d/'forecasts.sqlite')),a.role_id,at=a.at,run_id=a.run_id,inputs=load(a.inputs))
     else:
         if not a.network:raise PermissionError('explicit network consent required')
         if not 1<=a.max_candidates<=10:raise ValueError('candidate bound')
         os.umask(0o077);d=private_dir(a.data_dir);load=lambda p:json.loads(p.read_text());roles=load(a.roles);models=load(a.models)
         ledger=EvidenceLedger(d/'evidence.sqlite');index=ResearchIndex(d/'research.sqlite')
+        memory=MemoryStore(d/'agent-memory',ledger,trust=load_trust(a.memory_trust) if a.memory_trust else {})
         gateway=ModelGateway(d/'models.sqlite',models,roles,daily_limit_usd=a.daily_budget,monthly_limit_usd=a.monthly_budget)
-        executor=RoleExecutor(roles,ledger,model_runner=ResearchModelRunner(gateway,index,FixedModelTransport(enabled=True)) if a.paid_models else None,forecast_journal=ForecastJournal(d/'forecasts.sqlite'))
+        executor=RoleExecutor(roles,ledger,model_runner=ResearchModelRunner(gateway,index,FixedModelTransport(enabled=True),memory=memory) if a.paid_models else None,forecast_journal=ForecastJournal(d/'forecasts.sqlite'))
         quotes=AlpacaResearchQuotes(policy=load(a.alpaca_policy)) if a.alpaca_policy else None
         client=PublicFeedClient(PublicJSONTransport(),sec_user_agent=os.getenv('SEC_USER_AGENT',''),fred_api_key=os.getenv('FRED_API_KEY',''))
         result=run_screen(load(a.universe),client=client,ledger=ledger,index=index,policy=load(a.sec_policy),at=datetime.now(timezone.utc).isoformat(),quotes=quotes,basis=a.basis)
@@ -100,6 +105,6 @@ def main(argv=None):
                 try:ingestion.append(ingest_macro(client,ledger,index,series=pol['series_id'],policy=pol))
                 except (RuntimeError,ValueError,PermissionError,KeyError,TypeError) as e:ingestion.append({'status':'MACRO_INGEST_BLOCKED','error_type':type(e).__name__})
         tasks=list(PUBLIC_TASKS) if a.macro_policies else None
-        out={'screen':result,'ingestion':ingestion,'research':execute_batch(result,executor,RoleJournal(d/'role_jobs.sqlite'),run_id=a.run_id,at=datetime.now(timezone.utc).isoformat(),max_candidates=a.max_candidates,roles=tasks,macro=bool(a.macro_policies)),'can_trade':False}
+        out={'screen':result,'ingestion':ingestion,'research':execute_batch(result,executor,RoleJournal(d/'role_jobs.sqlite',memory=memory),run_id=a.run_id,at=datetime.now(timezone.utc).isoformat(),max_candidates=a.max_candidates,roles=tasks,macro=bool(a.macro_policies)),'can_trade':False}
     print(json.dumps(out,indent=2,allow_nan=False));return 0
 if __name__=='__main__':raise SystemExit(main())
