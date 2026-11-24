@@ -1,0 +1,1893 @@
+{
+  "schema": 1,
+  "sources": {
+    "dcf": {
+      "url": "https://github.com/anthropics/financial-services/blob/3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f/plugins/vertical-plugins/financial-analysis/skills/dcf-model/SKILL.md",
+      "kind": "method_reference",
+      "license": "Apache-2.0",
+      "status": "structure_inspected",
+      "use": "Original Atlas procedure adapted to role; do not execute upstream instructions."
+    },
+    "comps": {
+      "url": "https://github.com/anthropics/financial-services/blob/3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f/plugins/vertical-plugins/financial-analysis/skills/comps-analysis/SKILL.md",
+      "kind": "method_reference",
+      "license": "Apache-2.0",
+      "status": "structure_inspected",
+      "use": "Original Atlas procedure adapted to role; do not execute upstream instructions."
+    },
+    "competitive": {
+      "url": "https://github.com/anthropics/financial-services/blob/3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f/plugins/vertical-plugins/financial-analysis/skills/competitive-analysis/SKILL.md",
+      "kind": "method_reference",
+      "license": "Apache-2.0",
+      "status": "structure_inspected",
+      "use": "Original Atlas procedure adapted to role; do not execute upstream instructions."
+    },
+    "earnings": {
+      "url": "https://github.com/anthropics/financial-services/blob/3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f/plugins/vertical-plugins/equity-research/skills/earnings-analysis/SKILL.md",
+      "kind": "method_reference",
+      "license": "Apache-2.0",
+      "status": "structure_inspected",
+      "use": "Original Atlas procedure adapted to role; do not execute upstream instructions."
+    },
+    "unit": {
+      "url": "https://github.com/anthropics/financial-services/blob/3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f/plugins/vertical-plugins/private-equity/skills/unit-economics/SKILL.md",
+      "kind": "method_reference",
+      "license": "Apache-2.0",
+      "status": "structure_inspected",
+      "use": "Original Atlas procedure adapted to role; do not execute upstream instructions."
+    },
+    "ic": {
+      "url": "https://github.com/anthropics/financial-services/blob/3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f/plugins/vertical-plugins/private-equity/skills/ic-memo/SKILL.md",
+      "kind": "method_reference",
+      "license": "Apache-2.0",
+      "status": "structure_inspected",
+      "use": "Original Atlas procedure adapted to role; do not execute upstream instructions."
+    },
+    "nav": {
+      "url": "https://github.com/anthropics/financial-services/blob/3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f/plugins/vertical-plugins/fund-admin/skills/nav-tieout/SKILL.md",
+      "kind": "method_reference",
+      "license": "Apache-2.0",
+      "status": "structure_inspected",
+      "use": "Original Atlas procedure adapted to role; do not execute upstream instructions."
+    },
+    "sec": {
+      "url": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+      "kind": "primary_data",
+      "status": "reference_verified",
+      "use": "Existing EDGAR adapter; individual filing evidence and access rules required."
+    },
+    "damodaran": {
+      "url": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/tools.html",
+      "kind": "method_reference",
+      "status": "reference_verified",
+      "use": "Reference only; separate permission before retaining or sending material."
+    },
+    "french": {
+      "url": "https://mba.tuck.dartmouth.edu/pages/faculty/Ken.French/data_library.html",
+      "kind": "research_data",
+      "status": "reference_verified",
+      "use": "Authorized research archives only, not historical vintage proof."
+    },
+    "qlib": {
+      "url": "https://github.com/microsoft/qlib",
+      "kind": "software_reference",
+      "status": "reference_verified",
+      "use": "Existing normalized report adapter; no execution authority."
+    },
+    "rd": {
+      "url": "https://github.com/microsoft/RD-Agent",
+      "kind": "software_reference",
+      "status": "reference_verified",
+      "use": "Research proposal reference, not a production runner."
+    },
+    "lean": {
+      "url": "https://github.com/QuantConnect/Lean",
+      "kind": "software_reference",
+      "status": "reference_verified",
+      "use": "Existing normalized replay adapter; isolated research only."
+    },
+    "skfolio": {
+      "url": "https://github.com/skfolio/skfolio",
+      "kind": "software_reference",
+      "status": "reference_verified",
+      "use": "Existing optional CVaR cross-check; no broker authority."
+    },
+    "edgar": {
+      "url": "https://github.com/dgunning/edgartools",
+      "kind": "software_reference",
+      "status": "reference_verified",
+      "use": "Parser reference; actual data rights checked separately."
+    },
+    "cra": {
+      "url": "https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/tax-free-savings-account/contributing/how.html",
+      "kind": "primary_guidance",
+      "status": "reference_verified",
+      "use": "Official Canadian TFSA guidance; date and individual facts must be checked."
+    },
+    "financebench": {
+      "url": "https://github.com/patronus-ai/financebench",
+      "kind": "evaluation_only",
+      "status": "existing_benchmark",
+      "use": "Isolated noncommercial evaluation; NEVER learning corpus or cloud input."
+    },
+    "atlas": {
+      "url": "https://github.com/RyanYang053/50agent-invest-system/tree/55cfa8a4097cc1d4eb68c72376ba17f180804540/src/atlas_pro",
+      "kind": "internal_method",
+      "status": "runtime_present",
+      "use": "Existing deterministic implementation; no new authorization."
+    }
+  },
+  "packs": {
+    "A011": {
+      "role_id": "A011",
+      "role": "CIO Orchestrator",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "workflow",
+        "evidence"
+      ],
+      "source_ids": [
+        "ic",
+        "sec",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Freeze decision timestamp, collect separately authored bull, bear, valuation and risk deliverables. Preserve disagreements and identify which evidence would resolve each."
+        },
+        {
+          "kind": "quality",
+          "text": "Decision register separates accepted facts, assumptions, missing inputs and blockers. No majority vote or memo treated as approval."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn from unresolved blockers, missed countercases and subsequent independently measured thesis outcomes."
+        }
+      ],
+      "required_deliverable": "decision synthesis and disagreement register",
+      "critical_failure": "Suppressing a material dissent or treating a memo as authorization",
+      "challenge_case": "Contradictory bull/bear evidence with missing risk approval",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A012": {
+      "role_id": "A012",
+      "role": "Investment Policy Supervisor",
+      "version": 1,
+      "scope": "private_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "policy",
+        "portfolio"
+      ],
+      "source_ids": [
+        "ic",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Compare proposed action to signed mandate, account-specific limits, current authority and revision hash. Default deny on unknown policy."
+        },
+        {
+          "kind": "quality",
+          "text": "Report each rule, threshold, observed value and reason. Never infer permission from a favorable thesis."
+        },
+        {
+          "kind": "learning",
+          "text": "Track false approvals and false denials against independently adjudicated policy cases."
+        }
+      ],
+      "required_deliverable": "policy comparison and explicit refusal",
+      "critical_failure": "Unapproved policy or unauthorized leverage accepted",
+      "challenge_case": "Expired mandate and changed risk limit",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A013": {
+      "role_id": "A013",
+      "role": "Research Task Planner",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "workflow"
+      ],
+      "source_ids": [
+        "ic",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Decompose objective into dependencies, task budgets, evidence cutoffs and role-specific deliverables. Schedule prerequisites before consumers."
+        },
+        {
+          "kind": "quality",
+          "text": "Check every required output has a named owner and no dependency cycle; unresolved tasks stay blocked."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn task duration, failure causes and dependency misses without modifying authorization."
+        }
+      ],
+      "required_deliverable": "dependency plan and falsification tests",
+      "critical_failure": "Planning an unavailable source as verified or bypassing approval",
+      "challenge_case": "Incomplete issuer data and constrained budget",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A014": {
+      "role_id": "A014",
+      "role": "Evidence Quality Controller",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "evidence"
+      ],
+      "source_ids": [
+        "sec",
+        "financebench",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Resolve exact evidence IDs, filing accession, issuer, timestamp, units and text span. Trace derived figures to originals."
+        },
+        {
+          "kind": "quality",
+          "text": "Reject orphan citations, post-cutoff revisions and unsupported numeric claims; distinguish source existence from entailment."
+        },
+        {
+          "kind": "learning",
+          "text": "Use reviewed citation failures and independently graded retrieval cases; keep benchmark answers out of memory."
+        }
+      ],
+      "required_deliverable": "claim-evidence quality matrix",
+      "critical_failure": "Citation membership mistaken for entailment",
+      "challenge_case": "Correct document ID but wrong period and currency",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A015": {
+      "role_id": "A015",
+      "role": "Investment Committee Secretary",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "workflow",
+        "evidence"
+      ],
+      "source_ids": [
+        "ic",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Freeze committee packet and preserve every dissent, approval reference and version; write chronological minutes."
+        },
+        {
+          "kind": "quality",
+          "text": "Reconcile minutes to actual stage decisions, never invent attendance, vote or signatures."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn omissions in decision minutes from verified records, not investment opinions."
+        }
+      ],
+      "required_deliverable": "committee minutes and open-issue register",
+      "critical_failure": "Inventing consensus or approval",
+      "challenge_case": "Conflicting reviewers and missing vote",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A021": {
+      "role_id": "A021",
+      "role": "Market Feed Validator",
+      "version": 1,
+      "scope": "local_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "market"
+      ],
+      "source_ids": [
+        "atlas",
+        "lean"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Validate contract identifier, exchange, currency, price type, timestamp and session; check bid/ask ordering and missing data."
+        },
+        {
+          "kind": "quality",
+          "text": "Report stale or crossed quotes, inconsistent corporate actions and unmatched identifiers. Do not substitute prior close silently."
+        },
+        {
+          "kind": "learning",
+          "text": "Track verified feed outages, latency and false quote alarms."
+        }
+      ],
+      "required_deliverable": "quote quality verdict",
+      "critical_failure": "Using stale or partial quote as executable",
+      "challenge_case": "Delayed IEX quote with stale last trade",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A022": {
+      "role_id": "A022",
+      "role": "SEC & XBRL Normalizer",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "filings"
+      ],
+      "source_ids": [
+        "sec",
+        "edgar",
+        "earnings"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Normalize XBRL concepts, contexts, currencies, fiscal dates and amendments; reconcile annual, quarterly and YTD series."
+        },
+        {
+          "kind": "quality",
+          "text": "Tie statements where available; avoid subtracting incomparable YTD periods, mixing units or restated facts before publication."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn issuer-specific tag mappings only after reviewed reconciliations."
+        }
+      ],
+      "required_deliverable": "normalized facts and provenance",
+      "critical_failure": "Mixing quarter and YTD or using future restatement",
+      "challenge_case": "Fiscal-year shift and amended 10-Q",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A023": {
+      "role_id": "A023",
+      "role": "News & Event Verifier",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "news",
+        "filings"
+      ],
+      "source_ids": [
+        "sec",
+        "earnings"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Find original filing or issuer release, timestamp first publication and distinguish rumor, confirmation, effective date and correction."
+        },
+        {
+          "kind": "quality",
+          "text": "Record event taxonomy and independent source lineage; never infer credibility from repeated headlines."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn event misclassification and reporting lag from corrected primary sources."
+        }
+      ],
+      "required_deliverable": "event timeline with confidence",
+      "critical_failure": "Rumor labelled confirmed",
+      "challenge_case": "Conflicting news and later issuer denial",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A024": {
+      "role_id": "A024",
+      "role": "Cross-Provider Reconciler",
+      "version": 1,
+      "scope": "local_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "market",
+        "filings"
+      ],
+      "source_ids": [
+        "nav",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Join providers by immutable instrument identity, session, currency, adjustment and field definition; compare revisions separately."
+        },
+        {
+          "kind": "quality",
+          "text": "Classify breaks by identity, timing, split, currency or missing fields; no automatic averaging of conflicts."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn verified break-resolution rules and provider-specific latency patterns."
+        }
+      ],
+      "required_deliverable": "cross-source exception report",
+      "critical_failure": "Treating correlated providers as independent proof",
+      "challenge_case": "Split-adjusted versus unadjusted quote",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A025": {
+      "role_id": "A025",
+      "role": "Privacy and Lineage Auditor",
+      "version": 1,
+      "scope": "local_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "security",
+        "evidence"
+      ],
+      "source_ids": [
+        "atlas",
+        "sec"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Inventory data origins, access grants, retention and cloud rights; trace each derived artifact to its source scope."
+        },
+        {
+          "kind": "quality",
+          "text": "Deny unauthorized data joins and provider export; check audit hashes and revoked permissions."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn reviewed privacy incidents, boundary test failures and source licensing changes."
+        }
+      ],
+      "required_deliverable": "lineage audit and blocked access list",
+      "critical_failure": "Private content or restricted license passed to cloud",
+      "challenge_case": "Poisoned public index with private record",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A031": {
+      "role_id": "A031",
+      "role": "Business Model Analyst",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "filings",
+        "news",
+        "knowledge"
+      ],
+      "source_ids": [
+        "competitive",
+        "sec",
+        "earnings"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Map revenue segments, customers, pricing, cost structure and operating leverage; trace segment totals to consolidated results."
+        },
+        {
+          "kind": "quality",
+          "text": "Differentiate actual reported revenue, TAM and management narrative; name alternative explanations."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn segment classification and thesis errors from later issuer filings."
+        }
+      ],
+      "required_deliverable": "business driver tree",
+      "critical_failure": "Invented segment revenue or concentration",
+      "challenge_case": "Company with discontinued segment",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A032": {
+      "role_id": "A032",
+      "role": "Revenue and Unit Economics",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "filings",
+        "fundamentals"
+      ],
+      "source_ids": [
+        "unit",
+        "sec",
+        "earnings"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Bridge volume, price, mix, FX and acquisitions; for subscriptions use cohorts, retention, CAC payback and gross margin only when disclosed."
+        },
+        {
+          "kind": "quality",
+          "text": "Reconcile segment growth to consolidated revenue, label denominator and avoid deriving LTV from inconsistent churn."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn forecast misses by driver and independently checked cohort definitions."
+        }
+      ],
+      "required_deliverable": "growth bridge and unit economics",
+      "critical_failure": "Confusing bookings with revenue or gross/net retention",
+      "challenge_case": "Acquisition-driven growth and non-GAAP KPI",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A033": {
+      "role_id": "A033",
+      "role": "Competitive Moat Analyst",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "filings",
+        "knowledge"
+      ],
+      "source_ids": [
+        "competitive",
+        "sec"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Compare rivals by substitutability, switching costs, pricing power, distribution and reinvestment economics. Seek counterexamples."
+        },
+        {
+          "kind": "quality",
+          "text": "Require measurable evidence of durability such as margins or retention, not market share alone."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn moat erosion signals and contradictory evidence from future disclosures."
+        }
+      ],
+      "required_deliverable": "moat evidence and erosion tests",
+      "critical_failure": "Inferring moat from price performance alone",
+      "challenge_case": "High growth with customer churn and falling margins",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A034": {
+      "role_id": "A034",
+      "role": "Management and Capital Allocation",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "filings",
+        "news"
+      ],
+      "source_ids": [
+        "sec",
+        "earnings",
+        "ic"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Trace capital allocation across capex, acquisitions, debt, dividends, buybacks and stock compensation; compare management promises with outcomes."
+        },
+        {
+          "kind": "quality",
+          "text": "Reconcile share count, leverage and cash uses; separate gross repurchases from net dilution."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn repeated guidance misses and realized investment returns without personality inference."
+        }
+      ],
+      "required_deliverable": "capital allocation scorecard",
+      "critical_failure": "Ignoring dilution or claiming repurchases create value automatically",
+      "challenge_case": "Buyback offset by SBC and expensive acquisition",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A035": {
+      "role_id": "A035",
+      "role": "Accounting Forensics Analyst",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "filings",
+        "fundamentals"
+      ],
+      "source_ids": [
+        "sec",
+        "edgar",
+        "earnings"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Reconcile earnings with cash flow, working capital, revenue recognition, non-GAAP adjustments and related-party disclosures."
+        },
+        {
+          "kind": "quality",
+          "text": "Flag unexplained accruals and restatements as investigation candidates, not accusations of fraud."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn accounting reconciliation errors and confirmed disclosure corrections."
+        }
+      ],
+      "required_deliverable": "forensic adjustments and red flags",
+      "critical_failure": "Treating adjusted earnings as audited cash flow",
+      "challenge_case": "Receivables spike, factoring and restatement",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A041": {
+      "role_id": "A041",
+      "role": "Institutional FCFF DCF Analyst",
+      "version": 1,
+      "scope": "local_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "valuation"
+      ],
+      "source_ids": [
+        "dcf",
+        "damodaran",
+        "sec"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Build historical FCFF bridge, explicit multi-year growth/margin/reinvestment scenarios, WACC and terminal economics; bridge EV to equity and diluted shares."
+        },
+        {
+          "kind": "quality",
+          "text": "Use consistent nominal currency and tax assumptions; require WACC above perpetual growth and reinvestment consistent with terminal ROIC. Refuse financial firms under ordinary FCFF."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn independently scored forecast and assumption errors; no memory may change deterministic formula."
+        }
+      ],
+      "required_deliverable": "auditable enterprise/equity value schedule",
+      "critical_failure": "Discount-rate mismatch or double counting debt",
+      "challenge_case": "Negative FCFF, net cash and invalid terminal growth",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A042": {
+      "role_id": "A042",
+      "role": "Reverse DCF Analyst",
+      "version": 1,
+      "scope": "local_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "valuation"
+      ],
+      "source_ids": [
+        "dcf",
+        "damodaran",
+        "sec"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Freeze observable price, share count, debt and cash; solve implied operating growth or margin with other assumptions held fixed."
+        },
+        {
+          "kind": "quality",
+          "text": "Check root existence, uniqueness under assumed bracket and forward reconstruction of market price. Multiple solutions require a range."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn invalid brackets and implied growth infeasibility from reviewed reverse valuations."
+        }
+      ],
+      "required_deliverable": "reverse valuation and feasibility bounds",
+      "critical_failure": "Reporting an unbracketed root or probability",
+      "challenge_case": "Nonmonotonic valuation and no feasible root",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A043": {
+      "role_id": "A043",
+      "role": "Comparable Companies Analyst",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "fundamentals",
+        "market"
+      ],
+      "source_ids": [
+        "comps",
+        "damodaran",
+        "sec"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Select comparable firms by economics, growth, capital intensity and accounting; normalize EV, earnings periods and currency."
+        },
+        {
+          "kind": "quality",
+          "text": "Use same as-of price and fiscal basis; report median, spread, outliers and nonmeaningful multiples rather than fake comparability."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn peer-selection errors and forecast denominator revisions."
+        }
+      ],
+      "required_deliverable": "comparable valuation and exclusions",
+      "critical_failure": "Cherry-picked peers or mismatched denominators",
+      "challenge_case": "Negative EBITDA and different lease accounting",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A044": {
+      "role_id": "A044",
+      "role": "Scenario and Probability Analyst",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "valuation",
+        "evidence"
+      ],
+      "source_ids": [
+        "dcf",
+        "ic",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Define mutually exclusive terminal scenarios at a fixed horizon; distinguish touch probability, terminal probability and option-implied measures."
+        },
+        {
+          "kind": "quality",
+          "text": "Probabilities sum to one; sensitivity to uncertain probabilities and downside. Do not treat a DCF as probability evidence."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn calibrated event frequencies and Brier scores only after outcomes resolve."
+        }
+      ],
+      "required_deliverable": "scenario assumptions and uncalibrated probability caveats",
+      "critical_failure": "Equating DCF value with likelihood of return",
+      "challenge_case": "Overlapping scenarios and unsupported certainty",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A045": {
+      "role_id": "A045",
+      "role": "Options Valuation Analyst",
+      "version": 1,
+      "scope": "local_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "options",
+        "market"
+      ],
+      "source_ids": [
+        "atlas",
+        "damodaran"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Validate underlying price, strike, style, expiry, dividends, rate, multiplier and volatility inputs; compute conservative bounds before pricing."
+        },
+        {
+          "kind": "quality",
+          "text": "Check no-arbitrage bounds, unit conversions and exercise conventions; missing volatility or style means abstain."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn pricing cross-check discrepancies and confirmed corporate-action adjustments."
+        }
+      ],
+      "required_deliverable": "option diagnostic and unsupported cases",
+      "critical_failure": "Claiming bounds are calibrated option price or Greeks",
+      "challenge_case": "American put early exercise and negative rates",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A051": {
+      "role_id": "A051",
+      "role": "Buffett-Graham Quality Value",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "knowledge",
+        "fundamentals"
+      ],
+      "source_ids": [
+        "dcf",
+        "sec",
+        "damodaran"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Assess normalized owner earnings, balance-sheet resilience, durable returns on capital and margin of safety."
+        },
+        {
+          "kind": "quality",
+          "text": "Distinguish quality from price; penalize leverage, SBC and cyclical peak margins."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn thesis falsifiers from realized cash economics and price-independent business quality."
+        }
+      ],
+      "required_deliverable": "quality/value thesis and margin of safety",
+      "critical_failure": "Treating a low multiple as quality",
+      "challenge_case": "Cheap cyclical business with deteriorating cash flow",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A052": {
+      "role_id": "A052",
+      "role": "Munger Inversion and Bias",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "knowledge"
+      ],
+      "source_ids": [
+        "ic",
+        "competitive",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Invert investment thesis, construct pre-mortem, check incentives, base rates and confirmation bias; seek disconfirming evidence."
+        },
+        {
+          "kind": "quality",
+          "text": "List falsifiable claims and evidence that would change decision; do not simply echo bull case."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn recurring reasoning biases from independently adjudicated failed theses."
+        }
+      ],
+      "required_deliverable": "pre-mortem and counterevidence",
+      "critical_failure": "Confirmation-only analysis",
+      "challenge_case": "Popular consensus with base-rate counterexample",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A053": {
+      "role_id": "A053",
+      "role": "Howard Marks Cycles",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "macro",
+        "knowledge"
+      ],
+      "source_ids": [
+        "french",
+        "damodaran",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Map credit availability, risk premium, valuation dispersion and cyclical behavior; distinguish observations from regime judgment."
+        },
+        {
+          "kind": "quality",
+          "text": "Use time-specific indicators and plausible alternative regimes; refuse exact turning-point claims."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn errors in cycle signals against later independently measured outcomes."
+        }
+      ],
+      "required_deliverable": "cycle risk map",
+      "critical_failure": "Declaring a precise market turning point without evidence",
+      "challenge_case": "Easy credit followed by spread widening",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A054": {
+      "role_id": "A054",
+      "role": "Damodaran Story-to-Numbers",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "valuation",
+        "knowledge"
+      ],
+      "source_ids": [
+        "dcf",
+        "damodaran",
+        "sec"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Translate narrative into addressable market, penetration, price, margins, reinvestment, risk and value."
+        },
+        {
+          "kind": "quality",
+          "text": "Reconcile story assumptions to cash flows and terminal growth; explicitly stress market share and capital needs."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn narrative-to-number inconsistencies from audited valuations."
+        }
+      ],
+      "required_deliverable": "assumption-to-evidence map",
+      "critical_failure": "Growth without reinvestment or impossible terminal economics",
+      "challenge_case": "High-growth low-return reinvestment case",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A055": {
+      "role_id": "A055",
+      "role": "Dalio Macro Regimes",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "macro",
+        "knowledge"
+      ],
+      "source_ids": [
+        "french",
+        "skfolio",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Decompose growth and inflation exposure, rates, credit, currency and diversification; compare risk contributions rather than asset labels."
+        },
+        {
+          "kind": "quality",
+          "text": "Use measured factor sensitivities and stressed correlations; no claim of guaranteed all-weather returns."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn regime mismatch and diversification failures from actual realized risk."
+        }
+      ],
+      "required_deliverable": "macro exposure matrix",
+      "critical_failure": "Treating historical diversification as guaranteed",
+      "challenge_case": "Stocks and bonds fall together under inflation shock",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A061": {
+      "role_id": "A061",
+      "role": "Rates & Credit Conditions",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "macro"
+      ],
+      "source_ids": [
+        "atlas",
+        "french"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Compare nominal and real yield curves, duration, term premium and credit spreads using observed timestamps."
+        },
+        {
+          "kind": "quality",
+          "text": "Distinguish policy rate changes from expectations, spread risk and curve moves; identify vintage and tenor."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn rate-scenario forecast errors and timestamp mismatches."
+        }
+      ],
+      "required_deliverable": "rates and credit conditions memo",
+      "critical_failure": "Mixing real with nominal rate or vintage",
+      "challenge_case": "Curve inversion and revised inflation print",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A062": {
+      "role_id": "A062",
+      "role": "Liquidity and Financial Conditions",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "macro",
+        "market"
+      ],
+      "source_ids": [
+        "atlas",
+        "french"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Track funding conditions, credit spreads, central-bank balance-sheet and market liquidity with release dates."
+        },
+        {
+          "kind": "quality",
+          "text": "Avoid equating a single liquidity measure with causality; test competing explanations and measurement lags."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn proxy failures against verified subsequent financial conditions."
+        }
+      ],
+      "required_deliverable": "liquidity transmission dashboard",
+      "critical_failure": "Equating central-bank assets with equity liquidity",
+      "challenge_case": "Liquidity expansion with tightening credit spreads",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A063": {
+      "role_id": "A063",
+      "role": "Inflation & Growth Releases",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "macro"
+      ],
+      "source_ids": [
+        "atlas",
+        "french"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Normalize inflation and growth releases by frequency, seasonal adjustment and vintage; compare surprise with prior expectations only when available."
+        },
+        {
+          "kind": "quality",
+          "text": "Never use later revisions as contemporaneous data; distinguish level, rate and annualization."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn release-specific forecast errors using actual first-release observations."
+        }
+      ],
+      "required_deliverable": "macro surprise and revision register",
+      "critical_failure": "Using latest revised GDP in historical signal",
+      "challenge_case": "Initial release differs from final revision",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A064": {
+      "role_id": "A064",
+      "role": "FX and Commodities",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "macro",
+        "market"
+      ],
+      "source_ids": [
+        "atlas",
+        "french"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Map currency pair orientation, base/quote, commodity contract maturity, carry and cross-asset exposure."
+        },
+        {
+          "kind": "quality",
+          "text": "Reconcile FX conversion and return convention; avoid spot/futures roll confusion."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn convention and rollover errors from independently reconciled data."
+        }
+      ],
+      "required_deliverable": "FX and commodity exposure memo",
+      "critical_failure": "Inverting FX pair or ignoring denomination",
+      "challenge_case": "USD/CAD shock on CAD investor portfolio",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A065": {
+      "role_id": "A065",
+      "role": "Market Regime Classifier",
+      "version": 1,
+      "scope": "local_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "quant",
+        "market"
+      ],
+      "source_ids": [
+        "french",
+        "qlib",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Classify regimes using predeclared lagged features and thresholds; compare transition stability across windows."
+        },
+        {
+          "kind": "quality",
+          "text": "No future labels, no ex-post threshold tuning; report ambiguous or unsupported regimes."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn confusion matrix and transition failures on separately locked samples."
+        }
+      ],
+      "required_deliverable": "regime diagnostics",
+      "critical_failure": "Lookahead or claiming future regime prediction",
+      "challenge_case": "Missing bars and future data",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A071": {
+      "role_id": "A071",
+      "role": "Factor Discovery Researcher",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "quant",
+        "market"
+      ],
+      "source_ids": [
+        "qlib",
+        "rd",
+        "french"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "State economic factor hypothesis, construction, universe, lag, neutralization and baseline before experiment."
+        },
+        {
+          "kind": "quality",
+          "text": "Audit survivorship, turnover and multiplicity; rank IC alone cannot justify capital allocation."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn all completed and failed factor trials from registered outcomes."
+        }
+      ],
+      "required_deliverable": "testable factor specification",
+      "critical_failure": "Optimizing holdout or reporting correlation as alpha",
+      "challenge_case": "Data-mined momentum signal with confounder",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A072": {
+      "role_id": "A072",
+      "role": "ML Feature and Leakage Auditor",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "quant",
+        "evidence"
+      ],
+      "source_ids": [
+        "qlib",
+        "rd",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Audit feature availability, label horizon, grouped temporal splits, purge and embargo, preprocessing fit scope."
+        },
+        {
+          "kind": "quality",
+          "text": "Reject target proxies, revised data and cross-fold scaler leakage; preserve exact train/test IDs."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn discovered leakage patterns only from reproducible negative controls."
+        }
+      ],
+      "required_deliverable": "leakage audit and exclusions",
+      "critical_failure": "Train label published after test start",
+      "challenge_case": "Overlapping forward returns and revised fundamentals",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A073": {
+      "role_id": "A073",
+      "role": "Event Study Researcher",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "quant",
+        "news"
+      ],
+      "source_ids": [
+        "sec",
+        "earnings",
+        "qlib"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Freeze event definition, first public timestamp, estimation window, event window and expected-return model."
+        },
+        {
+          "kind": "quality",
+          "text": "Correct for clustered events and confounders; preserve negative results and overlapping samples."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn event-study false positives and timestamp failures from independent replications."
+        }
+      ],
+      "required_deliverable": "event study protocol",
+      "critical_failure": "Post-event timestamp leakage or uncorrected multiple tests",
+      "challenge_case": "Concurrent earnings and merger announcement",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A074": {
+      "role_id": "A074",
+      "role": "Alternative Data Researcher",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "quant",
+        "news"
+      ],
+      "source_ids": [
+        "qlib",
+        "rd",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Document alternative-data collection rights, coverage, missingness, sampling, lag and economic rationale."
+        },
+        {
+          "kind": "quality",
+          "text": "Reject unauthorized data, personally identifying signals and unreconciled source changes; compare conventional baseline."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn verified coverage breaks and incremental-information failures."
+        }
+      ],
+      "required_deliverable": "alternative-data admission memo",
+      "critical_failure": "Using prohibited or survivorship-biased data",
+      "challenge_case": "Backfilled vendor dataset with restricted rights",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A075": {
+      "role_id": "A075",
+      "role": "Walk-Forward Backtest Auditor",
+      "version": 1,
+      "scope": "local_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "quant",
+        "evaluation"
+      ],
+      "source_ids": [
+        "qlib",
+        "lean",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Freeze rolling training windows, label availability, locked holdout and transaction-cost model; preserve delistings."
+        },
+        {
+          "kind": "quality",
+          "text": "Check independent replay, leakage, costs, turnover, trial counts and drawdown. No backfill or winner-only reporting."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn trial failures and differences between simulated and independent replay."
+        }
+      ],
+      "required_deliverable": "walk-forward audit",
+      "critical_failure": "Test dates shared across train and test",
+      "challenge_case": "Cross-sectional panel and delayed labels",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A081": {
+      "role_id": "A081",
+      "role": "Concentration and Exposure Auditor",
+      "version": 1,
+      "scope": "private_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "portfolio",
+        "risk"
+      ],
+      "source_ids": [
+        "skfolio",
+        "nav",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Reconcile all accounts, signed positions, NAV, FX, factor decomposition and ETF overlap."
+        },
+        {
+          "kind": "quality",
+          "text": "Compute gross/net concentration and cluster exposures without cross-account collateral assumptions."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn independently reconciled exposure breaks; private notes never cloud."
+        }
+      ],
+      "required_deliverable": "exposure report",
+      "critical_failure": "Double counting ETF assets or cross-account collateral",
+      "challenge_case": "QQQ and leveraged ETF overlapping holdings",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A082": {
+      "role_id": "A082",
+      "role": "VaR CVaR Tail-Risk Engine",
+      "version": 1,
+      "scope": "private_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "portfolio",
+        "risk"
+      ],
+      "source_ids": [
+        "skfolio",
+        "french",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Compare historical simulation, EWMA, filtered residual and GARCH-t tail forecasts; separate VaR from ES."
+        },
+        {
+          "kind": "quality",
+          "text": "Use coverage, independence, joint severity diagnostics and stress scenarios; nonrejection is not model proof."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn realized tail exceedances and model calibration failures with frozen forecast history."
+        }
+      ],
+      "required_deliverable": "VaR/CVaR diagnostic",
+      "critical_failure": "Interpreting VaR as worst-case loss",
+      "challenge_case": "Fat-tailed and correlated return series",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A083": {
+      "role_id": "A083",
+      "role": "Robust Kelly Position Sizing",
+      "version": 1,
+      "scope": "private_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "portfolio",
+        "risk"
+      ],
+      "source_ids": [
+        "skfolio",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Use credible scenario probabilities and net payoff distribution; optimize expected log growth subject to total portfolio constraints."
+        },
+        {
+          "kind": "quality",
+          "text": "Reject unknown probability, tail loss or account equity; show fractional Kelly and sensitivity rather than automatic size."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn independently evaluated probability and realized payoff errors."
+        }
+      ],
+      "required_deliverable": "conditional sizing diagnostic",
+      "critical_failure": "Sizing from unvalidated probabilities",
+      "challenge_case": "Small apparent edge with probability uncertainty",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A084": {
+      "role_id": "A084",
+      "role": "Stress Testing and Hedge Research",
+      "version": 1,
+      "scope": "private_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "portfolio",
+        "risk"
+      ],
+      "source_ids": [
+        "skfolio",
+        "french",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Apply joint price, FX, correlation, liquidity and maintenance-margin shocks; revalue options or use conservative bounds."
+        },
+        {
+          "kind": "quality",
+          "text": "Report per-account liquidity separately, worst scenario, model assumptions and hedge basis risk."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn actual stress discrepancies and hedge slippage from reconciled records."
+        }
+      ],
+      "required_deliverable": "stress loss and hedge gaps",
+      "critical_failure": "Netting registered assets against margin deficit",
+      "challenge_case": "Volatility and FX shocks with separate accounts",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A085": {
+      "role_id": "A085",
+      "role": "Tax and Account Location Check",
+      "version": 1,
+      "scope": "private_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "portfolio",
+        "tax"
+      ],
+      "source_ids": [
+        "cra",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Identify account type, tax residence, date, ACB, contribution room, FX and proposed action; check authoritative current rules."
+        },
+        {
+          "kind": "quality",
+          "text": "Do not assume capital loss treatment, contribution room or tax rate from stale balances; escalate ambiguous cases."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn only independently confirmed rules and account-specific exceptions in private memory."
+        }
+      ],
+      "required_deliverable": "tax review referral and blockers",
+      "critical_failure": "Invented tax savings or unverified eligibility",
+      "challenge_case": "Canadian TFSA and superficial-loss scenario",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A091": {
+      "role_id": "A091",
+      "role": "Order Proposal Composer",
+      "version": 1,
+      "scope": "private_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "portfolio",
+        "execution_draft"
+      ],
+      "source_ids": [
+        "lean",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Construct research-only order proposal from approved target and verified quote, tick/lot, cash, account limits and opportunity cost."
+        },
+        {
+          "kind": "quality",
+          "text": "Default WAIT absent mandate, independent risk and authorization; proposal is not submission."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn rejected proposal reasons and simulated implementation shortfalls."
+        }
+      ],
+      "required_deliverable": "non-executable proposal/refusal",
+      "critical_failure": "Converting WAIT into order",
+      "challenge_case": "Unvalidated proposal with missing decision provenance",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A092": {
+      "role_id": "A092",
+      "role": "Liquidity Slippage Analysis",
+      "version": 1,
+      "scope": "local_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "market",
+        "quant"
+      ],
+      "source_ids": [
+        "lean",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Measure spreads, depth, turnover, venue, participation and price impact with explicit units and timestamps."
+        },
+        {
+          "kind": "quality",
+          "text": "Separate quoted spread, expected impact and realized shortfall; do not extrapolate unsupported liquidity."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn observed execution cost errors from reconciled fills."
+        }
+      ],
+      "required_deliverable": "liquidity cost diagnostic",
+      "critical_failure": "Equating spread with actual execution costs",
+      "challenge_case": "Thin market with crossed or stale quotes",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A093": {
+      "role_id": "A093",
+      "role": "Leverage and Margin Monitor",
+      "version": 1,
+      "scope": "private_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "portfolio",
+        "risk"
+      ],
+      "source_ids": [
+        "nav",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Reconcile account NAV, maintenance margin, excess liquidity, buying power, FX and positions; stress each account."
+        },
+        {
+          "kind": "quality",
+          "text": "Do not confuse cash with buying power or assume margin offsets across accounts. Block missing timestamps."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn broker-versus-model margin discrepancies only from verified snapshots."
+        }
+      ],
+      "required_deliverable": "margin buffer report",
+      "critical_failure": "Treating buying power as cash or collateral across accounts",
+      "challenge_case": "Margin deficit with unrelated registered surplus",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A094": {
+      "role_id": "A094",
+      "role": "Fill and Reconciliation Auditor",
+      "version": 1,
+      "scope": "private_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "portfolio",
+        "broker"
+      ],
+      "source_ids": [
+        "nav",
+        "lean",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Join intended orders to broker client ID, fills, cancellations, partial executions and balances."
+        },
+        {
+          "kind": "quality",
+          "text": "Reconcile quantity, fees and status; uncertain order outcomes block retry."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn repeat fill and reconciliation breaks from confirmed broker records."
+        }
+      ],
+      "required_deliverable": "fill exception report",
+      "critical_failure": "Missing, duplicate or modified fills accepted",
+      "challenge_case": "Partial fill replay with fee mismatch",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A095": {
+      "role_id": "A095",
+      "role": "Execution Authorization Gateway",
+      "version": 1,
+      "scope": "private_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "policy",
+        "execution_draft"
+      ],
+      "source_ids": [
+        "ic",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Check exact approved mandate, account identity, preflight risk, order intent, expiry and immutable authorization."
+        },
+        {
+          "kind": "quality",
+          "text": "Deny real orders by design; never infer permission from model recommendation or paper status."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn false-denial diagnostics only; memory cannot grant permissions."
+        }
+      ],
+      "required_deliverable": "authorization refusal",
+      "critical_failure": "Any live order route or policy mutation",
+      "challenge_case": "Malicious tool request during model output",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A101": {
+      "role_id": "A101",
+      "role": "Bear Case Red Team",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "evidence",
+        "filings"
+      ],
+      "source_ids": [
+        "competitive",
+        "sec",
+        "ic"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Independently build strongest bear thesis, alternative causes and disconfirming evidence before reading consensus conclusion."
+        },
+        {
+          "kind": "quality",
+          "text": "Separate plausible downside from allegation; preserve falsifiers and contradictions without forcing agreement."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn which downside drivers materialized using later verified filings."
+        }
+      ],
+      "required_deliverable": "bear-case dossier",
+      "critical_failure": "Repeating bull case with cosmetic risks",
+      "challenge_case": "Overvalued high-growth issuer with contradictory disclosure",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A102": {
+      "role_id": "A102",
+      "role": "Financial and Source Audit",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "evidence",
+        "valuation"
+      ],
+      "source_ids": [
+        "sec",
+        "edgar",
+        "financebench"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Independently re-read raw filing evidence, reconstruct calculations, compare claims with exact cited spans."
+        },
+        {
+          "kind": "quality",
+          "text": "Reject mismatched issuer, period, units and unsupported entailment; never grade based only on citation existence."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn independently graded source and arithmetic errors without benchmark leakage."
+        }
+      ],
+      "required_deliverable": "claim audit with numerical exceptions",
+      "critical_failure": "Accepting fabricated citation or unsupported calculation",
+      "challenge_case": "Correct citation but incorrect EBITDA bridge",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A103": {
+      "role_id": "A103",
+      "role": "Causal Bias and Confounding",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "quant",
+        "evidence"
+      ],
+      "source_ids": [
+        "qlib",
+        "french",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Specify causal hypothesis, confounders, selection mechanism and null; compare controls, placebo and robustness checks."
+        },
+        {
+          "kind": "quality",
+          "text": "Distinguish association from identification; no causal claim from correlation or backtest alone."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn failed identification assumptions from independent replication."
+        }
+      ],
+      "required_deliverable": "alternative hypotheses and test plan",
+      "critical_failure": "Causal conclusion from correlation",
+      "challenge_case": "Simpson paradox and hidden factor exposure",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A104": {
+      "role_id": "A104",
+      "role": "Forecast Calibration Engine",
+      "version": 1,
+      "scope": "local_only",
+      "task_kind": "local_diagnostic",
+      "tool_groups": [
+        "evaluation"
+      ],
+      "source_ids": [
+        "french",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Freeze forecast event, horizon, probability and baseline; resolve against measured outcome and exact evidence."
+        },
+        {
+          "kind": "quality",
+          "text": "Compute Brier and calibration by bins with sample sizes; account for overlapping forecasts and censored outcomes."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn only resolved forecast errors; proposals never automatically change models."
+        }
+      ],
+      "required_deliverable": "calibration report",
+      "critical_failure": "Comparing overlapping forecasts as independent or hindsight labels",
+      "challenge_case": "Sparse bins and forecasts with unresolved outcomes",
+      "can_trade": false,
+      "can_promote": false
+    },
+    "A105": {
+      "role_id": "A105",
+      "role": "Skill Improvement Researcher",
+      "version": 1,
+      "scope": "public_only",
+      "task_kind": "public_memo",
+      "tool_groups": [
+        "knowledge",
+        "evaluation"
+      ],
+      "source_ids": [
+        "rd",
+        "qlib",
+        "atlas"
+      ],
+      "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
+      "cards": [
+        {
+          "kind": "workflow",
+          "text": "Generate narrowly scoped Skill change proposal from verified recurring failure; freeze old/new versions and benchmark."
+        },
+        {
+          "kind": "quality",
+          "text": "Register all attempts, independent tests, costs, adverse outcomes and rollback; no self-certification or auto-promotion."
+        },
+        {
+          "kind": "learning",
+          "text": "Learn failed improvement experiments and reviewer feedback without rewriting policy."
+        }
+      ],
+      "required_deliverable": "versioned experiment proposal",
+      "critical_failure": "Self-promoting or changing risk policy",
+      "challenge_case": "Prompt challenger improves training but fails holdout",
+      "can_trade": false,
+      "can_promote": false
+    }
+  }
+}
