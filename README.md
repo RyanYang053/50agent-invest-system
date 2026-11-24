@@ -84,3 +84,7 @@ Run `python -m atlas_pro.public_acceptance` for a small developer-visible public
 ### 0.12 evidence recomputation (research-only)
 
 See [Evidence Recalculation and Public Benchmarks](docs/0.12.0%20Evidence%20Recalculation%20and%20Public%20Benchmarks.md). G3 and performance gates now independently recompute machine-verifiable metrics from joined artifacts. The public-data reference experiments use actual macro/industrial data, but are not historical PIT stock-return experiments or evidence of investment performance. `atlas-empirical` and the optional, rights-gated `atlas-financebench-reference` are developer benchmarks, not L6 certification. No live trading.
+
+### 0.13 — scoped RAG verification
+
+Lexical ranking now uses an ephemeral authorized, time-filtered and issuer-filtered FTS corpus rather than global document frequency statistics. Local limits: 20,000 eligible documents and 64 million characters; beyond these bounds fail closed and deploy a validated scoped retrieval backend. Evidence snippets include exact offsets and SHA-256. `atlas-financebench --jsonl /private/financebench.jsonl --confirm-noncommercial-evaluation-rights` runs the actual retrieval engine on the pinned noncommercial developer sample, without uploading raw content or calling models. It is annotated-page retrieval only, not independent G3 acceptance. The optional noncommercial workflow runs once for the same-repository personal development PR, then requires explicit manual rights confirmation.
