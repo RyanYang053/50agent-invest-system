@@ -240,3 +240,24 @@ def test_shadow_comparison_rejects_short_and_synthetic(tmp_path):
     for plan in (a,b):j.append(plan,ledger,session_close=CLOSE1,evidence_by_security=ids)
     r=j.compare(a,b,trial_count=1,max_drawdown=.25)
     assert 'INSUFFICIENT_DEPENDENT_OBSERVATIONS' in r['reasons'] and not r['promotion_allowed'] and r['requires_independent_data_qualification']
+
+def test_shadow_shared_window_reuses_evidence(tmp_path):
+    from atlas_pro.return_feed import TiingoEOD
+    c,rid,clock,j,ledger=setup(tmp_path)
+    binds={s:{'source_id':'tiingo_eod','license_id':'TIINGO_EOD_PERSONAL','data_class':'licensed','ticker':s} for s in BINDINGS}
+    a=start(c,rid,j,source_bindings=binds,synthetic=False)
+    b=start(c,rid,j,source_bindings=binds,synthetic=False,cost_bps=20)
+    calls=[]
+    def fetch(*args):calls.append(args);return tiingo_bars()
+    feed=TiingoEOD(TII_POLICY,transport=fetch,clock=clock)
+    assert feed.tick_batch(j,ledger,[a,b])['plans'][a]['status']=='NOT_DUE'
+    assert not calls
+    clock.at='2026-11-25T01:16:00Z'
+    x=feed.tick_batch(j,ledger,[a,b],max_fetches=2)
+    assert x['plans'][a]['status']=='FETCH_BUDGET_EXHAUSTED' and not calls
+    x=feed.tick_batch(j,ledger,[a,b],max_fetches=3)
+    assert x['fetches_reserved']==3 and len(calls)==3
+    assert all(v['status']=='RECORDED' for v in x['plans'].values())
+    with j._db() as db:
+        _,ad,_=j._load(db,a);_,bd,_=j._load(db,b)
+        assert ad[0]['evidence_by_security']==bd[0]['evidence_by_security']
