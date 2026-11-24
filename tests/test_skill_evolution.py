@@ -18,7 +18,7 @@ def reasons():return [digest(i) for i in range(3)]
 @pytest.mark.parametrize("rid",sorted(catalog()))
 def test_propose_isolation(state,rid):
     e,clock,_=state
-    rows=[{"role_id":rid,"status":"NO_EVIDENCE","result_hash":h} for h in reasons()]
+    rows=[{"role_id":rid,"status":"NO_EVIDENCE","result_hash":digest('same failure'),"task":h} for h in reasons()]
     ids=e.reflect(rid,rows);assert len(ids)==1
     assert e.reflect(rid,rows)==ids
     p=e.preview(ids[0]);orig=load();changed=p["employee_packs"]
