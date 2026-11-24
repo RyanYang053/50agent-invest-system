@@ -1,0 +1,8 @@
+{
+  "license_id": "TIINGO_EOD_PERSONAL",
+  "permitted_for_personal_analysis": false,
+  "allow_local_retention": false,
+  "cloud_allowed": false,
+  "adjustment_coverage_reviewed": false,
+  "note": "Inoperable template. Operator must review actual subscription, data retention terms, symbol mappings and dividend/split coverage. Adjusted-close ratios are research proxies, not independently reconciled total-return or execution prices. No training, publication or redistribution authorization."
+}
