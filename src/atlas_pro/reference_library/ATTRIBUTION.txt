@@ -2,3 +2,10 @@ Unmodified reference files from anthropics/financial-services, pinned commit 3e3
 Licensed under Apache License, Version 2.0. See LICENSE.txt.
 Original source URLs and Git blob IDs are recorded in employee_packs.json.
 No endorsement by upstream authors is implied. Files are reference data, not Atlas executable instructions.
+
+Additional unmodified documentation:
+qlib_data.rst: microsoft/qlib@54355232463878d2eebb91fe0ee5fa7fa1f5976c/docs/component/data.rst; MIT; see microsoft_qlib_LICENSE.txt
+qlib_workflow.rst: microsoft/qlib@54355232463878d2eebb91fe0ee5fa7fa1f5976c/docs/component/workflow.rst; MIT; see microsoft_qlib_LICENSE.txt
+rd_model.rst: microsoft/RD-Agent@484776c211e4fbbeef03e0ec00d6bbee7362a4f4/docs/scens/model_agent_fin.rst; MIT; see microsoft_rd_agent_LICENSE.txt
+skfolio_portfolio.rst: skfolio/skfolio@10dc6a5d038df356d60c2a64821721afbfb4f693/docs/user_guide/portfolio.rst; BSD-3-Clause; see skfolio_skfolio_LICENSE.txt
+skfolio_backtest.rst: skfolio/skfolio@10dc6a5d038df356d60c2a64821721afbfb4f693/docs/user_guide/backtesting_and_evaluation.rst; BSD-3-Clause; see skfolio_skfolio_LICENSE.txt

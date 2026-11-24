@@ -18,7 +18,7 @@ def local_reference(role_id,query,*,limit=5):
     for s in reference_plan(role_id):
         name=s.get("local_reference")
         if not name:continue
-        if s.get("license")!="Apache-2.0" or not re.fullmatch(r"[a-z]+\.md",name):raise PermissionError("reference license or filename")
+        if s.get("license") not in ("Apache-2.0","MIT","BSD-3-Clause") or not re.fullmatch(r"[a-z0-9_]+\.(md|rst)",name):raise PermissionError("reference license or filename")
         raw=root.joinpath(name).read_bytes()
         if len(raw)>250000:raise ValueError("reference too large")
         actual=hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\0"+raw).hexdigest()

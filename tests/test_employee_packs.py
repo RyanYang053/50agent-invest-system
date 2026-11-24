@@ -47,5 +47,5 @@ def test_upstream_reference_is_actual_pinned_text_and_isolated():
             assert hashlib.sha256(hit["text"].encode()).hexdigest()==hit["excerpt_sha256"]
     results=local_reference("A041","WACC terminal value")
     assert results and {x["source_id"] for x in results}=={"dcf"}
-    assert not local_reference("A082","WACC terminal value")
+    assert all(x["source_id"]!="dcf" for x in local_reference("A082","WACC terminal value"))
     assert not local_reference("A085","tax")

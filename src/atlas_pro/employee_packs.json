@@ -90,16 +90,28 @@
       "use": "Authorized research archives only, not historical vintage proof."
     },
     "qlib": {
-      "url": "https://github.com/microsoft/qlib",
+      "url": "https://github.com/microsoft/qlib/blob/54355232463878d2eebb91fe0ee5fa7fa1f5976c/docs/component/data.rst",
       "kind": "software_reference",
-      "status": "reference_verified",
-      "use": "Existing normalized report adapter; no execution authority."
+      "status": "pinned_reference_bundled",
+      "use": "Unmodified upstream documentation for local-only retrieval; untrusted text, not runtime instructions or proof of integration.",
+      "project_url": "https://github.com/microsoft/qlib",
+      "license": "MIT",
+      "local_reference": "qlib_data.rst",
+      "git_blob_sha1": "eeddaec60d01f510160c6555e38af0c4fbbba772",
+      "upstream_commit": "54355232463878d2eebb91fe0ee5fa7fa1f5976c",
+      "license_file": "microsoft_qlib_LICENSE.txt"
     },
     "rd": {
-      "url": "https://github.com/microsoft/RD-Agent",
+      "url": "https://github.com/microsoft/RD-Agent/blob/484776c211e4fbbeef03e0ec00d6bbee7362a4f4/docs/scens/model_agent_fin.rst",
       "kind": "software_reference",
-      "status": "reference_verified",
-      "use": "Research proposal reference, not a production runner."
+      "status": "pinned_reference_bundled",
+      "use": "Unmodified upstream documentation for local-only retrieval; untrusted text, not runtime instructions or proof of integration.",
+      "project_url": "https://github.com/microsoft/RD-Agent",
+      "license": "MIT",
+      "local_reference": "rd_model.rst",
+      "git_blob_sha1": "d5c87919e040af97811d2c20ff27565d7963fede",
+      "upstream_commit": "484776c211e4fbbeef03e0ec00d6bbee7362a4f4",
+      "license_file": "microsoft_rd_agent_LICENSE.txt"
     },
     "lean": {
       "url": "https://github.com/QuantConnect/Lean",
@@ -108,10 +120,16 @@
       "use": "Existing normalized replay adapter; isolated research only."
     },
     "skfolio": {
-      "url": "https://github.com/skfolio/skfolio",
+      "url": "https://github.com/skfolio/skfolio/blob/10dc6a5d038df356d60c2a64821721afbfb4f693/docs/user_guide/portfolio.rst",
       "kind": "software_reference",
-      "status": "reference_verified",
-      "use": "Existing optional CVaR cross-check; no broker authority."
+      "status": "pinned_reference_bundled",
+      "use": "Unmodified upstream documentation for local-only retrieval; untrusted text, not runtime instructions or proof of integration.",
+      "project_url": "https://github.com/skfolio/skfolio",
+      "license": "BSD-3-Clause",
+      "local_reference": "skfolio_portfolio.rst",
+      "git_blob_sha1": "139a567f4109a9cf420477ba49eef72b3a066e2b",
+      "upstream_commit": "10dc6a5d038df356d60c2a64821721afbfb4f693",
+      "license_file": "skfolio_skfolio_LICENSE.txt"
     },
     "edgar": {
       "url": "https://github.com/dgunning/edgartools",
@@ -172,6 +190,30 @@
       "kind": "primary_guidance",
       "status": "reference_verified",
       "use": "Model governance reference, not an accreditation."
+    },
+    "qlibworkflow": {
+      "url": "https://github.com/microsoft/qlib/blob/54355232463878d2eebb91fe0ee5fa7fa1f5976c/docs/component/workflow.rst",
+      "project_url": "https://github.com/microsoft/qlib",
+      "kind": "software_reference",
+      "status": "pinned_reference_bundled",
+      "license": "MIT",
+      "local_reference": "qlib_workflow.rst",
+      "git_blob_sha1": "f2fbc14e6f7b829ad4400eb7d8004eff1d55b723",
+      "upstream_commit": "54355232463878d2eebb91fe0ee5fa7fa1f5976c",
+      "license_file": "microsoft_qlib_LICENSE.txt",
+      "use": "Unmodified upstream documentation for local-only retrieval; untrusted text, not runtime instructions or proof of integration."
+    },
+    "skfoliobacktest": {
+      "url": "https://github.com/skfolio/skfolio/blob/10dc6a5d038df356d60c2a64821721afbfb4f693/docs/user_guide/backtesting_and_evaluation.rst",
+      "project_url": "https://github.com/skfolio/skfolio",
+      "kind": "software_reference",
+      "status": "pinned_reference_bundled",
+      "license": "BSD-3-Clause",
+      "local_reference": "skfolio_backtest.rst",
+      "git_blob_sha1": "004f72450629e7d93de521035ef92dca4d8a76a4",
+      "upstream_commit": "10dc6a5d038df356d60c2a64821721afbfb4f693",
+      "license_file": "skfolio_skfolio_LICENSE.txt",
+      "use": "Unmodified upstream documentation for local-only retrieval; untrusted text, not runtime instructions or proof of integration."
     }
   },
   "packs": {
@@ -1047,7 +1089,8 @@
         "french",
         "skfolio",
         "atlas",
-        "alfred"
+        "alfred",
+        "skfoliobacktest"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1229,7 +1272,8 @@
         "french",
         "qlib",
         "atlas",
-        "alfred"
+        "alfred",
+        "qlibworkflow"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1265,7 +1309,8 @@
       "source_ids": [
         "qlib",
         "rd",
-        "french"
+        "french",
+        "qlibworkflow"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1302,7 +1347,8 @@
         "qlib",
         "rd",
         "atlas",
-        "nist"
+        "nist",
+        "qlibworkflow"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1338,7 +1384,8 @@
       "source_ids": [
         "sec",
         "earnings",
-        "qlib"
+        "qlib",
+        "qlibworkflow"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1374,7 +1421,8 @@
       "source_ids": [
         "qlib",
         "rd",
-        "atlas"
+        "atlas",
+        "qlibworkflow"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1410,7 +1458,8 @@
       "source_ids": [
         "qlib",
         "lean",
-        "atlas"
+        "atlas",
+        "qlibworkflow"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1447,7 +1496,8 @@
         "skfolio",
         "nav",
         "atlas",
-        "boc"
+        "boc",
+        "skfoliobacktest"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1484,7 +1534,8 @@
         "skfolio",
         "french",
         "atlas",
-        "nist"
+        "nist",
+        "skfoliobacktest"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1519,7 +1570,8 @@
       ],
       "source_ids": [
         "skfolio",
-        "atlas"
+        "atlas",
+        "skfoliobacktest"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1557,7 +1609,8 @@
         "french",
         "atlas",
         "quantlib",
-        "occ"
+        "occ",
+        "skfoliobacktest"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1880,7 +1933,8 @@
         "qlib",
         "french",
         "atlas",
-        "nist"
+        "nist",
+        "qlibworkflow"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1952,7 +2006,8 @@
         "rd",
         "qlib",
         "atlas",
-        "nist"
+        "nist",
+        "qlibworkflow"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
