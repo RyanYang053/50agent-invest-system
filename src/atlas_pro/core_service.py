@@ -20,6 +20,7 @@ from .agent_memory import MemoryStore
 from .independent_review import load_trust
 from .filing_ingest import ingest_recent_filings,SECArchiveTransport
 from .macro_ingest import ingest_macro
+from .bls_ingest import ingest_bls,SERIES as BLS_SERIES
 
 
 def execute_batch(screen_result,executor,journal,*,run_id,at,max_candidates=3,roles=None,macro=False):
@@ -102,7 +103,9 @@ def main(argv=None):
                 except (RuntimeError,ValueError,PermissionError,KeyError,TypeError) as e:ingestion.append({'status':'FILING_INGEST_BLOCKED','symbol':c['symbol'],'error_type':type(e).__name__})
         if a.macro_policies:
             for pol in load(a.macro_policies):
-                try:ingestion.append(ingest_macro(client,ledger,index,series=pol['series_id'],policy=pol))
+                try:
+                    fn=ingest_bls if pol['series_id'] in BLS_SERIES else ingest_macro
+                    ingestion.append(fn(client,ledger,index,series=pol['series_id'],policy=pol))
                 except (RuntimeError,ValueError,PermissionError,KeyError,TypeError) as e:ingestion.append({'status':'MACRO_INGEST_BLOCKED','error_type':type(e).__name__})
         tasks=list(PUBLIC_TASKS) if a.macro_policies else None
         out={'screen':result,'ingestion':ingestion,'research':execute_batch(result,executor,RoleJournal(d/'role_jobs.sqlite',memory=memory),run_id=a.run_id,at=datetime.now(timezone.utc).isoformat(),max_candidates=a.max_candidates,roles=tasks,macro=bool(a.macro_policies)),'can_trade':False}
