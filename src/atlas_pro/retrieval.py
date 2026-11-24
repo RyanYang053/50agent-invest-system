@@ -94,7 +94,7 @@ class ResearchIndex:
         norm_a=math.sqrt(sum(x*x for x in a)); norm_b=math.sqrt(sum(x*x for x in b))
         return sum(x*y for x,y in zip(a,b))/(norm_a*norm_b) if norm_a and norm_b else 0.0
 
-    def search(self, query:str, *, decision_at:str, scope:str='public_only', security_id:str='', top_k:int=5, embed=None, vector_backend=None):
+    def search(self, query:str, *, decision_at:str, scope:str='public_only', security_id:str='', top_k:int=5, embed=None, vector_backend=None, exclude_sources=()):
         decision_at=iso(decision_at).isoformat()
         if scope not in ('public_only','private_local'):
             raise ValueError('INVALID_RETRIEVAL_SCOPE')
@@ -109,6 +109,11 @@ class ResearchIndex:
         clauses=['d.available_at<=?']; params=[decision_at]
         if scope=='public_only': clauses.append("d.scope='public'")
         if security_id: clauses.append('d.security_id=?'); params.append(security_id)
+        if not isinstance(exclude_sources,(tuple,list)) or len(exclude_sources)>32 or any(not isinstance(s,str) or not s for s in exclude_sources):raise ValueError('INVALID_SOURCE_EXCLUSION')
+        if exclude_sources:
+            clauses.append('d.source_id NOT IN ('+','.join('?' for _ in exclude_sources)+')');params.extend(exclude_sources)
+            # External vector backends cannot enforce this extra boundary before ranking.
+            if vector_backend is not None:embed=None;vector_backend=None
         where=' AND '.join(clauses)
         fts_query=' OR '.join('"'+term.replace('"','')+'"' for term in terms)
         with self._db() as c:
