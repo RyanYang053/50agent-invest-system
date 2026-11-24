@@ -1,0 +1,12 @@
+# Qlib developer reference runtime; build separately from offline execution.
+# Top-level pins are NOT a full transitive supply-chain lock.
+FROM python:3.12-slim
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 HOME=/tmp OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 MPLCONFIGDIR=/tmp/mpl
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 && rm -rf /var/lib/apt/lists/*
+COPY pyproject.toml ./
+COPY src ./src
+RUN python -m pip install --no-cache-dir 'numpy==2.2.6' 'pandas==2.2.3' 'scipy==1.15.3' 'scikit-learn==1.6.1' 'mlflow==3.1.1' 'pyqlib==0.9.7' && python -m pip install --no-cache-dir --no-deps .
+USER 65532:65532
+ENTRYPOINT ["python","-m","atlas_pro.sandbox_entry"]
+CMD ["--demo","--qlib"]
