@@ -1,0 +1,11 @@
+{
+  "mode": "ALPACA_PAPER_ONLY",
+  "live_execution": false,
+  "owner_confirmed_paper_only": false,
+  "account_id": "REPLACE_WITH_DEDICATED_PAPER_ACCOUNT_UUID",
+  "allowed_symbols": ["SPY"],
+  "max_order_usd": 1000,
+  "max_position_weight": 0.10,
+  "min_cash_weight": 0.20,
+  "max_gross_weight": 0.80
+}
