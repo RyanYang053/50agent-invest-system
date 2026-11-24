@@ -7,6 +7,36 @@ from .research import num
 import math
 
 
+def self_financing_rebalance(weights, previous_weights, cost_rate):
+    """Exact long-only rebalancing with targets measured after transaction fees.
+
+    Solve lambda + c * sum(abs(lambda*w_i-p_i)) = 1, excluding CASH.
+    The function is strictly increasing for c < 1. All notional fractions are
+    measured against pre-trade NAV; no borrowing or cash injection.
+    """
+    cost_rate=num(cost_rate)
+    if not 0<=cost_rate<=.1:raise ValueError('invalid cost rate')
+    a={k:num(v) for k,v in weights.items()};b={k:num(v) for k,v in previous_weights.items()}
+    for w in (a,b):
+        if not w or any(not isinstance(k,str) or not k or v<0 for k,v in w.items()) or abs(sum(w.values())-1)>1e-8:
+            raise ValueError('invalid rebalance weights')
+    keys=sorted((set(a)|set(b))-{'CASH'})
+    def traded(scale):
+        return math.fsum(abs(scale*a.get(k,0)-b.get(k,0)) for k in keys)
+    if cost_rate==0:return traded(1.),0.
+    if traded(1.)==0:return 0.,0.
+    lo,hi=0.,1.
+    for _ in range(64):
+        mid=(lo+hi)/2
+        if mid+cost_rate*traded(mid)>1:hi=mid
+        else:lo=mid
+    scale=(lo+hi)/2;turnover=traded(scale);fee=cost_rate*turnover
+    cash=b.get('CASH',0)-math.fsum(scale*a.get(k,0)-b.get(k,0) for k in keys)-fee
+    if abs(scale+fee-1)>1e-12 or abs(cash-scale*a.get('CASH',0))>3e-8:
+        raise ArithmeticError('self-financing invariant')
+    return turnover,fee
+
+
 def replay_periods(periods,*,initial_nav=1.0,cost_bps=10.0):
     """Long-only fully invested unlevered targets + explicit CASH; total-return bars.
     Each period is non-overlapping. Targets are frozen before executable start;
@@ -25,8 +55,8 @@ def replay_periods(periods,*,initial_nav=1.0,cost_bps=10.0):
         weights={k:num(v) for k,v in p['weights'].items()}; returns={k:num(v) for k,v in p['total_returns'].items()}
         if any(v<0 for v in weights.values()) or abs(sum(weights.values())-1)>1e-8 or not set(weights).issubset(returns):raise ValueError('invalid weights or missing returns')
         if any(v< -1 for v in returns.values()):raise ValueError('impossible unlevered return')
-        turnover=sum(abs(weights.get(k,0)-previous_weights.get(k,0)) for k in set(weights)|set(previous_weights) if k!='CASH')
-        fee=wealth*turnover*costs; net_start=wealth-fee
+        turnover,fee_fraction=self_financing_rebalance(weights,previous_weights,costs)
+        fee=wealth*fee_fraction; net_start=wealth-fee
         if net_start<=0:raise ValueError('portfolio insolvent')
         gross_return=sum(v*returns[k] for k,v in weights.items()); wealth=net_start*(1+gross_return)
         b=num(p['benchmark_total_return'])

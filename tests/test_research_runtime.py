@@ -205,7 +205,8 @@ def test_learning_no_early_outcome(tmp_path):
 def period():return {'signal_at':OLD,'start_at':NOW,'end_at':FUT,'historical_universe_verified':True,'corporate_actions_verified':True,'universe_evidence_id':'fixture','signal_evidence_available_at':[OLD],'weights':{'TEST':.8,'CASH':.2},'total_returns':{'TEST':.1,'CASH':0},'benchmark_total_return':.04}
 
 def test_backtest_costs():
-    r=replay_periods([period()],cost_bps=10);assert r['total_cost']==pytest.approx(.0008) and r['total_return']==pytest.approx(.9992*1.08-1)
+    r=replay_periods([period()],cost_bps=10);fee=.0008/1.0008
+    assert r['total_cost']==pytest.approx(fee) and r['total_return']==pytest.approx((1-fee)*1.08-1)
 
 @pytest.mark.parametrize('patch',[{'signal_at':NOW},{'signal_evidence_available_at':[FUT]},{'historical_universe_verified':False},{'total_returns':{'CASH':0}}])
 def test_backtest_rejects_leakage_or_missing(patch):
