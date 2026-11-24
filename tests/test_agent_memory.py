@@ -115,3 +115,49 @@ def test_role_journal_automatic_episode_and_restart(env,tmp_path):
     RoleJournal(tmp_path/"jobs.sqlite",memory=s).execute(Executor(),"A031",**kw)
     assert m.stats()["episodes"]==1
     assert s.bind("A032").stats()["episodes"]==0
+
+
+def test_runner_uses_only_own_approved_public_annotations(env):
+    from atlas_pro.runtime import ResearchModelRunner
+    from atlas_pro.skill_contracts import contract
+    s,now,trust,review=env
+    m=s.bind("A031");other=s.bind("A033")
+    query=contract("A031")["research_query"]
+    text="business model evidence economics "+query[:200]
+    a=propose(m,visibility="public_reviewed",text=text);m.approve(a,review(m,a,True))
+    b=propose(other,visibility="public_reviewed",text=text+" other role");other.approve(b,review(other,b,True))
+    pending=propose(m,topic="pending",visibility="public_reviewed",text=text+" quarantine")
+    class Gateway:
+        roles={"A031":{"role":"Business Model Analyst","data_scope":"public_only","minimum_effort":"low"}}
+        registry={"model":{"provider":"openai","model_id":"mock"}}
+        def select_and_reserve(self,**kw):
+            return {"status":"RESERVED","model":"model"}
+    class Index:
+        def search(self,*a,**kw):return [{"doc_id":"filing","text":"public source evidence"}]
+    calls=[]
+    def transport(provider,body):
+        calls.append(json.loads(body["input"]))
+        return {"status":"completed","output":[{"type":"message","content":[{"type":"output_text","text":json.dumps({"claims":[{"claim":"claim","evidence_ids":["filing"]}],"uncertainties":[],"countercase":""})}]}],"usage":{"input_tokens":100,"output_tokens":100}}
+    runner=ResearchModelRunner(Gateway(),Index(),transport,memory=s)
+    args=dict(role_id="A031",task_set=task_id("A031"),request_id="run",security_id="CIK:1",query=query,at=now[0].isoformat())
+    result=runner.run(**args)
+    assert result["status"]=="UNVERIFIED_RESEARCH_MEMO"
+    assert result["evidence_ids"]==["filing"]
+    assert [x["memory_id"] for x in calls[0]["role_memory_annotations"]]==[a]
+    assert b not in json.dumps(calls[0]) and pending not in json.dumps(calls[0])
+    def bad_transport(provider,body):
+        return {"status":"completed","output":[{"type":"message","content":[{"type":"output_text","text":json.dumps({"claims":[{"claim":"claim","evidence_ids":[a]}],"uncertainties":[],"countercase":""})}]}],"usage":{"input_tokens":100,"output_tokens":100}}
+    runner=ResearchModelRunner(Gateway(),Index(),bad_transport,memory=s)
+    assert runner.run(**args)["status"]=="MODEL_OUTPUT_REJECTED"
+
+def test_real_ledger_source_scope_and_integrity(tmp_path):
+    from atlas_pro.ledger import EvidenceLedger
+    at="2026-11-24T12:00:00Z"
+    ledger=EvidenceLedger(tmp_path/"ledger.sqlite")
+    policy={"license_id":"public","permitted_for_personal_analysis":True,"cloud_allowed":True}
+    ledger.add_evidence({"record_id":"public-source","source_id":"test","document_id":"test","security_id":"CIK:1","observed_at":at,"published_at":at,"available_at":at,"payload":{"revenue":42},"data_class":"public","license_id":"public"},policy=policy)
+    s=MemoryStore(tmp_path/"memory",ledger,clock=lambda:at)
+    m=s.bind("A031");assert len(propose(m))==64
+    with pytest.raises(ValueError):propose(m,security_id="CIK:2")
+    with ledger._db() as c:c.execute("UPDATE evidence SET payload_json='{}'")
+    with pytest.raises(ValueError):propose(m,topic="different")
