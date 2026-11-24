@@ -66,3 +66,39 @@ def test_rights_before_network(tmp_path):
     p=POL|{"allow_historical_research":False}
     c=AlpacaResearchQuotes(policy=p,transport=lambda *a:pytest.fail("unexpected network"),api_key="fixture",api_secret="fixture")
     with pytest.raises(PermissionError):ingest_daily(c,EvidenceLedger(tmp_path/"e"),symbol="ABC",security_id="CIK:1",start=START,end=END,policy=p,clock=lambda:AT)
+
+def test_maintenance_watchlist_actual_role_dispatch(tmp_path):
+    pytest.importorskip("exchange_calendars")
+    import json
+    from pathlib import Path
+    from datetime import date
+    from atlas_pro.daily_bars import refresh_daily
+    root=tmp_path/"private";root.mkdir(mode=0o700)
+    roles=json.loads((Path(__file__).resolve().parents[1]/"config/50 agent manifest.json").read_text())
+    end=AT.astimezone(NY).date()-timedelta(days=1)
+    days=list(sessions(end-timedelta(days=180),end))
+    data=[]
+    for i,d in enumerate(days):
+        c=100+i*.1
+        data.append({"t":datetime.combine(d,datetime.min.time(),NY).astimezone(timezone.utc).isoformat(),"o":c,"h":c+1,"l":c-1,"c":c,"v":1000})
+    def factory(*,policy):
+        return AlpacaResearchQuotes(policy=policy,transport=lambda *args:{"bars":{"ABC":data},"next_page_token":None},api_key="fixture",api_secret="fixture")
+    l=EvidenceLedger(root/"evidence.sqlite")
+    result=refresh_daily(root,l,[POL],roles,clock=lambda:AT,client_factory=factory)
+    assert len(result)==1
+    out=result[0]["role_result"]
+    assert out["role_id"]=="A065" and out["status"]=="PRICE_BEHAVIOR_DIAGNOSTIC" and not out["can_trade"]
+    assert out["reference_context"]["role_id"]=="A065"
+    from atlas_pro.agent_memory import MemoryStore
+    assert MemoryStore(root/"agent-memory",l).bind("A065").stats()["episodes"]==1
+
+def test_maintenance_daily_route_and_no_repeat(tmp_path):
+    from atlas_pro.maintenance import tick
+    calls=[];config={"daily_bar_policies":[POL],"reflect":False}
+    with pytest.raises(ValueError):tick(tmp_path/"private",config,network=True)
+    def runner(p):
+        calls.append(p);return [{"status":"fixture"}]
+    args={"network":True,"clock":lambda:AT,"roles":[],"daily_runner":runner}
+    r=tick(tmp_path/"private",config,**args)
+    assert r["reports"]==[{"type":"daily_price_behavior","result":[{"status":"fixture"}]}]
+    assert tick(tmp_path/"private",config,**args)==r and len(calls)==1
