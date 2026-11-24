@@ -103,9 +103,9 @@ class Evolution:
         if role_id not in catalog() or not isinstance(episodes,list) or len(episodes)>1000:raise ValueError("episode bounds")
         groups={k:set() for k in CHECKS}
         for e in episodes:
-            if e.get("role_id")!=role_id or not ishash(e.get("result_hash")):raise PermissionError("episode scope or integrity")
+            if e.get("role_id")!=role_id or not ishash(e.get("result_hash")) or not ishash(e.get("task")):raise PermissionError("episode scope or integrity")
             check=STATUS_CHECK.get(e.get("status"))
-            if check:groups[check].add(e["result_hash"])
+            if check:groups[check].add(digest({'task':e['task'],'result_hash':e['result_hash']}))
         return [self.propose(role_id,k,sorted(v)[:100]) for k,v in groups.items() if len(v)>=3]
     def preview(self,pid):
         with self.db() as c:
