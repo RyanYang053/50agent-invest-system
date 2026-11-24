@@ -44,7 +44,8 @@ def guidance(role_id):
 def main():
     a=argparse.ArgumentParser(description=__doc__);a.add_argument("role",nargs="?");a.add_argument("--query");v=a.parse_args()
     if v.role:
-        r={"pack":pack(v.role),"references":reference_plan(v.role),"retrieved_procedures":search(v.role,v.query) if v.query else [],"can_trade":False}
+        from .role_reference import local_reference
+        r={"pack":pack(v.role),"references":reference_plan(v.role),"retrieved_procedures":search(v.role,v.query) if v.query else [],"local_upstream_references":local_reference(v.role,v.query) if v.query else [],"can_trade":False}
     else:r=[{"role_id":k,"role":p["role"],"procedure_cards":len(p["cards"]),"source_ids":p["source_ids"],"review_status":p["review_status"]} for k,p in load()["packs"].items()]
     print(json.dumps(r,indent=2,allow_nan=False));return 0
 if __name__=="__main__":raise SystemExit(main())

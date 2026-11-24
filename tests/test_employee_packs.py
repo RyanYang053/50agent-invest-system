@@ -30,3 +30,22 @@ def test_unknown_and_bad_query():
 def test_benchmark_is_not_learning_source():
     assert load()["sources"]["financebench"]["kind"]=="evaluation_only"
     assert all(not s["automatic_ingestion"] for s in reference_plan("A102"))
+
+
+def test_upstream_reference_is_actual_pinned_text_and_isolated():
+    from atlas_pro.role_reference import local_reference
+    from importlib.resources import files
+    import hashlib
+    p=load()
+    for rid,role in p["packs"].items():
+        for hit in local_reference(rid,"cash flow valuation financial capital"):
+            assert hit["source_id"] in role["source_ids"]
+            assert hit["local_only"] and hit["untrusted_source_text"] and hit["not_financial_evidence"]
+            source=p["sources"][hit["source_id"]]
+            body=files("atlas_pro").joinpath("reference_library",source["local_reference"]).read_text(encoding="utf8")
+            assert body[hit["excerpt_start"]:hit["excerpt_end"]]==hit["text"]
+            assert hashlib.sha256(hit["text"].encode()).hexdigest()==hit["excerpt_sha256"]
+    results=local_reference("A041","WACC terminal value")
+    assert results and {x["source_id"] for x in results}=={"dcf"}
+    assert not local_reference("A082","WACC terminal value")
+    assert not local_reference("A085","tax")

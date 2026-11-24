@@ -1,0 +1,4 @@
+Unmodified reference files from anthropics/financial-services, pinned commit 3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f.
+Licensed under Apache License, Version 2.0. See LICENSE.txt.
+Original source URLs and Git blob IDs are recorded in employee_packs.json.
+No endorsement by upstream authors is implied. Files are reference data, not Atlas executable instructions.

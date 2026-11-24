@@ -6,49 +6,70 @@
       "kind": "method_reference",
       "license": "Apache-2.0",
       "status": "structure_inspected",
-      "use": "Original Atlas procedure adapted to role; do not execute upstream instructions."
+      "use": "Unmodified upstream reference text, local-only retrieval as untrusted source. Do not execute or send to model. Original Atlas procedure is separately authored.",
+      "local_reference": "dcf.md",
+      "git_blob_sha1": "cc17fc002b7e739d00e6b62c4c7a3a806b6f3f22",
+      "upstream_commit": "3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f"
     },
     "comps": {
       "url": "https://github.com/anthropics/financial-services/blob/3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f/plugins/vertical-plugins/financial-analysis/skills/comps-analysis/SKILL.md",
       "kind": "method_reference",
       "license": "Apache-2.0",
       "status": "structure_inspected",
-      "use": "Original Atlas procedure adapted to role; do not execute upstream instructions."
+      "use": "Unmodified upstream reference text, local-only retrieval as untrusted source. Do not execute or send to model. Original Atlas procedure is separately authored.",
+      "local_reference": "comps.md",
+      "git_blob_sha1": "8eea74c4f9c91e449657ca51d8e2c7f106f601dd",
+      "upstream_commit": "3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f"
     },
     "competitive": {
       "url": "https://github.com/anthropics/financial-services/blob/3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f/plugins/vertical-plugins/financial-analysis/skills/competitive-analysis/SKILL.md",
       "kind": "method_reference",
       "license": "Apache-2.0",
       "status": "structure_inspected",
-      "use": "Original Atlas procedure adapted to role; do not execute upstream instructions."
+      "use": "Unmodified upstream reference text, local-only retrieval as untrusted source. Do not execute or send to model. Original Atlas procedure is separately authored.",
+      "local_reference": "competitive.md",
+      "git_blob_sha1": "2632b3d1507424ac2d81578c7e05f81e7d54791d",
+      "upstream_commit": "3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f"
     },
     "earnings": {
       "url": "https://github.com/anthropics/financial-services/blob/3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f/plugins/vertical-plugins/equity-research/skills/earnings-analysis/SKILL.md",
       "kind": "method_reference",
       "license": "Apache-2.0",
       "status": "structure_inspected",
-      "use": "Original Atlas procedure adapted to role; do not execute upstream instructions."
+      "use": "Unmodified upstream reference text, local-only retrieval as untrusted source. Do not execute or send to model. Original Atlas procedure is separately authored.",
+      "local_reference": "earnings.md",
+      "git_blob_sha1": "447de2f9ec277f976eb2b52501465250c80e1adf",
+      "upstream_commit": "3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f"
     },
     "unit": {
       "url": "https://github.com/anthropics/financial-services/blob/3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f/plugins/vertical-plugins/private-equity/skills/unit-economics/SKILL.md",
       "kind": "method_reference",
       "license": "Apache-2.0",
       "status": "structure_inspected",
-      "use": "Original Atlas procedure adapted to role; do not execute upstream instructions."
+      "use": "Unmodified upstream reference text, local-only retrieval as untrusted source. Do not execute or send to model. Original Atlas procedure is separately authored.",
+      "local_reference": "unit.md",
+      "git_blob_sha1": "52a3ed8dcb6e6cb296b35f7fb46620cbc7edb21f",
+      "upstream_commit": "3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f"
     },
     "ic": {
       "url": "https://github.com/anthropics/financial-services/blob/3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f/plugins/vertical-plugins/private-equity/skills/ic-memo/SKILL.md",
       "kind": "method_reference",
       "license": "Apache-2.0",
       "status": "structure_inspected",
-      "use": "Original Atlas procedure adapted to role; do not execute upstream instructions."
+      "use": "Unmodified upstream reference text, local-only retrieval as untrusted source. Do not execute or send to model. Original Atlas procedure is separately authored.",
+      "local_reference": "ic.md",
+      "git_blob_sha1": "70cb5d2bcd45309e335bcc3638392c752aa9da0b",
+      "upstream_commit": "3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f"
     },
     "nav": {
       "url": "https://github.com/anthropics/financial-services/blob/3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f/plugins/vertical-plugins/fund-admin/skills/nav-tieout/SKILL.md",
       "kind": "method_reference",
       "license": "Apache-2.0",
       "status": "structure_inspected",
-      "use": "Original Atlas procedure adapted to role; do not execute upstream instructions."
+      "use": "Unmodified upstream reference text, local-only retrieval as untrusted source. Do not execute or send to model. Original Atlas procedure is separately authored.",
+      "local_reference": "nav.md",
+      "git_blob_sha1": "fa0824343cdba6ac995958cafcd80952fcbd95c0",
+      "upstream_commit": "3e32c2287dcb637c184c01cc0ad82d6af7e9bb0f"
     },
     "sec": {
       "url": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
@@ -115,6 +136,42 @@
       "kind": "internal_method",
       "status": "runtime_present",
       "use": "Existing deterministic implementation; no new authorization."
+    },
+    "alfred": {
+      "url": "https://fred.stlouisfed.org/docs/api/fred/alfred.html",
+      "kind": "primary_data",
+      "status": "reference_verified",
+      "use": "Existing vintage macro adapter; enforce release and series-level rights."
+    },
+    "bls": {
+      "url": "https://www.bls.gov/audience/developers.htm",
+      "kind": "primary_data",
+      "status": "reference_verified",
+      "use": "Official labor statistics; release-time and revision control."
+    },
+    "boc": {
+      "url": "https://www.bankofcanada.ca/valet/docs/",
+      "kind": "primary_data",
+      "status": "reference_verified",
+      "use": "Existing Valet macro adapter; use currency direction and release timestamps."
+    },
+    "occ": {
+      "url": "https://www.theocc.com/company-information/documents-and-archives/options-disclosure-document",
+      "kind": "primary_guidance",
+      "status": "reference_verified",
+      "use": "Current options disclosures; no trade authorization."
+    },
+    "quantlib": {
+      "url": "https://github.com/lballabio/QuantLib",
+      "kind": "software_reference",
+      "status": "reference_verified",
+      "use": "Reference for independent derivative valuation; not installed or enabled."
+    },
+    "nist": {
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+      "kind": "primary_guidance",
+      "status": "reference_verified",
+      "use": "Model governance reference, not an accreditation."
     }
   },
   "packs": {
@@ -131,7 +188,8 @@
       "source_ids": [
         "ic",
         "sec",
-        "atlas"
+        "atlas",
+        "nist"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -166,7 +224,8 @@
       ],
       "source_ids": [
         "ic",
-        "atlas"
+        "atlas",
+        "nist"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -235,7 +294,8 @@
       "source_ids": [
         "sec",
         "financebench",
-        "atlas"
+        "atlas",
+        "nist"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -444,7 +504,8 @@
       ],
       "source_ids": [
         "atlas",
-        "sec"
+        "sec",
+        "nist"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -659,7 +720,8 @@
       "source_ids": [
         "dcf",
         "damodaran",
-        "sec"
+        "sec",
+        "alfred"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -694,7 +756,8 @@
       "source_ids": [
         "dcf",
         "damodaran",
-        "sec"
+        "sec",
+        "alfred"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -801,7 +864,9 @@
       ],
       "source_ids": [
         "atlas",
-        "damodaran"
+        "damodaran",
+        "occ",
+        "quantlib"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -908,7 +973,8 @@
       "source_ids": [
         "french",
         "damodaran",
-        "atlas"
+        "atlas",
+        "alfred"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -980,7 +1046,8 @@
       "source_ids": [
         "french",
         "skfolio",
-        "atlas"
+        "atlas",
+        "alfred"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1014,7 +1081,9 @@
       ],
       "source_ids": [
         "atlas",
-        "french"
+        "french",
+        "alfred",
+        "boc"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1049,7 +1118,8 @@
       ],
       "source_ids": [
         "atlas",
-        "french"
+        "french",
+        "alfred"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1083,7 +1153,9 @@
       ],
       "source_ids": [
         "atlas",
-        "french"
+        "french",
+        "alfred",
+        "bls"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1118,7 +1190,9 @@
       ],
       "source_ids": [
         "atlas",
-        "french"
+        "french",
+        "boc",
+        "alfred"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1154,7 +1228,8 @@
       "source_ids": [
         "french",
         "qlib",
-        "atlas"
+        "atlas",
+        "alfred"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1226,7 +1301,8 @@
       "source_ids": [
         "qlib",
         "rd",
-        "atlas"
+        "atlas",
+        "nist"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1370,7 +1446,8 @@
       "source_ids": [
         "skfolio",
         "nav",
-        "atlas"
+        "atlas",
+        "boc"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1406,7 +1483,8 @@
       "source_ids": [
         "skfolio",
         "french",
-        "atlas"
+        "atlas",
+        "nist"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1477,7 +1555,9 @@
       "source_ids": [
         "skfolio",
         "french",
-        "atlas"
+        "atlas",
+        "quantlib",
+        "occ"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1617,7 +1697,9 @@
       ],
       "source_ids": [
         "nav",
-        "atlas"
+        "atlas",
+        "occ",
+        "boc"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1688,7 +1770,8 @@
       ],
       "source_ids": [
         "ic",
-        "atlas"
+        "atlas",
+        "nist"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1796,7 +1879,8 @@
       "source_ids": [
         "qlib",
         "french",
-        "atlas"
+        "atlas",
+        "nist"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1830,7 +1914,8 @@
       ],
       "source_ids": [
         "french",
-        "atlas"
+        "atlas",
+        "nist"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1866,7 +1951,8 @@
       "source_ids": [
         "rd",
         "qlib",
-        "atlas"
+        "atlas",
+        "nist"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [

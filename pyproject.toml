@@ -50,4 +50,4 @@ where = ["src"]
 include = ["atlas_pro*"]
 
 [tool.setuptools.package-data]
-atlas_pro = ["role_skills.json", "public_filing_smoke.json", "employee_packs.json"]
+atlas_pro = ["role_skills.json", "public_filing_smoke.json", "employee_packs.json", "reference_library/*.md", "reference_library/*.txt"]
