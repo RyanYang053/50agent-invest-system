@@ -1,0 +1,31 @@
+name: Public historical market allocation reference
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      confirm_research_rights:
+        description: Confirm research rights; do not publish raw data
+        type: boolean
+        required: true
+        default: false
+permissions:
+  contents: read
+jobs:
+  market-allocation:
+    if: >-
+      (github.event_name == 'workflow_dispatch' && inputs.confirm_research_rights == true) ||
+      (github.event_name == 'pull_request' && github.repository == 'RyanYang053/50agent-invest-system' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'atlas-0.16-market-allocation')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[market_calendar,test,quant]'
+      - run: python -m pytest -q tests/test_market_strategy.py
+      - run: |
+          curl --fail --location --proto '=https' --max-time 90 --max-filesize 2000000 'https://mba.tuck.dartmouth.edu/pages/Faculty/ken.french/ftp_202412/F-F_Research_Data_Factors_daily_CSV.zip' -o "$RUNNER_TEMP/french.zip"
+          python -m atlas_pro.market_strategy --zip "$RUNNER_TEMP/french.zip" --confirm-research-rights
+          rm -f "$RUNNER_TEMP/french.zip"
