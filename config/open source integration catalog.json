@@ -7,8 +7,8 @@
       "license_reported": "MIT",
       "last_push_date_utc": "2026-11-04",
       "contribution": "Sector-relative factor ranks; purged walk-forward; normalized research interchange",
-      "actual_status": "PIT normalized score importer via ledger; purged cross-sectional split; sector-factor ranking implemented and fixture-tested; Qlib engine not installed",
-      "acceptance_gate": "Execute locked real Qlib training and export scores in isolated worker"
+      "actual_status": "PIT normalized score importer via ledger; optional pinned Qlib 0.9.7 DataHandlerLP/DatasetH/LinearModel execution on Atlas purged folds implemented; dedicated network-isolated CI pending",
+      "acceptance_gate": "Pass dedicated Qlib synthetic execution CI, then execute on rights-cleared independently locked real PIT panel and verify score provenance"
     },
     {
       "repo": "https://github.com/microsoft/RD-Agent",
@@ -39,7 +39,7 @@
       "license_reported": "BSD-3-Clause",
       "last_push_date_utc": "2026-11-23",
       "contribution": "Risk/correlation constraints and CVaR optimization",
-      "actual_status": "SciPy optimizer tested; optional Portfolio CVaR cross-check adapter added; real skfolio test unavailable locally, CI job configured",
+      "actual_status": "SciPy optimizer tested; actual optional skfolio Portfolio CVaR cross-check passed on regular CI (PR #23)",
       "acceptance_gate": "Actual cross-check and broker-specific margin/FX/options validation"
     },
     {
@@ -71,7 +71,7 @@
       "license_reported": "Apache-2.0",
       "last_push_date_utc": "2026-11-23",
       "contribution": "Hybrid search with metadata filters and versioned dense vectors",
-      "actual_status": "Optional local in-memory Qdrant snapshot wired to RAG/runner/eval; scope/time/source checks and stale rebuild; actual package test unavailable locally, CI job configured",
+      "actual_status": "Optional local in-memory Qdrant snapshot wired to RAG/runner/eval; scope/time/source checks and stale rebuild; actual dependency integration CI passed (PR #23)",
       "acceptance_gate": "Real retrieval tests, performance/recall benchmark; persistent ANN only if needed"
     },
     {
@@ -79,7 +79,7 @@
       "license_reported": "MIT",
       "last_push_date_utc": "2026-11-23",
       "contribution": "Parquet/PIT analytics and larger datasets",
-      "actual_status": "Optional fixed-schema local Parquet as-of revision query; hash and license gates, actual package test unavailable locally, CI job configured",
+      "actual_status": "Optional fixed-schema local Parquet as-of revision query; hash and license gates; actual dependency integration CI passed (PR #23)",
       "acceptance_gate": "Real integration test and verified source completeness/warehouse ETL"
     },
     {
