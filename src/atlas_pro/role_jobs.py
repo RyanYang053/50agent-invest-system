@@ -178,8 +178,8 @@ class RoleJournal:
     """Append-only job intents/results. Interrupted paid calls require operator review.
     One transaction admits each job; no automatic resend after uncertain results.
     """
-    def __init__(self,path):
-        self.path=str(path)
+    def __init__(self,path,*,memory=None):
+        self.path=str(path);self.memory=memory
         with closing(sqlite3.connect(self.path)) as c,c:
             c.executescript('CREATE TABLE IF NOT EXISTS role_jobs(id TEXT PRIMARY KEY,request_hash TEXT NOT NULL,result TEXT,result_hash TEXT); CREATE TABLE IF NOT EXISTS batches(id TEXT PRIMARY KEY,request_hash TEXT NOT NULL);')
     def bind_batch(self,run_id,request):
@@ -188,6 +188,8 @@ class RoleJournal:
             c.execute('BEGIN IMMEDIATE');row=c.execute('SELECT request_hash FROM batches WHERE id=?',(run_id,)).fetchone()
             if row and row[0]!=rh:raise ValueError('batch inputs changed; use a new run ID')
             c.execute('INSERT OR IGNORE INTO batches VALUES(?,?)',(run_id,rh))
+    def _episode(self,role_id,jid,result,at):
+        if self.memory is not None:self.memory.bind(role_id).record_episode(task_id_value=jid,result_hash=digest(result),status=result.get('status','UNKNOWN'),at=at)
     def execute(self,executor,role_id,*,at,run_id,inputs):
         jid=digest({'role':role_id,'run_id':run_id});rh=digest({'at':iso(at).isoformat(),'inputs':inputs,'skill':task_id(role_id)})
         with closing(sqlite3.connect(self.path,timeout=10)) as c,c:
@@ -197,10 +199,12 @@ class RoleJournal:
                 if row[1] is None:return {'status':'UNRESOLVED_JOB_NO_RESEND','can_trade':False}
                 result=json.loads(row[1]);
                 if digest(result)!=row[2]:raise ValueError('job integrity failure')
+                self._episode(role_id,jid,result,at)
                 return result
             c.execute('INSERT INTO role_jobs VALUES(?,?,NULL,NULL)',(jid,rh))
         try:result=executor.run(role_id,at=at,run_id=run_id,inputs=inputs)
         except (ValueError,KeyError,PermissionError,TypeError,AttributeError,ArithmeticError) as e:result={'status':'BLOCKED_INPUT','error_type':type(e).__name__,'role_id':role_id,'can_trade':False}
         result=_safe(result);raw=json.dumps(result,sort_keys=True,allow_nan=False)
         with closing(sqlite3.connect(self.path,timeout=10)) as c,c:c.execute('UPDATE role_jobs SET result=?,result_hash=? WHERE id=? AND result IS NULL',(raw,digest(result),jid))
+        self._episode(role_id,jid,result,at)
         return result
