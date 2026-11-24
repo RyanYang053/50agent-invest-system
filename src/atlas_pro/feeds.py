@@ -11,7 +11,7 @@ from urllib.parse import urlencode,urlparse
 class ProviderUnavailable(RuntimeError):pass
 
 class PublicFeedClient:
-    HOSTS={'data.sec.gov','api.stlouisfed.org','www.bankofcanada.ca'}
+    HOSTS={'data.sec.gov','api.stlouisfed.org','www.bankofcanada.ca','api.bls.gov'}
     def __init__(self, transport,*,sec_user_agent:str='',fred_api_key:str=''):
         self.transport=transport
         self.sec_ua=sec_user_agent
@@ -44,6 +44,11 @@ class PublicFeedClient:
         q=urlencode({'series_id':series,'api_key':self.fred_key,'file_type':'json',
             'realtime_start':asof,'realtime_end':asof,'observation_start':observation_start})
         return self._fetch('https://api.stlouisfed.org/fred/series/observations?'+q)
+
+    def bls_series(self,series):
+        from .bls_ingest import SERIES
+        if series not in SERIES:raise ValueError('BAD_BLS_SERIES')
+        return self._fetch(f'https://api.bls.gov/publicAPI/v2/timeseries/data/{series}',{'Accept':'application/json'})
 
     def boc_observations(self,series='FXUSDCAD',*,recent=30):
         if not re.fullmatch('[A-Z0-9]{1,35}',series):raise ValueError('BAD_BOC_SERIES')

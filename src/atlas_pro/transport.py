@@ -12,7 +12,7 @@ class NoRedirect(HTTPRedirectHandler):
     def redirect_request(self,*args,**kwargs):return None
 
 class PublicJSONTransport:
-    HOSTS=frozenset({'data.sec.gov','api.stlouisfed.org','www.bankofcanada.ca'})
+    HOSTS=frozenset({'data.sec.gov','api.stlouisfed.org','www.bankofcanada.ca','api.bls.gov'})
     _lock=threading.Lock()
     _last={}
     def __init__(self, *, timeout=20, max_bytes=25_000_000, attempts=3):

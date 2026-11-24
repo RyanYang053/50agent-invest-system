@@ -20,6 +20,7 @@ from .agent_memory import MemoryStore
 from .independent_review import load_trust
 from .filing_ingest import ingest_recent_filings,SECArchiveTransport
 from .macro_ingest import ingest_macro
+from .bls_ingest import ingest_bls,SERIES as BLS_SERIES
 
 
 def execute_batch(screen_result,executor,journal,*,run_id,at,max_candidates=3,roles=None,macro=False):
@@ -67,9 +68,23 @@ def readiness():
     return {'status':'CONFIGURATION_CHECK_ONLY','credentials_present':{k:all(bool(os.getenv(v)) for v in vs) for k,vs in groups.items()},'network_verified':False,'broker_verified':False,'can_trade':False}
 
 
+def refresh_macro_sources(client,ledger,index,policies):
+    if not isinstance(policies,list) or not 1<=len(policies)<=20 or any(not isinstance(p,dict) or not isinstance(p.get('series_id'),str) for p in policies):raise ValueError('invalid macro policy list')
+    if len({p['series_id'] for p in policies})!=len(policies):raise ValueError('duplicate macro series policy')
+    reports=[]
+    for pol in policies:
+        try:
+            fn=ingest_bls if pol['series_id'] in BLS_SERIES else ingest_macro
+            reports.append(fn(client,ledger,index,series=pol['series_id'],policy=pol))
+        except (RuntimeError,ValueError,PermissionError,KeyError,TypeError) as e:
+            reports.append({'status':'MACRO_INGEST_BLOCKED','series_id':pol['series_id'],'error_type':type(e).__name__,'can_trade':False})
+    return reports
+
+
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__);sub=parser.add_subparsers(dest='cmd',required=True)
     sub.add_parser('readiness')
+    m=sub.add_parser('refresh-macro');m.add_argument('--data-dir',type=Path,required=True);m.add_argument('--macro-policies',type=Path,required=True);m.add_argument('--network',action='store_true')
     c=sub.add_parser('catalog');c.add_argument('--roles',type=Path,required=True)
     r=sub.add_parser('screen-research');r.add_argument('--universe',type=Path,required=True);r.add_argument('--data-dir',type=Path,required=True);r.add_argument('--sec-policy',type=Path,required=True);r.add_argument('--alpaca-policy',type=Path);r.add_argument('--roles',type=Path,required=True);r.add_argument('--models',type=Path,required=True);r.add_argument('--max-candidates',type=int,default=3);r.add_argument('--daily-budget',default='0');r.add_argument('--monthly-budget',default='0');r.add_argument('--paid-models',action='store_true');r.add_argument('--network',action='store_true');r.add_argument('--basis',choices=['annual','ttm'],default='ttm');r.add_argument('--run-id',required=True);r.add_argument('--filings-per-company',type=int,default=0,choices=range(0,6));r.add_argument('--macro-policies',type=Path)
     j=sub.add_parser('run-role');j.add_argument('role_id');j.add_argument('--inputs',type=Path,required=True);j.add_argument('--data-dir',type=Path,required=True);j.add_argument('--roles',type=Path,required=True);j.add_argument('--models',type=Path,required=True);j.add_argument('--at',required=True);j.add_argument('--run-id',required=True);j.add_argument('--paid-models',action='store_true');j.add_argument('--daily-budget',default='0');j.add_argument('--monthly-budget',default='0')
@@ -77,6 +92,13 @@ def main(argv=None):
     a=parser.parse_args(argv)
     if a.cmd=='readiness':out=readiness()
     elif a.cmd=='catalog':out=RoleExecutor(json.loads(a.roles.read_text()),None).catalog()
+    elif a.cmd=='refresh-macro':
+        if not a.network:raise PermissionError('explicit network consent required')
+        os.umask(0o077);d=private_dir(a.data_dir)
+        policies=json.loads(a.macro_policies.read_text())
+        client=PublicFeedClient(PublicJSONTransport(),fred_api_key=os.getenv('FRED_API_KEY',''))
+        reports=refresh_macro_sources(client,EvidenceLedger(d/'evidence.sqlite'),ResearchIndex(d/'research.sqlite'),policies)
+        out={'status':'MACRO_REFRESH_ONLY','ingestion':reports,'can_trade':False}
     elif a.cmd=='run-role':
         os.umask(0o077);d=private_dir(a.data_dir);load=lambda p:json.loads(p.read_text());roles=load(a.roles);models=load(a.models);ledger=EvidenceLedger(d/'evidence.sqlite');index=ResearchIndex(d/'research.sqlite')
         memory=MemoryStore(d/'agent-memory',ledger,trust=load_trust(a.memory_trust) if a.memory_trust else {})
@@ -101,9 +123,7 @@ def main(argv=None):
                 try:ingestion.append(ingest_recent_filings(client.sec_submissions(c['cik']),cik=c['cik'],ledger=ledger,index=index,policy=load(a.sec_policy),transport=transport,limit=a.filings_per_company))
                 except (RuntimeError,ValueError,PermissionError,KeyError,TypeError) as e:ingestion.append({'status':'FILING_INGEST_BLOCKED','symbol':c['symbol'],'error_type':type(e).__name__})
         if a.macro_policies:
-            for pol in load(a.macro_policies):
-                try:ingestion.append(ingest_macro(client,ledger,index,series=pol['series_id'],policy=pol))
-                except (RuntimeError,ValueError,PermissionError,KeyError,TypeError) as e:ingestion.append({'status':'MACRO_INGEST_BLOCKED','error_type':type(e).__name__})
+            ingestion.extend(refresh_macro_sources(client,ledger,index,load(a.macro_policies)))
         tasks=list(PUBLIC_TASKS) if a.macro_policies else None
         out={'screen':result,'ingestion':ingestion,'research':execute_batch(result,executor,RoleJournal(d/'role_jobs.sqlite',memory=memory),run_id=a.run_id,at=datetime.now(timezone.utc).isoformat(),max_candidates=a.max_candidates,roles=tasks,macro=bool(a.macro_policies)),'can_trade':False}
     print(json.dumps(out,indent=2,allow_nan=False));return 0
