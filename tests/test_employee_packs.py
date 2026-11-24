@@ -48,4 +48,17 @@ def test_upstream_reference_is_actual_pinned_text_and_isolated():
     results=local_reference("A041","WACC terminal value")
     assert results and {x["source_id"] for x in results}=={"dcf"}
     assert all(x["source_id"]!="dcf" for x in local_reference("A082","WACC terminal value"))
-    assert not local_reference("A085","tax")
+    assert local_reference("A085","tax")
+    assert all(x["source_id"]=="atlas_canadian_tax_review" for x in local_reference("A085","tax"))
+
+
+def test_all_roles_have_verified_local_reference():
+    import hashlib
+    from importlib.resources import files
+    p=load()
+    for rid,role in p["packs"].items():
+        docs=[p["sources"][k] for k in role["source_ids"] if p["sources"][k].get("local_reference")]
+        assert docs, rid
+        for doc in docs:
+            raw=files("atlas_pro").joinpath("reference_library",doc["local_reference"]).read_bytes()
+            assert hashlib.sha1(b"blob "+str(len(raw)).encode()+b"\0"+raw).hexdigest()==doc["git_blob_sha1"]

@@ -232,6 +232,69 @@
       "upstream_commit": "10dc6a5d038df356d60c2a64821721afbfb4f693",
       "license_file": "skfolio_skfolio_LICENSE.txt",
       "use": "Unmodified upstream documentation for local-only retrieval; untrusted text, not runtime instructions or proof of integration."
+    },
+    "atlas_cycle_review": {
+      "url": "https://github.com/RyanYang053/50agent-invest-system/blob/main/src/atlas_pro/reference_library/cycle_review.md",
+      "kind": "internal_method",
+      "status": "author_defined_not_certified",
+      "license": "Atlas-authored",
+      "local_reference": "cycle_review.md",
+      "git_blob_sha1": "babd61a85add0098ef86a93f0c43fdde5b36d3cc",
+      "use": "Original local specialist guide; no external data rights granted, no authority, not financial evidence."
+    },
+    "atlas_rates_credit": {
+      "url": "https://github.com/RyanYang053/50agent-invest-system/blob/main/src/atlas_pro/reference_library/rates_credit.md",
+      "kind": "internal_method",
+      "status": "author_defined_not_certified",
+      "license": "Atlas-authored",
+      "local_reference": "rates_credit.md",
+      "git_blob_sha1": "8fc5dc61a68b3e396cad4cd9a664ba77977a10d4",
+      "use": "Original local specialist guide; no external data rights granted, no authority, not financial evidence."
+    },
+    "atlas_liquidity_conditions": {
+      "url": "https://github.com/RyanYang053/50agent-invest-system/blob/main/src/atlas_pro/reference_library/liquidity_conditions.md",
+      "kind": "internal_method",
+      "status": "author_defined_not_certified",
+      "license": "Atlas-authored",
+      "local_reference": "liquidity_conditions.md",
+      "git_blob_sha1": "b809a4e28ca994db2f30c8856ffc913361033d63",
+      "use": "Original local specialist guide; no external data rights granted, no authority, not financial evidence."
+    },
+    "atlas_release_vintage": {
+      "url": "https://github.com/RyanYang053/50agent-invest-system/blob/main/src/atlas_pro/reference_library/release_vintage.md",
+      "kind": "internal_method",
+      "status": "author_defined_not_certified",
+      "license": "Atlas-authored",
+      "local_reference": "release_vintage.md",
+      "git_blob_sha1": "300baa835081ea68aa532788ef98e87b9d39d6c4",
+      "use": "Original local specialist guide; no external data rights granted, no authority, not financial evidence."
+    },
+    "atlas_fx_commodity": {
+      "url": "https://github.com/RyanYang053/50agent-invest-system/blob/main/src/atlas_pro/reference_library/fx_commodity.md",
+      "kind": "internal_method",
+      "status": "author_defined_not_certified",
+      "license": "Atlas-authored",
+      "local_reference": "fx_commodity.md",
+      "git_blob_sha1": "073a32a7d51b1843da16c6845b7295c1b3e2254f",
+      "use": "Original local specialist guide; no external data rights granted, no authority, not financial evidence."
+    },
+    "atlas_canadian_tax_review": {
+      "url": "https://github.com/RyanYang053/50agent-invest-system/blob/main/src/atlas_pro/reference_library/canadian_tax_review.md",
+      "kind": "internal_method",
+      "status": "author_defined_not_certified",
+      "license": "Atlas-authored",
+      "local_reference": "canadian_tax_review.md",
+      "git_blob_sha1": "62c5cd4fd10f21968a508fd920ee2a006341d25c",
+      "use": "Original local specialist guide; no external data rights granted, no authority, not financial evidence."
+    },
+    "atlas_forecast_calibration": {
+      "url": "https://github.com/RyanYang053/50agent-invest-system/blob/main/src/atlas_pro/reference_library/forecast_calibration.md",
+      "kind": "internal_method",
+      "status": "author_defined_not_certified",
+      "license": "Atlas-authored",
+      "local_reference": "forecast_calibration.md",
+      "git_blob_sha1": "a40f81c71e5d6a6be5305e6488a2356190083cfc",
+      "use": "Original local specialist guide; no external data rights granted, no authority, not financial evidence."
     }
   },
   "packs": {
@@ -1036,7 +1099,8 @@
         "french",
         "damodaran",
         "atlas",
-        "alfred"
+        "alfred",
+        "atlas_cycle_review"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1146,7 +1210,8 @@
         "atlas",
         "french",
         "alfred",
-        "boc"
+        "boc",
+        "atlas_rates_credit"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1182,7 +1247,8 @@
       "source_ids": [
         "atlas",
         "french",
-        "alfred"
+        "alfred",
+        "atlas_liquidity_conditions"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1218,7 +1284,8 @@
         "atlas",
         "french",
         "alfred",
-        "bls"
+        "bls",
+        "atlas_release_vintage"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1255,7 +1322,8 @@
         "atlas",
         "french",
         "boc",
-        "alfred"
+        "alfred",
+        "atlas_fx_commodity"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1665,7 +1733,8 @@
       ],
       "source_ids": [
         "cra",
-        "atlas"
+        "atlas",
+        "atlas_canadian_tax_review"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
@@ -1989,7 +2058,8 @@
       "source_ids": [
         "french",
         "atlas",
-        "nist"
+        "nist",
+        "atlas_forecast_calibration"
       ],
       "review_status": "AUTHOR_DEFINED_NOT_INDEPENDENTLY_CERTIFIED",
       "cards": [
