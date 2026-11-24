@@ -21,6 +21,13 @@ CHECKS={
 }
 STATUS_CHECK={"NO_EVIDENCE":"evidence","BLOCKED_INPUT":"numeric","MODEL_OUTPUT_REJECTED":"uncertainty"}
 
+def candidate_pack(role_id,check):
+    candidate=load();target=candidate['packs'][role_id]
+    for card in target['cards']:
+        if card['kind']=='quality':card['text']+=' '+CHECKS[check]
+    target['review_status']='CANDIDATE_REQUIRES_RELEASE_AND_RECERTIFICATION'
+    return candidate
+
 def paired_grade(cases,rows):
     if not isinstance(rows,list) or len(rows)!=len(cases):raise ValueError("incomplete paired results")
     expected={x["id"]:x for x in cases};seen=set();wins=losses=base=challenger=critical=negative=0
@@ -79,10 +86,15 @@ class Evolution:
         c.execute("INSERT INTO events(payload,prev,hash) VALUES(?,?,?)",(canonical(e),prev,digest({"prev":prev,"event":e})))
     def propose(self,role_id,check,reason_hashes):
         if role_id not in catalog() or check not in CHECKS or not isinstance(reason_hashes,list) or not 3<=len(reason_hashes)<=100 or len(set(reason_hashes))!=len(reason_hashes) or not all(ishash(x) for x in reason_hashes):raise ValueError("bounded role proposal required")
-        p={"role_id":role_id,"base_runtime":runtime_hash(role_id),"base_pack":digest(pack(role_id)),"check":check,"reason_hashes":sorted(reason_hashes),"can_trade":False}
+        p={"role_id":role_id,"base_runtime":runtime_hash(role_id),"base_pack":digest(pack(role_id)),"check":check,"candidate_pack_hash":digest(candidate_pack(role_id,check)),"reason_hashes":sorted(reason_hashes),"can_trade":False}
         key=digest(p)
         with self.db() as c:
             c.execute("BEGIN IMMEDIATE");self._events(c)
+            # A check is proposed at most once for a role and base revision.
+            for existing,raw in c.execute('SELECT id,payload FROM proposals'):
+                old=json.loads(raw)
+                if digest(old)!=existing:raise ValueError('proposal integrity')
+                if all(old[k]==p[k] for k in ('role_id','base_runtime','base_pack','check')):return existing
             if not c.execute("SELECT 1 FROM proposals WHERE id=?",(key,)).fetchone():
                 c.execute("INSERT INTO proposals VALUES(?,?)",(key,canonical(p)));self._append(c,"PROPOSED",{"id":key,"role":role_id})
         return key
@@ -95,6 +107,13 @@ class Evolution:
             check=STATUS_CHECK.get(e.get("status"))
             if check:groups[check].add(e["result_hash"])
         return [self.propose(role_id,k,sorted(v)[:100]) for k,v in groups.items() if len(v)>=3]
+    def preview(self,pid):
+        with self.db() as c:
+            p=self._get(c,'proposals',pid)
+            if p['base_runtime']!=runtime_hash(p['role_id']):raise ValueError('stale proposal')
+            candidate=candidate_pack(p['role_id'],p['check'])
+            if digest(candidate)!=p['candidate_pack_hash']:raise ValueError('candidate revision mismatch')
+            return {'proposal_id':pid,'proposal':p,'employee_packs':candidate,'live_activation':False}
     def lock(self,pid,cases,*,testset_hash,rubric_hash,confirmed=False):
         if confirmed is not True:raise PermissionError("independent holdout operator confirmation")
         if not all(ishash(x) for x in (testset_hash,rubric_hash)) or testset_hash==rubric_hash:raise ValueError("artifact hashes")
@@ -136,7 +155,7 @@ class Evolution:
             if digest(result)!=row[1] or grade!=result["grade"] or not grade["passes"]:raise ValueError("challenger not eligible")
             verify_artifacts([m["testset_hash"],m["rubric_hash"]]+[r[k] for r in result["rows"] for k in ("baseline_answer_hash","challenger_answer_hash")],artifact_dir)
             review=verify_review(envelope,trust,at=self._time())
-            expected={"kind":"SKILL_CHALLENGER_V1","role_id":p["role_id"],"proposal_id":m["proposal_id"],"lock_id":lid,"evaluation_hash":row[1],"base_runtime":p["base_runtime"],"holdout_independence_verified":True,"real_tasks_verified":True,"data_rights_verified":True,"candidate_executed_verified":True,"baseline_executed_verified":True,"no_privilege_change_verified":True}
+            expected={"kind":"SKILL_CHALLENGER_V1","role_id":p["role_id"],"proposal_id":m["proposal_id"],"lock_id":lid,"evaluation_hash":row[1],"base_runtime":p["base_runtime"],"candidate_pack_hash":p['candidate_pack_hash'],"holdout_independence_verified":True,"real_tasks_verified":True,"data_rights_verified":True,"candidate_executed_verified":True,"baseline_executed_verified":True,"no_privilege_change_verified":True}
             if any(review.get(k)!=v for k,v in expected.items()) or iso(review["reviewed_at"])<iso(result["evaluated_at"]) or not review.get("producer_organization"):raise PermissionError("independent review not bound to comparison")
             if p["base_runtime"]!=runtime_hash(p["role_id"]) or p["base_pack"]!=digest(pack(p["role_id"])):raise ValueError("base revision changed")
             if c.execute("SELECT 1 FROM staged WHERE role=?",(p["role_id"],)).fetchone():raise ValueError("role already staged; rollback first")
@@ -150,10 +169,8 @@ class Evolution:
             review=verify_review(json.loads(r[2]),trust,at=self._time())
             if review.get("proposal_id")!=r[0] or review.get("lock_id")!=r[1] or review.get("role_id")!=role_id or p["role_id"]!=role_id or m["proposal_id"]!=r[0]:raise ValueError("staged scope")
             if p["base_runtime"]!=runtime_hash(role_id) or p["base_pack"]!=digest(pack(role_id)):raise ValueError("stale release")
-            candidate=load();target=candidate["packs"][role_id]
-            for card in target["cards"]:
-                if card["kind"]=="quality":card["text"]+=" "+CHECKS[p["check"]]
-            target["review_status"]="CANDIDATE_REQUIRES_RELEASE_AND_RECERTIFICATION"
+            candidate=candidate_pack(role_id,p['check'])
+            if digest(candidate)!=p['candidate_pack_hash'] or review.get('candidate_pack_hash')!=p['candidate_pack_hash']:raise ValueError('candidate revision mismatch')
             return {"proposal_id":r[0],"role_id":role_id,"base_runtime":p["base_runtime"],"employee_packs":candidate,"requires_new_runtime_certification":True,"live_activation":False,"can_trade":False}
     def rollback(self,role_id,*,owner_confirmed=False):
         if owner_confirmed is not True:raise PermissionError("owner confirmation required")
@@ -170,7 +187,7 @@ class Evolution:
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__);p.add_argument("--data-dir",type=Path,required=True);s=p.add_subparsers(dest="cmd",required=True)
     s.add_parser("status")
-    for cmd in ("propose","reflect","lock","evaluate","stage","export","rollback"):
+    for cmd in ("propose","reflect","preview","lock","evaluate","stage","export","rollback"):
         q=s.add_parser(cmd);q.add_argument("--request",type=Path,required=True)
         if cmd in ("lock","stage","rollback"):q.add_argument("--confirm",action="store_true")
         if cmd in ("evaluate","stage"):q.add_argument("--artifacts",type=Path,required=True)
@@ -181,6 +198,7 @@ def main(argv=None):
         r=json.loads(a.request.read_text())
         if a.cmd=="propose":out=e.propose(**r)
         elif a.cmd=="reflect":out=e.reflect(**r)
+        elif a.cmd=='preview':out=e.preview(**r)
         elif a.cmd=="lock":out=e.lock(**r,confirmed=a.confirm)
         elif a.cmd=="evaluate":out=e.evaluate(**r,artifact_dir=a.artifacts)
         elif a.cmd=="stage":out=e.stage(**r,trust=load_trust(a.trust),artifact_dir=a.artifacts,owner_confirmed=a.confirm)
