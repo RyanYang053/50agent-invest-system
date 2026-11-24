@@ -50,6 +50,29 @@ def ingest_daily(client,ledger,*,symbol,security_id,start,end,policy,clock=now):
     for record in records:ledger.add_evidence(record,policy=policy)
     return {"status":"DAILY_BARS_STORED","security_id":security_id,"record_ids":[x["record_id"] for x in records],"receipt_at":received.isoformat(),"sessions":len(records),"point_in_time_history":False,"can_trade":False}
 
+def refresh_daily(root,ledger,policies,roles,*,clock=now,client_factory=AlpacaResearchQuotes):
+    """Operator-configured watchlist; dispatch actual A065 tasks, not model calls."""
+    from .role_jobs import RoleExecutor,RoleJournal
+    from .agent_memory import MemoryStore
+    from .skill_evolution import Evolution
+    from .external_references import ReferenceStore
+    if not isinstance(policies,list) or not 1<=len(policies)<=20 or any(not isinstance(p,dict) or not isinstance(p.get("symbol"),str) or not isinstance(p.get("security_id"),str) for p in policies):raise ValueError("invalid bounded watchlist")
+    if len({p["security_id"] for p in policies})!=len(policies) or len({p["symbol"] for p in policies})!=len(policies):raise ValueError("duplicate watchlist identity")
+    memory=MemoryStore(root/"agent-memory",ledger)
+    executor=RoleExecutor(roles,ledger,reference_store=ReferenceStore(root/"external-references"))
+    journal=RoleJournal(root/"role_jobs.sqlite",memory=memory,evolution=Evolution(root/"skill-evolution"))
+    end=clock().astimezone(NY).date()-timedelta(days=1)
+    start=end-timedelta(days=180);out=[]
+    for policy in policies:
+        try:
+            report=ingest_daily(client_factory(policy=policy),ledger,symbol=policy["symbol"],security_id=policy["security_id"],start=start.isoformat(),end=end.isoformat(),policy=policy,clock=clock)
+            args={"security_id":report["security_id"],"record_ids":report["record_ids"]}
+            result=journal.execute(executor,"A065",at=report["receipt_at"],run_id=digest(report),inputs={"price_behavior":args})
+            out.append({"symbol":policy["symbol"],"ingestion":report,"role_result":result,"can_trade":False})
+        except (ValueError,PermissionError,RuntimeError,OSError,KeyError,TypeError,ImportError) as e:
+            out.append({"symbol":policy["symbol"],"status":"DAILY_RESEARCH_BLOCKED","error_type":type(e).__name__,"can_trade":False})
+    return out
+
 def main(argv=None):
     from .core_service import private_dir
     from .price_behavior import diagnose
