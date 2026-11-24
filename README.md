@@ -1,6 +1,6 @@
-# Atlas Investment OS — research runtime 0.4.0
+# Atlas Investment OS — research and controlled paper pilot 0.5.0
 
-A local-first investment research system with 50 logical specialist roles and 21 event routes. **Research only; no live order submission or AI modification of owner risk policy.** The existing IBKR-Agent-harness is not modified.
+A local-first investment research system with 50 logical specialist roles and 21 event routes. **No live order submission or AI modification of owner risk policy.** Separate operator-only paper pilot; no Agent can send orders. The existing IBKR-Agent-harness is not modified.
 
 ## Quick start (from repository checkout)
 
@@ -29,3 +29,13 @@ atlas-screen 'config/universe example.json' --data-dir /path/to/private/data --p
 Copy the policy examples to a private directory and confirm actual usage rights before enabling permissions. Configure `SEC_USER_AGENT` with a legitimate contact identity and the Alpaca credentials locally. IEX is a partial-market research feed, not an execution quote. The sample universe provides identifiers, not investment recommendations. Missing eligible price/share evidence means no candidate. Do not commit credentials or local databases. No real API request was made for this release's offline verification.
 
 See [engineering review](docs/0.4.0%20Engineering%20Review.md) for model selection, tool coverage, limitations, acceptance gates and deployment sequence. Earlier architecture and verification reports remain historical records, not current live readiness claims.
+
+## Controlled paper pilot
+
+```bash
+python -m atlas_pro.paper_replay
+```
+
+The offline replay uses fictional prices and a fictional instrument. For a dedicated Alpaca paper account, follow [Paper Pilot Runbook](docs/0.5.0%20Paper%20Pilot%20Runbook.md). The paper gateway is disarmed by default, fixed to the Alpaca paper host, and requires a locally confirmed policy, dedicated paper keys, account ID match, cash-only limits, and explicit operator approval for every order. IBKR remains read-only. Do not use real brokerage credentials, commit private files, or register the paper gateway as a model tool.
+
+The broker paper adapter has been tested against provider-shaped fixtures, not an authenticated broker session. No actual simulated broker orders have been sent. Research WAIT decisions are not automatically converted to orders.

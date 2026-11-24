@@ -59,9 +59,13 @@ class ProductionCore(unittest.TestCase):
             @staticmethod
             def latest_broker_snapshot():return {'status':'ok','capture_status':'ok','live_verified':True,'adapter':'ibkr_tws_readonly','as_of':NOW,'snapshot_id':'broker'}
             @staticmethod
-            def reconcile_live_to_flex():return {'status':'reconciled'}
-        out=IBKRReadOnlyBridge(Finance,Broker).inspect()
-        self.assertEqual(out['status'],'READ_ONLY_READY');self.assertFalse(out['can_place_order'])
+            def reconcile_live_to_flex():return {'status':'reconciled','broker_snapshot_id':'broker','flex_snapshot_id':'flex'}
+        out=IBKRReadOnlyBridge(Finance,Broker).inspect(at=NOW)
+        self.assertEqual(out['status'],'READ_ONLY_READY');self.assertFalse(out['can_place_order']);self.assertFalse(out['same_asof'])
+        self.assertEqual(IBKRReadOnlyBridge(Finance,Broker).inspect(at='2026-11-23T18:05:01Z')['status'],'RESTRICTED')
+        self.assertEqual(IBKRReadOnlyBridge(Finance,Broker).inspect(at='2026-11-23T17:59:59Z')['status'],'RESTRICTED')
+        Broker.reconcile_live_to_flex=staticmethod(lambda:{'status':'reconciled','broker_snapshot_id':'other','flex_snapshot_id':'flex'})
+        self.assertEqual(IBKRReadOnlyBridge(Finance,Broker).inspect(at=NOW)['status'],'RESTRICTED')
     def test_bridge_broker_disconnected_restricts(self):
         from types import SimpleNamespace
         class Finance:
