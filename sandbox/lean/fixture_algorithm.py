@@ -17,14 +17,19 @@ class AtlasLeanAccountingFixture(QCAlgorithm):
         self.symbol = security.symbol
         self.set_benchmark(self.symbol)
         self.stage = 0
-        self.bars = []
+        self.bars = {}
         self.fills = []
 
     def on_data(self, data):
         if not data.bars.contains_key(self.symbol):
             return
         bar = data.bars[self.symbol]
-        self.bars.append({"date": self.time.strftime("%Y-%m-%d"), "close": float(bar.close)})
+        date = self.time.strftime("%Y-%m-%d")
+        price = float(bar.close)
+        item = self.bars.setdefault(date, {"count": 0, "close_min": price, "close_max": price})
+        item["count"] += 1
+        item["close_min"] = min(item["close_min"], price)
+        item["close_max"] = max(item["close_max"], price)
         if self.stage == 0 and self.time.day == 2:
             self.stage = 1
             self.market_order(self.symbol, 10, tag="synthetic-fixture-buy")
