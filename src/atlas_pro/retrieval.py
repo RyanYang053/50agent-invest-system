@@ -34,6 +34,8 @@ class ResearchIndex:
               INSERT INTO docs_fts(rowid,content) VALUES(new.rowid,new.content);
             END;
             ''')
+            cols={r[1] for r in c.execute('PRAGMA table_info(docs)')}
+            if 'embedding_model_id' not in cols:c.execute('ALTER TABLE docs ADD COLUMN embedding_model_id TEXT')
 
     @contextmanager
     def _db(self):
@@ -66,19 +68,23 @@ class ResearchIndex:
         if len(body)>250_000: raise ValueError('DOC_TOO_LARGE_SPLIT_INTO_CHUNKS')
         if embed and document['scope'] != 'public' and not getattr(embed,'local_only',False):
             raise PermissionError('PRIVATE_EMBEDDING_MUST_BE_LOCAL')
+        model_id=getattr(embed,'model_id',None) if embed else None
+        if model_id is not None and (not isinstance(model_id,str) or not model_id.strip()):raise ValueError('INVALID_EMBEDDING_MODEL_ID')
         vector=embed(body) if embed else None
         if vector is not None:
             if not isinstance(vector,(tuple,list)) or not vector or any(not isinstance(x,(float,int)) or not math.isfinite(x) for x in vector):
                 raise ValueError('INVALID_EMBEDDING')
         hashval=hashlib.sha256(body.encode()).hexdigest()
         with self._db() as c:
+            c.execute('BEGIN IMMEDIATE')
             old=c.execute('SELECT * FROM docs WHERE doc_id=?',(document['doc_id'],)).fetchone()
             if old:
                 if old['text_sha256']!=hashval or any(old[k]!=document[k] for k in ('source_id','source_uri','security_id','scope','license_id')) or old['available_at']!=dt.isoformat(): raise ValueError('DOC_IMMUTABILITY_CONFLICT')
+                if vector is not None and old['embedding_model_id']!=model_id:raise ValueError('EMBEDDING_MODEL_MISMATCH_REINDEX_REQUIRED')
                 return 'DUPLICATE'
-            c.execute('''INSERT INTO docs(doc_id,source_id,source_uri,security_id,available_at,scope,license_id,text_sha256,indexed_at,embedding_json,content)
-              VALUES(?,?,?,?,?,?,?,?,?,?,?)''',
-              (document['doc_id'],document['source_id'],document['source_uri'],document['security_id'],dt.isoformat(),document['scope'],document['license_id'],hashval,datetime.now(timezone.utc).isoformat(),json.dumps(vector) if vector is not None else None,body))
+            c.execute('''INSERT INTO docs(doc_id,source_id,source_uri,security_id,available_at,scope,license_id,text_sha256,indexed_at,embedding_json,content,embedding_model_id)
+              VALUES(?,?,?,?,?,?,?,?,?,?,?,?)''',
+              (document['doc_id'],document['source_id'],document['source_uri'],document['security_id'],dt.isoformat(),document['scope'],document['license_id'],hashval,datetime.now(timezone.utc).isoformat(),json.dumps(vector) if vector is not None else None,body,model_id))
         return 'ADDED'
 
     @staticmethod
@@ -107,25 +113,30 @@ class ResearchIndex:
         with self._db() as c:
             rows=c.execute(f'''SELECT d.*,bm25(docs_fts) AS bm FROM docs_fts
               JOIN docs d ON d.rowid=docs_fts.rowid
-              WHERE docs_fts MATCH ? AND {where} ORDER BY bm LIMIT 60''',[fts_query]+params).fetchall()
+              WHERE docs_fts MATCH ? AND {where} ORDER BY bm,d.doc_id LIMIT 60''',[fts_query]+params).fetchall()
             lexical={r['doc_id']:(1.0/(60+i),dict(r)) for i,r in enumerate(rows)}
             if cjk_terms:
                 extra=c.execute(f"SELECT d.* FROM docs d WHERE {where} AND ("+' OR '.join('instr(d.content,?)>0' for _ in cjk_terms)+") ORDER BY d.available_at DESC, d.doc_id LIMIT 60",params+cjk_terms).fetchall()
                 for i,r in enumerate(extra):
                     if r['doc_id'] not in lexical:lexical[r['doc_id']]=(1.0/(60+i),dict(r))
-            if embed:
-                allrows=c.execute(f'SELECT * FROM docs d WHERE {where} AND embedding_json IS NOT NULL LIMIT 5000',params).fetchall()
+            # Unversioned vectors cannot safely be compared across model revisions.
+            model_id=getattr(embed,'model_id',None) if embed else None
+            if embed and model_id:
+                allrows=c.execute(f'SELECT * FROM docs d WHERE {where} AND embedding_json IS NOT NULL AND embedding_model_id=? ORDER BY d.doc_id LIMIT 5001',params+[model_id]).fetchall()
+                if len(allrows)>5000:raise ValueError('EXACT_VECTOR_CAPACITY_EXCEEDED_USE_VALIDATED_INDEX')
                 vec=embed(query)
                 if not isinstance(vec,(list,tuple)) or not vec or any(not isinstance(x,(float,int)) or not math.isfinite(x) for x in vec):raise ValueError('INVALID_QUERY_EMBEDDING')
                 sims=[]
                 for r in allrows:
-                    sim=self._cos(vec,json.loads(r['embedding_json']))
+                    stored=json.loads(r['embedding_json'])
+                    if len(vec)!=len(stored):raise ValueError('EMBEDDING_DIMENSION_MISMATCH')
+                    sim=self._cos(vec,stored)
                     if sim>0: sims.append((sim,dict(r)))
                 sims.sort(reverse=True,key=lambda x:x[0])
                 for i,(_,r) in enumerate(sims[:60]):
                     prior=lexical.get(r['doc_id'],(0,r))
                     lexical[r['doc_id']]=(prior[0]+1.0/(60+i),r)
-        results=sorted(lexical.values(),key=lambda x:x[0],reverse=True)[:top_k]
+        results=sorted(lexical.values(),key=lambda x:(-x[0],x[1]['doc_id']))[:top_k]
         # Return source refs, NOT operator instructions. Cloud cannot query private.
         return [{'doc_id':r['doc_id'],'source_id':r['source_id'],'source_uri':r['source_uri'],
                  'available_at':r['available_at'],'evidence_sha256':r['text_sha256'],

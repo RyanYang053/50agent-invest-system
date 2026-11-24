@@ -17,6 +17,8 @@ def decision_grid(*, candidate, assumptions, terminal_scenarios, quote_price, be
     if not 1<=horizon_days<=3650 or type(horizon_days) is not int:raise ValueError('horizon bounds')
     quote_price=num(quote_price)
     if quote_price<=0 or set(assumptions)!={'bear','base','bull'}:raise ValueError('invalid decision inputs')
+    if candidate.get('price') is not None and abs(num(candidate['price'])-quote_price)>max(1e-8,quote_price*1e-8):raise ValueError('candidate quote mismatch')
+    if any(iso(candidate[k])>cutoff for k in ('available_at','decision_at','price_asof') if k in candidate):raise ValueError('future candidate')
     vals={k:dcf(**assumptions[k]) for k in ('bear','base','bull')}
     ordered=[vals[k]['value_per_share'] for k in ('bear','base','bull')]
     if ordered!=sorted(ordered):raise ValueError('DCF scenarios not economically ordered')

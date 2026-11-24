@@ -75,17 +75,17 @@ class EventBus:
         if not source and rule['priority']!='P0':
             return {'status':'MISSING_SOURCE_ID','can_trade':False}
         dedupe=digest({'type':kind,'security':event.get('security_id','ALL'),'source_event':source or event.get('signal_id','UNATTRIBUTED')})
+        work_id=digest({'event':dedupe,'window':int(now.timestamp()/5) if rule['priority']=='P0' else 0})
         with self._db() as c:
             c.execute('BEGIN IMMEDIATE')
             try:
                 old=c.execute('SELECT * FROM events WHERE dedupe_key=?',(dedupe,)).fetchone()
                 if old:
-                    age=(now-iso(old['last_seen_at'])).total_seconds()
                     if rule['priority']!='P0':
                         c.execute('COMMIT')
                         return {'status':'DUPLICATE','dedupe_key':dedupe,'can_trade':False}
                     # P0 accepted even for repeats, but only one queued job per fixed time window.
-                    if age<5:
+                    if c.execute('SELECT 1 FROM queue WHERE work_id=?',(work_id,)).fetchone():
                         c.execute('UPDATE events SET attempts=attempts+1,last_seen_at=? WHERE dedupe_key=?',(now.isoformat(),dedupe))
                         c.execute('COMMIT')
                         return {'status':'P0_ALREADY_ACTIVE','can_trade':False}
@@ -93,7 +93,6 @@ class EventBus:
                     c.execute('INSERT INTO events VALUES(?,?,?,?,?,?,?,?)',(dedupe,kind,rule['priority'],source,now.isoformat(),now.isoformat(),1,'QUEUED'))
                 else:
                     c.execute('UPDATE events SET last_seen_at=?,attempts=attempts+1,last_result=? WHERE dedupe_key=?',(now.isoformat(),'QUEUED',dedupe))
-                work_id=digest({'event':dedupe,'window':int(now.timestamp()/5) if rule['priority']=='P0' else 0})
                 routed=rule['primary_agents']
                 if rule['priority']=='P0':
                     if self.roles is None: raise ValueError('P0_ROLE_MANIFEST_REQUIRED')

@@ -7,10 +7,26 @@ from pathlib import Path
 from datetime import datetime,timezone
 from .feeds import PublicFeedClient, ProviderUnavailable
 from .transport import PublicJSONTransport
-from .research import sec_annual_facts,annual_snapshot,screen
+from .research import sec_annual_facts,annual_snapshot,screen,num
 from .ledger import EvidenceLedger,digest,iso
 from .retrieval import ResearchIndex
 from .market_data import AlpacaResearchQuotes,outstanding_shares
+
+
+def market_evidence_matches(ledger,market,*,cik,at):
+    """Require actual price/share payloads, not just unrelated valid record IDs."""
+    try:
+        records=ledger.resolve_ids(market['evidence_ids'],security_id=f'CIK:{cik}',decision_at=at,include_private=True)
+        quote_ok=shares_ok=False
+        for r in records:
+            p=r['payload']
+            if not isinstance(p,dict) or iso(r['available_at'])>iso(market['available_at']):continue
+            if ('price' in p and p.get('symbol')==market['symbol'] and p.get('currency')==market['currency'] and
+                num(p['price'])==num(market['price']) and iso(p['price_asof'])==iso(market['price_asof']) and iso(r['observed_at'])==iso(market['price_asof'])):quote_ok=True
+            if ('shares' in p and int(p['cik'])==cik and num(p['shares'])==num(market['shares']) and
+                iso(p['shares_asof'])==iso(market['shares_asof']) and iso(r['observed_at'])==iso(market['shares_asof'])):shares_ok=True
+        return quote_ok and shares_ok
+    except (ValueError,KeyError,TypeError,AttributeError):return False
 
 
 def run_screen(universe, *, client, ledger, index, policy, at, replay=False, received_at=None, quotes=None):
@@ -57,9 +73,7 @@ def run_screen(universe, *, client, ledger, index, policy, at, replay=False, rec
             else:
                 # External market evidence must have been registered by operator before screen.
                 if quotes is None:
-                    records=ledger.asof(f'CIK:{cik}',decision_at,include_private=True,max_rows=500)
-                    ids={r['record_id'] for r in records}
-                    if not market.get('evidence_ids') or not set(market['evidence_ids']).issubset(ids):
+                    if not market_evidence_matches(ledger,market,cik=cik,at=decision_at):
                         market=market|{'qualified_research_data':False}
                 result=screen(snap,market,at=decision_at)
             if result['status']=='CANDIDATE':candidates.append(result|{'decision_at':decision_at})
