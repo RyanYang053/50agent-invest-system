@@ -20,12 +20,13 @@ def sessions(start,end):
 
 def ingest_daily(client,ledger,*,symbol,security_id,start,end,policy,clock=now):
     if not isinstance(symbol,str) or not re.fullmatch(r"[A-Z][A-Z0-9.\-]{0,11}",symbol) or not isinstance(security_id,str) or not re.fullmatch(r"CIK:[1-9][0-9]{0,9}",security_id):raise ValueError("symbol or issuer identity")
+    if policy.get('license_id')!='ALPACA_PERSONAL' or policy.get('cloud_allowed') is not False or any(policy.get(k) is not True for k in ('permitted_for_personal_analysis','allow_local_retention')):raise PermissionError('local research entitlement required')
     if policy!=client.policy or policy.get("symbol")!=symbol or policy.get("security_id")!=security_id or policy.get("symbol_mapping_reviewed") is not True or policy.get("allow_historical_research") is not True:raise PermissionError("explicit historical rights and issuer mapping required")
     a,b=date.fromisoformat(start),date.fromisoformat(end);before=iso(clock().isoformat())
     if not 0<=(b-a).days<=365 or b>=before.astimezone(NY).date():raise ValueError("bounded completed historical dates only")
     expected=sessions(a,b)
     if not 61<=len(expected)<=200:raise ValueError("61–200 exchange sessions required")
-    q=urlencode({"symbols":symbol,"timeframe":"1Day","start":datetime.combine(a,datetime.min.time(),NY).isoformat(),"end":datetime.combine(b+timedelta(days=1),datetime.min.time(),NY).isoformat(),"limit":1000,"adjustment":"split","feed":"iex","sort":"asc","asof":"-"})
+    q=urlencode({"symbols":symbol,"timeframe":"1Day","start":datetime.combine(a,datetime.min.time(),NY).isoformat(),"end":(datetime.combine(b+timedelta(days=1),datetime.min.time(),NY)-timedelta(microseconds=1)).isoformat(),"limit":1000,"adjustment":"split","feed":"iex","sort":"asc","asof":"-"})
     raw=client.transport("https://data.alpaca.markets/v2/stocks/bars?"+q,{"APCA-API-KEY-ID":client.key,"APCA-API-SECRET-KEY":client.secret})
     received=iso(clock().isoformat())
     if received<before or raw.get("next_page_token") is not None or not isinstance(raw.get("bars"),dict) or set(raw["bars"])!={symbol}:raise ValueError("incomplete history or identity mismatch")
@@ -52,11 +53,14 @@ def ingest_daily(client,ledger,*,symbol,security_id,start,end,policy,clock=now):
 def main(argv=None):
     from .core_service import private_dir
     from .price_behavior import diagnose
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument("--data-dir",type=Path,required=True);p.add_argument("--policy",type=Path,required=True);p.add_argument("--start",required=True);p.add_argument("--end",required=True);p.add_argument("--network",action="store_true")
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument("--data-dir",type=Path,required=True);p.add_argument("--policy",type=Path,required=True);p.add_argument("--start",required=True);p.add_argument("--end",required=True);p.add_argument("--network",action="store_true");p.add_argument("--retrospective",action="store_true")
     a=p.parse_args(argv)
     if not a.network:raise PermissionError("explicit network consent required")
     os.umask(0o077);root=private_dir(a.data_dir);policy=json.loads(a.policy.read_text());l=EvidenceLedger(root/"evidence.sqlite")
     result=ingest_daily(AlpacaResearchQuotes(policy=policy),l,symbol=policy["symbol"],security_id=policy["security_id"],start=a.start,end=a.end,policy=policy)
     result["diagnostic"]=diagnose(l,security_id=result["security_id"],record_ids=result["record_ids"],at=result["receipt_at"])
+    if a.retrospective:
+        from .price_replay import retrospective
+        result['retrospective']=retrospective(l,security_id=result['security_id'],record_ids=result['record_ids'],at=result['receipt_at'])
     print(json.dumps(result,indent=2,allow_nan=False));return 0
 if __name__=="__main__":raise SystemExit(main())
