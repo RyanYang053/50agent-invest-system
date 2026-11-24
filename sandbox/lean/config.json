@@ -32,5 +32,6 @@
       ],
       "transaction-handler": "QuantConnect.Lean.Engine.TransactionHandlers.BacktestingTransactionHandler"
     }
-  }
+  },
+  "object-store-root": "/tmp/atlas-object-store"
 }
