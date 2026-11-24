@@ -9,7 +9,7 @@ def esc(v):
 def table(headers, rows):
     return "<section><table><thead><tr>" + "".join("<th>"+esc(x)+"</th>" for x in headers) + "</tr></thead><tbody>" + "".join("<tr>"+"".join("<td>"+esc(x)+"</td>" for x in row)+"</tr>" for row in rows) + "</tbody></table></section>"
 def write_report(path, title, summary, body):
-    document = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+'</title><style>'+STYLE+'</style></head><body><main><small>SYNTHETIC RESEARCH DEMO</small><h1>'+esc(title)+'</h1><p>'+esc(summary)+'</p>'+body+'<p>Fixture data only. No investment recommendation or live performance claim.</p></main></body></html>'
+    document = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src &apos;none&apos;; style-src &apos;unsafe-inline&apos;; base-uri &apos;none&apos;; form-action &apos;none&apos;"><title>'+esc(title)+'</title><style>'+STYLE+'</style></head><body><main><small>SYNTHETIC RESEARCH DEMO</small><h1>'+esc(title)+'</h1><p>'+esc(summary)+'</p>'+body+'<p>Fixture data only. No investment recommendation or live performance claim.</p></main></body></html>'
     with path.open("x", encoding="utf-8") as handle:
         handle.write(document)
     print(f"Report: {path.resolve()}")
@@ -27,7 +27,10 @@ def main():
     roles = json.loads((ROOT / "config" / "50 agent manifest.json").read_text(encoding="utf-8"))
     rows = [(r["agent_id"], r["team"], r["role"], r["data_scope"], r["primary_model"]) for r in roles]
     body = "<h2>Offline integration result</h2><p>Exit status: "+esc(run.returncode)+"</p><pre>"+esc(run.stdout + run.stderr)+"</pre>"
-    body += "<h2>Registered roles ("+str(len(rows))+")</h2><p>Catalog only, not a live execution trace.</p>"+table(["ID","Team","Role","Scope","Configured model"], rows)
+    body += "<h2>Registered roles ("+str(len(rows))+")</h2><p>Catalog only, not a live execution trace. Expand a team to inspect its configured roles.</p>"
+    for team in sorted({row[1] for row in rows}):
+        group = [row for row in rows if row[1] == team]
+        body += "<details><summary>"+esc(team)+" ("+str(len(group))+")</summary>"+table(["ID","Team","Role","Scope","Configured model"], group)+"</details>"
     write_report(out, "Atlas research explorer", "Offline smoke output and role manifest from this checkout.", body)
     return run.returncode
 
