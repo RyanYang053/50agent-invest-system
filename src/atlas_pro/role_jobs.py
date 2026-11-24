@@ -108,15 +108,21 @@ class RoleExecutor:
     def run(self,role_id,*,at,run_id,inputs):
         if role_id not in self.roles or not run_id or not isinstance(inputs,dict):raise ValueError('invalid role job')
         iso(at)
+        from .capability_runtime import load_role_context
+        try:
+            context=load_role_context(role_id)
+        except (ValueError,KeyError,PermissionError,OSError):
+            return _safe({'status':'BLOCKED_ROLE_REFERENCE_INTEGRITY','role_id':role_id})
+        receipt=context['receipt']
         if role_id in PUBLIC_TASKS:
             # No free-text user/portfolio inputs cross this boundary. The query is static.
             kind,query=PUBLIC_TASKS[role_id];sid=inputs.get('security_id')
             if set(inputs)!={'security_id'} or not isinstance(sid,str) or (kind=='company' and not re.fullmatch(r'CIK:[1-9][0-9]{0,9}',sid)) or (kind=='macro' and sid!='MACRO:US'):
                 raise PermissionError('public role only accepts canonical public identifier')
-            if self.model_runner is None:return _safe({'status':'BLOCKED_MODEL_RUNTIME','role_id':role_id})
+            if self.model_runner is None:return _safe({'status':'BLOCKED_MODEL_RUNTIME','role_id':role_id,'reference_context':receipt})
             result=self.model_runner.run(role_id=role_id,task_set=task_id(role_id),request_id=digest({'run':run_id,'role':role_id,'security':sid,'at':iso(at).isoformat()}),security_id=sid,query=query,at=at)
         else:result=self._local(LOCAL_TASKS[role_id],inputs,at)
-        return _safe(result)|{'role_id':role_id,'skill_task_set':task_id(role_id),'task_id':digest({'role':role_id,'skill':task_id(role_id),'run':run_id,'inputs':inputs,'at':iso(at).isoformat()})}
+        return _safe(result)|{'reference_context':receipt,'role_id':role_id,'skill_task_set':task_id(role_id),'task_id':digest({'role':role_id,'skill':task_id(role_id),'run':run_id,'inputs':inputs,'at':iso(at).isoformat()})}
     def _local(self,task,p,at):
         if task=='policy_gate':
             pol=p['policy'];ok=pol.get('status')=='ACTIVE_APPROVED' and pol.get('owner_approval',{}).get('approved') is True and pol.get('permissions',{}).get('live_execution') is False
